@@ -1,4 +1,4 @@
-<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/project-studying-dotnet/Streetcode-Admin-March-01/blob/main/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
+<a href="https://softserve.academy/"><div align="center"><img src="https://github.com/project-studying-dotnet/Streetcode-Server-June/blob/main/StreetCodeLogo.jpg" title="SoftServe IT Academy" alt="SoftServe IT Academy"></div></a>
 
 # Streetcode
 This is a Back-end part of our Streetcode project.
@@ -60,11 +60,11 @@ api.secret=${API_SECRET}
 ### Clone
   Clone this repo to your local machine using:
   ```
-https://github.com/project-studying-dotnet/Streetcode-Admin-March-01
+https://github.com/project-studying-dotnet/Streetcode-Server-June
   ```
   Or if your have an associated SSH key:
   ```
-git@github.com:project-studying-dotnet/Streetcode-Admin-March-01.git
+git@github.com:project-studying-dotnet/Streetcode-Server-June.git
   ```
 
 ### Setup
@@ -165,7 +165,7 @@ For example, `fix typo` or `increase rate limit`. Note: you don't need to commit
 
 #### Step 6
 
-- 🔃 Create a new pull request using <a href="https://github.com/project-studying-dotnet/Streetcode-Admin-March-01.git" target="_blank">*this link*</a>.
+- 🔃 Create a new pull request using <a href="https://github.com/project-studying-dotnet/Streetcode-Server-June.git" target="_blank">*this link*</a>.
 
 #### Step 7
 
