@@ -1,4 +1,5 @@
 using System.Text;
+using System.Data.SqlClient;
 using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -52,7 +53,10 @@ public static class ServiceCollectionExtensions
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        configuration.AddUserSecrets<Program>();
+        var connectionStringBuilder = new SqlConnectionStringBuilder(configuration.GetConnectionString("DefaultConnection"));
+        connectionStringBuilder.Password = configuration["DbPassword"];
+        var connectionString = connectionStringBuilder.ConnectionString;
         var emailConfig = configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
         services.AddSingleton(emailConfig);
 
