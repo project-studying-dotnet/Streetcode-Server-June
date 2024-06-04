@@ -9,6 +9,15 @@ Front-end part: https://github.com/project-studying-dotnet/Streetcode_Client-Adm
 >### **Mission**
 >To fill the gaps in the historical memory of Ukrainians.
 
+[![Github Issues](https://img.shields.io/github/issues/project-studying-dotnet/Streetcode-Server-June?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Server-June/issues)
+[![Pending Pull-Requests](https://img.shields.io/github/issues-pr/project-studying-dotnet/Streetcode-Server-June?style=flat-square)](https://github.com/project-studying-dotnet/Streetcode-Server-June/pulls)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=coverage)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=bugs)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=project-studying-dotnet_Streetcode-Server-June&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=project-studying-dotnet_Streetcode-Server-June)
 ---
 
 ## Table of Contents 
