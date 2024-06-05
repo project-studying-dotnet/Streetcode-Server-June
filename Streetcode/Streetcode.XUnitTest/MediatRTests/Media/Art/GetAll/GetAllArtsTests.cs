@@ -88,5 +88,4 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Arts
             mockMapper.Setup(mapper => mapper.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<object>>())).Returns(artListDTO);
         }
     }
-
 }
