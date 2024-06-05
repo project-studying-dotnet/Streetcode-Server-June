@@ -21,7 +21,15 @@ public static class ConfigureHostBuilderExtensions
 
     public static void ConfigureBlob(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        services.Configure<BlobEnvironmentVariables>(builder.Configuration.GetSection("Blob"));
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
+        if (environment == "IntegrationTests")
+        {
+            services.Configure<BlobEnvironmentVariables>(builder.Configuration.GetSection(environment).GetSection("Blob"));
+        }
+        else
+        {
+            services.Configure<BlobEnvironmentVariables>(builder.Configuration.GetSection("Blob"));
+        }
     }
 
     public static void ConfigurePayment(this IServiceCollection services, WebApplicationBuilder builder)
