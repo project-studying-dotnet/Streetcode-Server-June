@@ -21,6 +21,7 @@ public static class ConfigureHostBuilderExtensions
 
     public static void ConfigureBlob(this IServiceCollection services, WebApplicationBuilder builder)
     {
+        // Hello world
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
         if (environment == "IntegrationTests")
         {
