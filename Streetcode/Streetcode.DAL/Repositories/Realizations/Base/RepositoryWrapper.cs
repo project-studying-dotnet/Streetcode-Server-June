@@ -40,23 +40,23 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private IAudioRepository? _audioRepository;
 
-    private IStreetcodeCoordinateRepository _streetcodeCoordinateRepository;
+    private IStreetcodeCoordinateRepository? _streetcodeCoordinateRepository;
 
-    private IImageRepository _imageRepository;
+    private IImageRepository? _imageRepository;
 
-    private IImageDetailsRepository _imageDetailsRepository;
+    private IImageDetailsRepository? _imageDetailsRepository;
 
-    private IArtRepository _artRepository;
+    private IArtRepository? _artRepository;
 
-    private IStreetcodeArtRepository _streetcodeArtRepository;
+    private IStreetcodeArtRepository? _streetcodeArtRepository;
 
-    private IFactRepository _factRepository;
+    private IFactRepository? _factRepository;
 
-    private IPartnersRepository _partnersRepository;
+    private IPartnersRepository? _partnersRepository;
 
-    private ISourceCategoryRepository _sourceCategoryRepository;
+    private ISourceCategoryRepository? _sourceCategoryRepository;
 
-    private IStreetcodeCategoryContentRepository _streetcodeCategoryContentRepository;
+    private IStreetcodeCategoryContentRepository? _streetcodeCategoryContentRepository;
 
     private IRelatedFigureRepository _relatedFigureRepository;
 
