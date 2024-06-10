@@ -2,22 +2,23 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
+using System.Linq.Expressions;
+using Xunit;
+
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using System.Linq.Expressions;
-using Xunit;
 
 namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 {
-    public class GetAllArtsTest
+    public class GetAllArtsHandlerTest
     {
         private readonly Mock<IRepositoryWrapper> mockRepo;
         private readonly Mock<IMapper> mockMapper;
         private readonly Mock<ILoggerService> mockLogger;
 
-        public GetAllArtsTest()
+        public GetAllArtsHandlerTest()
         {
             mockRepo = new Mock<IRepositoryWrapper>();
             mockMapper = new Mock<IMapper>();
