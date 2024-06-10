@@ -3,6 +3,7 @@
     "Streetcode_Local": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "swagger",
       "environmentVariables": {
         "STREETCODE_ENVIRONMENT": "Local",
         "ASPNETCORE_ENVIRONMENT": "Local"
