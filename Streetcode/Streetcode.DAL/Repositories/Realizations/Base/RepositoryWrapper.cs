@@ -36,9 +36,9 @@ public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
 
-    private IVideoRepository _videoRepository;
+    private IVideoRepository? _videoRepository;
 
-    private IAudioRepository _audioRepository;
+    private IAudioRepository? _audioRepository;
 
     private IStreetcodeCoordinateRepository _streetcodeCoordinateRepository;
 
