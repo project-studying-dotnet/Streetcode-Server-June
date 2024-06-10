@@ -39,7 +39,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         }
 
         [Fact]
-        public async Task Handle_Should_ReturnsZeroArts_WhenTheyAbsent()
+        public async Task Handle_Should_ReturnsZeroArts_WhenNotExists()
         {
             // Arrange
             var mockHandler = CreateHandler(new List<DAL.Entities.Media.Images.Art>(), new List<ArtDTO>());
@@ -74,7 +74,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 
         private static List<DAL.Entities.Media.Images.Art> GetArtsList() => new() { new DAL.Entities.Media.Images.Art { Id = 1, Title = "Title 1" }, new DAL.Entities.Media.Images.Art { Id = 2, Title = "Title 2" } };
 
-        private static List<ArtDTO> GetArtsDtoList() => new() { new ArtDTO { Id = 1, Title = "Title 1" }, new ArtDTO { Id = 2, Title = "Title 2" } };
+        private static List<ArtDTO> GetArtsDtoList() => new() { new ArtDTO { Id = 11, Title = "TitleDto 1" }, new ArtDTO { Id = 22, Title = "TitleDto 2" } };
 
         private void MockRepository(IEnumerable<DAL.Entities.Media.Images.Art> artList)
         {
