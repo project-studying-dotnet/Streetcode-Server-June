@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using FluentResults;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Xunit;
