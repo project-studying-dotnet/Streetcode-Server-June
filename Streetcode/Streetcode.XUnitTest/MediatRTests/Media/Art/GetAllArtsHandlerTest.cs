@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
-using Moq;
 using System.Linq.Expressions;
+using Moq;
 using Xunit;
 
 using Streetcode.BLL.DTO.Media.Art;
