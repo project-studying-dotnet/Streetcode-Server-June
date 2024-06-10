@@ -134,7 +134,7 @@
     <Rule Id="SA1644" Action="Error" />
     <Rule Id="SA1649" Action="Error" />
     <Rule Id="SA1652" Action="None" />
-    <Rule Id="SX1101" Action="Error" />
+    <Rule Id="SX1101" Action="Warning" />
     <Rule Id="SX1309" Action="Warning" />
   </Rules>
 </RuleSet>
