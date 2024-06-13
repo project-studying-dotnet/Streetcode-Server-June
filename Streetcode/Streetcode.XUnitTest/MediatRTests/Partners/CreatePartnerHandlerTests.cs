@@ -58,7 +58,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
         }
 
         [Fact]
-        public Task Handle_Should_ReturnEqualTrue_WhenInputNewPartner()
+        public void Handle_Should_ReturnEqualTrue_WhenInputNewPartner()
         {
             // Arrange
             _mapperMock.Setup(obj => obj.Map<PartnerDTO>(It.IsAny<object>())).Returns(_partnerDTO);
@@ -74,11 +74,10 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
 
             // Assert
             Assert.Equal(2, result.Result.Value.Id);
-            return Task.CompletedTask;
         }
 
         [Fact]
-        public Task Handle_Should_ReturnFailed_WhenInputEmptyPartner()
+        public void Handle_Should_ReturnFailed_WhenInputEmptyPartner()
         {
             // Arrange
             _mapperMock.Setup(obj => obj.Map<PartnerDTO>(It.IsAny<object>())).Returns(new PartnerDTO());
@@ -94,7 +93,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
 
             // Assert
             Assert.True(result.Result.IsFailed);
-            return Task.CompletedTask;
         }
     }
 }
