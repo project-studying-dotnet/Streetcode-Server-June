@@ -46,7 +46,7 @@ public class GetArtByIdHandlerTests
     }
 
     [Fact]
-    public async Task Handle_Should_ReturnFailureResult_WhenTagNotExists()
+    public async Task Handle_Should_ReturnNotFound_WhenAriWithIdNotExists()
     {
         // Arrange
         var artId = 1;
