@@ -33,42 +33,42 @@ public class StreetcodeDbContext : DbContext
     {
     }
 
-    public DbSet<Art>? Arts { get; set; }
-    public DbSet<Audio>? Audios { get; set; }
-    public DbSet<ToponymCoordinate>? ToponymCoordinates { get; set; }
-    public DbSet<StreetcodeCoordinate>? StreetcodeCoordinates { get; set; }
-    public DbSet<Fact>? Facts { get; set; }
-    public DbSet<HistoricalContext>? HistoricalContexts { get; set; }
-    public DbSet<Image>? Images { get; set; }
-    public DbSet<ImageDetails>? ImageDetailses { get; set; }
-    public DbSet<Partner>? Partners { get; set; }
-    public DbSet<PartnerSourceLink>? PartnerSourceLinks { get; set; }
-    public DbSet<RelatedFigure>? RelatedFigures { get; set; }
-    public DbSet<Response>? Responses { get; set; }
-    public DbSet<StreetcodeContent>? Streetcodes { get; set; }
-    public DbSet<Subtitle>? Subtitles { get; set; }
-    public DbSet<StatisticRecord>? StatisticRecords { get; set; }
-    public DbSet<Tag>? Tags { get; set; }
-    public DbSet<Term>? Terms { get; set; }
-    public DbSet<RelatedTerm>? RelatedTerms { get; set; }
-    public DbSet<Text>? Texts { get; set; }
-    public DbSet<TimelineItem>? TimelineItems { get; set; }
-    public DbSet<Toponym>? Toponyms { get; set; }
-    public DbSet<TransactionLink>? TransactionLinks { get; set; }
-    public DbSet<Video>? Videos { get; set; }
-    public DbSet<StreetcodeCategoryContent>? StreetcodeCategoryContent { get; set; }
-    public DbSet<StreetcodeArt>? StreetcodeArts { get; set; }
-    public DbSet<User>? Users { get; set; }
-    public DbSet<StreetcodeTagIndex>? StreetcodeTagIndices { get; set; }
-    public DbSet<TeamMember>? TeamMembers { get; set; }
-    public DbSet<TeamMemberLink>? TeamMemberLinks { get; set; }
-    public DbSet<Positions>? Positions { get; set; }
-    public DbSet<News>? News { get; set; }
-    public DbSet<SourceLinkCategory>? SourceLinks { get; set; }
-    public DbSet<StreetcodeImage>? StreetcodeImages { get; set; }
-    public DbSet<HistoricalContextTimeline>? HistoricalContextsTimelines { get; set; }
-    public DbSet<StreetcodePartner>? StreetcodePartners { get; set; }
-    public DbSet<TeamMemberPositions>? TeamMemberPosition { get; set; }
+    public DbSet<Art> Arts { get; set; } = null!;
+    public DbSet<Audio> Audios { get; set; } = null!;
+    public DbSet<ToponymCoordinate> ToponymCoordinates { get; set; } = null!;
+    public DbSet<StreetcodeCoordinate> StreetcodeCoordinates { get; set; } = null!;
+    public DbSet<Fact> Facts { get; set; } = null!;
+    public DbSet<HistoricalContext> HistoricalContexts { get; set; } = null!;
+    public DbSet<Image> Images { get; set; } = null!;
+    public DbSet<ImageDetails> ImageDetailses { get; set; } = null!;
+    public DbSet<Partner> Partners { get; set; } = null!;
+    public DbSet<PartnerSourceLink> PartnerSourceLinks { get; set; } = null!;
+    public DbSet<RelatedFigure> RelatedFigures { get; set; } = null!;
+    public DbSet<Response> Responses { get; set; } = null!;
+    public DbSet<StreetcodeContent> Streetcodes { get; set; } = null!;
+    public DbSet<Subtitle> Subtitles { get; set; } = null!;
+    public DbSet<StatisticRecord> StatisticRecords { get; set; } = null!;
+    public DbSet<Tag> Tags { get; set; } = null!;
+    public DbSet<Term> Terms { get; set; } = null!;
+    public DbSet<RelatedTerm> RelatedTerms { get; set; } = null!;
+    public DbSet<Text> Texts { get; set; } = null!;
+    public DbSet<TimelineItem> TimelineItems { get; set; } = null!;
+    public DbSet<Toponym> Toponyms { get; set; } = null!;
+    public DbSet<TransactionLink> TransactionLinks { get; set; } = null!;
+    public DbSet<Video> Videos { get; set; } = null!;
+    public DbSet<StreetcodeCategoryContent> StreetcodeCategoryContent { get; set; } = null!;
+    public DbSet<StreetcodeArt> StreetcodeArts { get; set; } = null!;
+    public DbSet<User> Users { get; set; } = null!;
+    public DbSet<StreetcodeTagIndex> StreetcodeTagIndices { get; set; } = null!;
+    public DbSet<TeamMember> TeamMembers { get; set; } = null!;
+    public DbSet<TeamMemberLink> TeamMemberLinks { get; set; } = null!;
+    public DbSet<Positions> Positions { get; set; } = null!;
+    public DbSet<News> News { get; set; } = null!;
+    public DbSet<SourceLinkCategory> SourceLinks { get; set; } = null!;
+    public DbSet<StreetcodeImage> StreetcodeImages { get; set; } = null!;
+    public DbSet<HistoricalContextTimeline> HistoricalContextsTimelines { get; set; } = null!;
+    public DbSet<StreetcodePartner> StreetcodePartners { get; set; } = null!;
+    public DbSet<TeamMemberPositions> TeamMemberPosition { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
