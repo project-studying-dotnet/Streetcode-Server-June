@@ -14,12 +14,12 @@ namespace Streetcode.DAL.Entities.News
         public int Id { get; set; }
         [Required]
         [MaxLength(150)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
         [Required]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
         [Required]
         [MaxLength(100)]
-        public string URL { get; set; }
+        public string URL { get; set; } = string.Empty;
         public int? ImageId { get; set; }
         public Image? Image { get; set; }
         [Required]

@@ -15,12 +15,12 @@ namespace Streetcode.DAL.Entities.Analytics
         public int Count { get; set; }
 
         [MaxLength(150)]
-        public string Address { get; set; }
+        public string Address { get; set; } = string.Empty;
 
         public int StreetcodeId { get; set; }
         public StreetcodeContent? Streetcode { get; set; }
 
         public int StreetcodeCoordinateId { get; set; }
-        public StreetcodeCoordinate StreetcodeCoordinate { get; set; }
+        public StreetcodeCoordinate StreetcodeCoordinate { get; set; } = new();
      }
 }

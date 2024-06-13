@@ -5,7 +5,7 @@ namespace Streetcode.DAL.Entities.Payment
     public class BasketOrder
     {
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty("qty")]
         public int Qty { get; set; }
@@ -14,27 +14,27 @@ namespace Streetcode.DAL.Entities.Payment
         public long Sum { get; set; }
 
         [JsonProperty("icon")]
-        public string Icon { get; set; }
+        public string Icon { get; set; } = string.Empty;
 
         [JsonProperty("unit")]
-        public string Unit { get; set; }
+        public string Unit { get; set; } = string.Empty;
 
         [JsonProperty("code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
 
         [JsonProperty("barcode")]
-        public string Barcode { get; set; }
+        public string Barcode { get; set; } = string.Empty;
 
         [JsonProperty("header")]
-        public string Header { get; set; }
+        public string Header { get; set; } = string.Empty;
 
         [JsonProperty("footer")]
-        public string Footer { get; set; }
+        public string Footer { get; set; } = string.Empty;
 
         [JsonProperty("tax")]
-        public List<int> Tax { get; set; }
+        public List<int> Tax { get; set; } = new();
 
         [JsonProperty("uktzed")]
-        public string Uktzed { get; set; }
+        public string Uktzed { get; set; } = string.Empty;
     }
 }

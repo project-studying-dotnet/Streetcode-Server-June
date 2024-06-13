@@ -8,6 +8,6 @@ namespace Streetcode.DAL.Entities.Instagram
 {
     public class InstagramPostResponse
     {
-        public IEnumerable<InstagramPost> Data { get; set; }
+        public IEnumerable<InstagramPost>? Data { get; set; }
     }
 }
