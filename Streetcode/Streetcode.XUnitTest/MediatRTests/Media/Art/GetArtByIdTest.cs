@@ -1,9 +1,9 @@
 ﻿namespace Streetcode.XUnitTest.MediatRTests.Media.Art;
 using AutoMapper;
 using Moq;
-using Streetcode.BLL.Enums;
-using Streetcode.BLL.Exceptions;
-using Streetcode.BLL.Interfaces.Logging;
+using BLL.Enums;
+using BLL.Exceptions;
+using BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System;
@@ -32,11 +32,7 @@ public class GetArtByIdHandlerTests
         var artId = 1;
         var request = new GetArtByIdQuery(artId);
         var artEntity = new DAL.Entities.Media.Images.Art { Id = artId };
-
-        repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DAL.Entities.Media.Images.Art, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.Media.Images.Art>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<DAL.Entities.Media.Images.Art, object>>>()))
-            .ReturnsAsync(artEntity);
+        MockRepository(artEntity);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -51,11 +47,7 @@ public class GetArtByIdHandlerTests
         // Arrange
         var artId = 1;
         var request = new GetArtByIdQuery(artId);
-
-        repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DAL.Entities.Media.Images.Art, bool>>>(),
-                It.IsAny<Func<IQueryable<DAL.Entities.Media.Images.Art>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<DAL.Entities.Media.Images.Art, object>>>()))
-            .ReturnsAsync(null as DAL.Entities.Media.Images.Art);
+        MockRepository(null);
 
         // Act
         var result = await Assert.ThrowsAsync<EntityNotFoundException>(() => handler.Handle(request, CancellationToken.None));
@@ -64,5 +56,13 @@ public class GetArtByIdHandlerTests
         Assert.Equal(ErrorType.NotFound, result.ErrorType);
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
         Assert.Equal("Entity 'Art' with id '1' not found", result.Message);
+    }
+
+    private void MockRepository(DAL.Entities.Media.Images.Art? artEntity)
+    {
+        repositoryWrapperMock.Setup(repo => repo.ArtRepository.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<DAL.Entities.Media.Images.Art, bool>>>(),
+                It.IsAny<Func<IQueryable<DAL.Entities.Media.Images.Art>, Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<DAL.Entities.Media.Images.Art, object>>>()))
+            .ReturnsAsync(artEntity);
     }
 }
