@@ -49,7 +49,7 @@ public class CreateRelatedFigureHandler : IRequestHandler<CreateRelatedFigureCom
         _repositoryWrapper.RelatedFigureRepository.Create(relation);
 
         var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;
-        if(resultIsSuccess)
+        if (resultIsSuccess)
         {
             return Result.Ok(Unit.Value);
         }
