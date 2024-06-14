@@ -29,23 +29,23 @@ public class StreetcodeContent
     public int Index { get; set; }
 
     [MaxLength(650)]
-    public string? Teaser { get; set; }
+    public string Teaser { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(50)]
-    public string? DateString { get; set; }
+    public string DateString { get; set; } = string.Empty;
 
     [MaxLength(50)]
-    public string? Alias { get; set; }
+    public string Alias { get; set; } = string.Empty;
 
     public StreetcodeStatus Status { get; set; }
 
     [Required]
     [MaxLength(100)]
-    public string? Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     [Required]
     [MaxLength(150)]
-    public string? TransliterationUrl { get; set; }
+    public string TransliterationUrl { get; set; } = string.Empty;
 
     public int ViewCount { get; set; }
 
@@ -60,9 +60,9 @@ public class StreetcodeContent
 
     public int? AudioId { get; set; }
 
-    public Text? Text { get; set; }
+    public Text Text { get; set; } = new();
 
-    public Audio? Audio { get; set; }
+    public Audio Audio { get; set; } = new();
 
     public List<StatisticRecord> StatisticRecords { get; set; } = new();
 

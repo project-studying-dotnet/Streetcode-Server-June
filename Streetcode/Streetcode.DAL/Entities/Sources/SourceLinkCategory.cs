@@ -20,7 +20,7 @@ public class SourceLinkCategory
     [Required]
     public int ImageId { get; set; }
 
-    public Image? Image { get; set; }
+    public Image Image { get; set; } = new();
 
     public List<StreetcodeContent> Streetcodes { get; set; } = new ();
 

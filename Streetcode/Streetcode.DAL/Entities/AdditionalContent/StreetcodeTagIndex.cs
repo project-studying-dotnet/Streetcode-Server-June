@@ -20,8 +20,8 @@ namespace Streetcode.DAL.Entities.AdditionalContent
         [Range(0, int.MaxValue)]
         public int Index { get; set; }
 
-        public StreetcodeContent? Streetcode { get; set; }
+        public StreetcodeContent Streetcode { get; set; } = new();
 
-        public Tag? Tag { get; set; }
+        public Tag Tag { get; set; } = new();
     }
 }
