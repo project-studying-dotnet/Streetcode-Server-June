@@ -36,75 +36,75 @@ public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
 
-    private IVideoRepository _videoRepository;
+    private IVideoRepository? _videoRepository;
 
-    private IAudioRepository _audioRepository;
+    private IAudioRepository? _audioRepository;
 
-    private IStreetcodeCoordinateRepository _streetcodeCoordinateRepository;
+    private IStreetcodeCoordinateRepository? _streetcodeCoordinateRepository;
 
-    private IImageRepository _imageRepository;
+    private IImageRepository? _imageRepository;
 
-    private IImageDetailsRepository _imageDetailsRepository;
+    private IImageDetailsRepository? _imageDetailsRepository;
 
-    private IArtRepository _artRepository;
+    private IArtRepository? _artRepository;
 
-    private IStreetcodeArtRepository _streetcodeArtRepository;
+    private IStreetcodeArtRepository? _streetcodeArtRepository;
 
-    private IFactRepository _factRepository;
+    private IFactRepository? _factRepository;
 
-    private IPartnersRepository _partnersRepository;
+    private IPartnersRepository? _partnersRepository;
 
-    private ISourceCategoryRepository _sourceCategoryRepository;
+    private ISourceCategoryRepository? _sourceCategoryRepository;
 
-    private IStreetcodeCategoryContentRepository _streetcodeCategoryContentRepository;
+    private IStreetcodeCategoryContentRepository? _streetcodeCategoryContentRepository;
 
-    private IRelatedFigureRepository _relatedFigureRepository;
+    private IRelatedFigureRepository? _relatedFigureRepository;
 
-    private IRelatedTermRepository _relatedTermRepository;
+    private IRelatedTermRepository? _relatedTermRepository;
 
-    private IStreetcodeRepository _streetcodeRepository;
+    private IStreetcodeRepository? _streetcodeRepository;
 
-    private ISubtitleRepository _subtitleRepository;
+    private ISubtitleRepository? _subtitleRepository;
 
-    private IStatisticRecordRepository _statisticRecordRepository;
+    private IStatisticRecordRepository? _statisticRecordRepository;
 
-    private ITagRepository _tagRepository;
+    private ITagRepository? _tagRepository;
 
-    private ITermRepository _termRepository;
+    private ITermRepository? _termRepository;
 
-    private ITeamRepository _teamRepository;
+    private ITeamRepository? _teamRepository;
 
-    private IPositionRepository _positionRepository;
+    private IPositionRepository? _positionRepository;
 
-    private ITextRepository _textRepository;
+    private ITextRepository? _textRepository;
 
-    private ITimelineRepository _timelineRepository;
+    private ITimelineRepository? _timelineRepository;
 
-    private IToponymRepository _toponymRepository;
+    private IToponymRepository? _toponymRepository;
 
-    private ITransactLinksRepository _transactLinksRepository;
+    private ITransactLinksRepository? _transactLinksRepository;
 
-    private IHistoricalContextRepository _historyContextRepository;
+    private IHistoricalContextRepository? _historyContextRepository;
 
-    private IPartnerSourceLinkRepository _partnerSourceLinkRepository;
+    private IPartnerSourceLinkRepository? _partnerSourceLinkRepository;
 
-    private IUserRepository _userRepository;
+    private IUserRepository? _userRepository;
 
-    private IStreetcodeTagIndexRepository _streetcodeTagIndexRepository;
+    private IStreetcodeTagIndexRepository? _streetcodeTagIndexRepository;
 
-    private IPartnerStreetcodeRepository _partnerStreetcodeRepository;
+    private IPartnerStreetcodeRepository? _partnerStreetcodeRepository;
 
-    private INewsRepository _newsRepository;
+    private INewsRepository? _newsRepository;
 
-    private ITeamLinkRepository _teamLinkRepository;
+    private ITeamLinkRepository? _teamLinkRepository;
 
-    private ITeamPositionRepository _teamPositionRepository;
+    private ITeamPositionRepository? _teamPositionRepository;
 
-    private IHistoricalContextTimelineRepository _historicalContextTimelineRepository;
+    private IHistoricalContextTimelineRepository? _historicalContextTimelineRepository;
 
-    private IStreetcodeToponymRepository _streetcodeToponymRepository;
+    private IStreetcodeToponymRepository? _streetcodeToponymRepository;
 
-    private IStreetcodeImageRepository _streetcodeImageRepository;
+    private IStreetcodeImageRepository? _streetcodeImageRepository;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
