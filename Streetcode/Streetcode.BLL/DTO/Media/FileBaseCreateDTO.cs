@@ -2,8 +2,8 @@
 
 public class FileBaseCreateDTO
 {
-    public string? Title { get; set; }
-    public string? BaseFormat { get; set; }
-    public string? MimeType { get; set; }
-    public string? Extension { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string BaseFormat { get; set; } = string.Empty;
+    public string MimeType { get; set; } = string.Empty;
+    public string Extension { get; set; } = string.Empty;
 }

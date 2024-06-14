@@ -104,7 +104,7 @@ public class RepositoryWrapper : IRepositoryWrapper
 
     private IStreetcodeToponymRepository? _streetcodeToponymRepository;
 
-    private IStreetcodeImageRepository? _streetcodeImageRepository = null;
+    private IStreetcodeImageRepository? _streetcodeImageRepository;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
@@ -213,24 +213,8 @@ public class RepositoryWrapper : IRepositoryWrapper
     public IStreetcodeToponymRepository StreetcodeToponymRepository =>
         _streetcodeToponymRepository ??= new StreetcodeToponymRepository(_streetcodeDbContext);
 
-    // public IStreetcodeImageRepository StreetcodeImageRepository =>
-    //    _streetcodeImageRepository ??= new StreetcodeImageRepository(_streetcodeDbContext);
     public IStreetcodeImageRepository StreetcodeImageRepository =>
-        GetRepository(_streetcodeImageRepository as StreetcodeImageRepository);
-
-    public T GetRepository<T>(T? repo)
-     where T : IStreetcodeDbContextProvider, new()
-    {
-        if (repo is null)
-        {
-            repo = new T()
-            {
-                DbContext = _streetcodeDbContext
-            };
-        }
-
-        return repo;
-    }
+       _streetcodeImageRepository ??= new StreetcodeImageRepository(_streetcodeDbContext);
 
     public int SaveChanges()
     {
