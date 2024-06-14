@@ -2,6 +2,6 @@
 
 public class BlobEnvironmentVariables
 {
-    public string BlobStoreKey { get; set; }
-    public string BlobStorePath { get; set; }
+    public string BlobStoreKey { get; set; } = string.Empty;
+    public string BlobStorePath { get; set; } = string.Empty;
 }
