@@ -11,7 +11,7 @@ public class PartnerDTO
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public int LogoId { get; set; }
-    public UrlDTO? TargetUrl { get; set; }
+    public UrlDTO TargetUrl { get; set; } = new();
     public List<PartnerSourceLinkDTO>? PartnerSourceLinks { get; set; }
     public List<StreetcodeShortDTO>? Streetcodes { get; set; }
 }
