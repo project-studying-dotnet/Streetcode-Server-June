@@ -11,8 +11,8 @@ namespace Streetcode.DAL.Entities.Team
     public class TeamMemberPositions
     {
         public int TeamMemberId { get; set; }
-        public Positions Positions { get; set; }
-        public TeamMember TeamMember { get; set; }
+        public Positions Positions { get; set; } = new();
+        public TeamMember TeamMember { get; set; } = new();
         public int PositionsId { get; set; }
     }
 }
