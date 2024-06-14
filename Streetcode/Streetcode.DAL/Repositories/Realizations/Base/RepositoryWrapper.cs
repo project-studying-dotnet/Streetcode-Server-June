@@ -214,7 +214,10 @@ public class RepositoryWrapper : IRepositoryWrapper
         GetRepository(_streetcodeToponymRepository as StreetcodeToponymRepository);
 
     public IStreetcodeImageRepository StreetcodeImageRepository =>
-        GetRepository(_streetcodeImageRepository as StreetcodeImageRepository);
+        _streetcodeImageRepository ??= GetRepository(new StreetcodeImageRepository());
+
+    // public IStreetcodeImageRepository StreetcodeImageRepository =>
+    //    GetRepository(_streetcodeImageRepository as StreetcodeImageRepository);
 
     public T GetRepository<T>(T? repo)
      where T : IStreetcodeDbContextProvider, new()
