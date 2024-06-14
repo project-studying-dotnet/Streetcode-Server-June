@@ -7,16 +7,11 @@ using System.Threading.Tasks;
 
 namespace Streetcode.BLL.DTO.Sources
 {
-    public class StreetcodeCategoryContentDTO
+    public class CategoryContentUpdateDTO
     {
-        [Required]
-        [MaxLength(4000)]
-        public string Text { get; set; }
-      
-        [Required]
         public int SourceLinkCategoryId { get; set; }
-
-        [Required]
+        [MaxLength(4000)]
+        public string? Text { get; set; }
         public int StreetcodeId { get; set; }
     }
 }
