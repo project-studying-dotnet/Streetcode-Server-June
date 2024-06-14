@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Streetcode.WebApi.Extensions;
 
 namespace Streetcode.WebApi.Middlewares;
@@ -30,10 +30,10 @@ public sealed class GenericExceptionHandlerMiddleware
 
     private static Task HandleException(HttpContext context, Exception exception)
     {
-        var (errorDetails, statusCode) = exception.GetErrorDetailsAndStatusCode();
+        var errorDetails = exception.GetErrorDetailsAndStatusCode();
 
         context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)statusCode;
+        context.Response.StatusCode = (int)errorDetails.StatusCode;
 
         return context.Response.WriteAsync(SerializeJson(errorDetails));
     }

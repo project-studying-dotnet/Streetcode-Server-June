@@ -1,13 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Net;
+using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.AdditionalContent.Subtitles;
-using Streetcode.BLL.DTO.Media.Images;
-using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Exceptions;
+using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Media.Art.GetById;
 
@@ -30,9 +28,9 @@ public class GetArtByIdHandler : IRequestHandler<GetArtByIdQuery, Result<ArtDTO>
 
         if (art is null)
         {
-            string errorMsg = $"Cannot find an art with corresponding id: {request.Id}";
+            var errorMsg = $"Cannot find an art with corresponding id: {request.Id}";
             _logger.LogError(request, errorMsg);
-            throw new EntityNotFoundException(nameof(Art), request.Id);
+            throw new RequestException(errorMsg, HttpStatusCode.NotFound);
         }
 
         return Result.Ok(_mapper.Map<ArtDTO>(art));

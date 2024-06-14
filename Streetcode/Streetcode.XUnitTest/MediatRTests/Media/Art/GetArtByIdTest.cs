@@ -1,9 +1,8 @@
 ﻿namespace Streetcode.XUnitTest.MediatRTests.Media.Art;
 using AutoMapper;
-using Moq;
-using BLL.Enums;
 using BLL.Exceptions;
 using BLL.Interfaces.Logging;
+using Moq;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System;
@@ -50,12 +49,11 @@ public class GetArtByIdHandlerTests
         MockRepository(null);
 
         // Act
-        var result = await Assert.ThrowsAsync<EntityNotFoundException>(() => handler.Handle(request, CancellationToken.None));
+        var result = await Assert.ThrowsAsync<RequestException>(() => handler.Handle(request, CancellationToken.None));
 
         // Assert
-        Assert.Equal(ErrorType.NotFound, result.ErrorType);
         Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
-        Assert.Equal("Entity 'Art' with id '1' not found", result.Message);
+        Assert.Equal($"Cannot find an art with corresponding id: {request.Id}", result.Message);
     }
 
     private void MockRepository(DAL.Entities.Media.Images.Art? artEntity)
