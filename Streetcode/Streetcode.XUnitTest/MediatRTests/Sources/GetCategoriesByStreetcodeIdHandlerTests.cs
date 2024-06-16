@@ -1,20 +1,23 @@
-﻿using System.Linq.Expressions;
+﻿namespace Streetcode.XUnitTest.MediatRTests.Sources;
+
 using AutoMapper;
 using FluentResults;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using Streetcode.BLL.DTO.Media.Images;
-using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Logging;
-using Xunit;
-
+using BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Sources;
+using BLL.Interfaces.BlobStorage;
+using BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Sources.SourceLink.GetCategoriesByStreetcodeId;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
-namespace Streetcode.XUnitTest.MediatRTests.Sources;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Xunit;
 
 public class GetCategoriesByStreetcodeIdHandlerTests
 {

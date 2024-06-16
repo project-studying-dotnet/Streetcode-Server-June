@@ -8,8 +8,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="MediatRTests\Streetcode\Text\**" />
 	  <Compile Remove="MediatRTests\Team - Copy\**" />
+	  <EmbeddedResource Remove="MediatRTests\Streetcode\Text\**" />
 	  <EmbeddedResource Remove="MediatRTests\Team - Copy\**" />
+	  <None Remove="MediatRTests\Streetcode\Text\**" />
 	  <None Remove="MediatRTests\Team - Copy\**" />
 	</ItemGroup>
 

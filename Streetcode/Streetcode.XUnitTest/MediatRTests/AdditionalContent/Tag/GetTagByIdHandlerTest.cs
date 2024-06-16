@@ -1,13 +1,20 @@
-﻿using System.Linq.Expressions;
+﻿namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
 using Moq;
-using Xunit;
-
+using Streetcode.BLL.DTO.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetById;
+using Streetcode.BLL.MediatR.Media.Art.GetById;
+using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
-namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag;
+using Xunit;
 
 public class GetTagByIdHandlerTest
 {
@@ -28,9 +35,9 @@ public class GetTagByIdHandlerTest
     public async Task Handle_Should_ReturnSuccess_WhenTagExists()
     {
         // Arrange
-        var tag = new DAL.Entities.AdditionalContent.Tag();
+        var tag = new Tag();
         var query = new GetTagByIdQuery(1);
-        repositoryMock.Setup(repo => repo.TagRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>>>(), default)).ReturnsAsync(tag);
+        repositoryMock.Setup(repo => repo.TagRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Tag, bool>>>(), default)).ReturnsAsync(tag);
 
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -45,7 +52,7 @@ public class GetTagByIdHandlerTest
         // Arrange
         var request = new GetTagByIdQuery(1);
 
-        repositoryMock.Setup(repo => repo.TagRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DAL.Entities.AdditionalContent.Tag, bool>>>(), default)).ReturnsAsync((DAL.Entities.AdditionalContent.Tag)null!);
+        repositoryMock.Setup(repo => repo.TagRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Tag, bool>>>(), default)).ReturnsAsync((Tag)null!);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);

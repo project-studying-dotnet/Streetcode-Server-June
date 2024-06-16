@@ -1,14 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿namespace Streetcode.XUnitTest.MediatRTests.Media.Art;
 using AutoMapper;
 using Moq;
-using Xunit;
-
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetById;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
-namespace Streetcode.XUnitTest.MediatRTests.Media.Art;
-
+using System.Linq.Expressions;
+using Xunit;
 public class GetArtByIdHandlerTests
 {
     private readonly Mock<IRepositoryWrapper> repositoryWrapperMock;

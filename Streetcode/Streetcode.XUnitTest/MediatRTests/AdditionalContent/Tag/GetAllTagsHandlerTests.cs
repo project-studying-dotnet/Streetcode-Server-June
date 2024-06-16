@@ -1,13 +1,14 @@
-﻿using AutoMapper;
+﻿namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using Moq;
-using Xunit;
-
 using Streetcode.BLL.DTO.AdditionalContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.AdditionalContent.Tag.GetAll;
+using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-
-namespace Streetcode.XUnitTest.MediatRTests.AdditionalContent.Tag;
+using Xunit;
 
 public class GetAllTagsHandlerTests
 {
@@ -29,7 +30,7 @@ public class GetAllTagsHandlerTests
     {
         // Arrange
         var request = new GetAllTagsQuery();
-        repositoryMock.Setup(repo => repo.TagRepository.GetAllAsync(default, default)).ReturnsAsync((IEnumerable<DAL.Entities.AdditionalContent.Tag>)null!);
+        repositoryMock.Setup(repo => repo.TagRepository.GetAllAsync(default, default)).ReturnsAsync((IEnumerable<Tag>)null!);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -43,7 +44,7 @@ public class GetAllTagsHandlerTests
     {
         // Arrange
         var request = new GetAllTagsQuery();
-        IEnumerable<DAL.Entities.AdditionalContent.Tag> tags = new List<DAL.Entities.AdditionalContent.Tag>() { new DAL.Entities.AdditionalContent.Tag() };
+        IEnumerable<Tag> tags = new List<Tag>() { new Tag() };
         repositoryMock.Setup(repo => repo.TagRepository.GetAllAsync(default, default)).ReturnsAsync(tags);
 
         // Act
@@ -58,10 +59,10 @@ public class GetAllTagsHandlerTests
     {
         // Arrange
         var request = new GetAllTagsQuery();
-        IEnumerable<DAL.Entities.AdditionalContent.Tag> tags = new List<DAL.Entities.AdditionalContent.Tag>() { new DAL.Entities.AdditionalContent.Tag() };
+        IEnumerable<Tag> tags = new List<Tag>() { new Tag() };
         IEnumerable<TagDTO> tagsDTO = new List<TagDTO>() { new TagDTO() };
         repositoryMock.Setup(repo => repo.TagRepository.GetAllAsync(default, default)).ReturnsAsync(tags);
-        mapperMock.Setup(mapper => mapper.Map<IEnumerable<TagDTO>>(It.IsAny<IEnumerable<DAL.Entities.AdditionalContent.Tag>>())).Returns(tagsDTO);
+        mapperMock.Setup(mapper => mapper.Map<IEnumerable<TagDTO>>(It.IsAny<IEnumerable<Tag>>())).Returns(tagsDTO);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);

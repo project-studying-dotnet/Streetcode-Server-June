@@ -10,81 +10,82 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Media.Art.GetAll;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.XUnitTest.MediatRTests.Media.Art;
-
-public class GetAllArtsHandlerTest
+namespace Streetcode.XUnitTest.MediatRTests.Media.Art
 {
-    private readonly Mock<IRepositoryWrapper> mockRepo;
-    private readonly Mock<IMapper> mockMapper;
-    private readonly Mock<ILoggerService> mockLogger;
-
-    public GetAllArtsHandlerTest()
+    public class GetAllArtsHandlerTest
     {
-        mockRepo = new Mock<IRepositoryWrapper>();
-        mockMapper = new Mock<IMapper>();
-        mockLogger = new Mock<ILoggerService>();
-    }
+        private readonly Mock<IRepositoryWrapper> mockRepo;
+        private readonly Mock<IMapper> mockMapper;
+        private readonly Mock<ILoggerService> mockLogger;
 
-    [Fact]
-    public async Task Handle_Should_ReturnsAllArts()
-    {
-        // Arrange
-        var mockHandler = CreateHandler(GetArtsList(), GetArtsDtoList());
+        public GetAllArtsHandlerTest()
+        {
+            mockRepo = new Mock<IRepositoryWrapper>();
+            mockMapper = new Mock<IMapper>();
+            mockLogger = new Mock<ILoggerService>();
+        }
 
-        // Act
-        var result = await mockHandler.Handle(new GetAllArtsQuery(), default);
+        [Fact]
+        public async Task Handle_Should_ReturnsAllArts()
+        {
+            // Arrange
+            var mockHandler = CreateHandler(GetArtsList(), GetArtsDtoList());
 
-        // Assert
-        Assert.Equal(GetArtsList().Count, result.Value.Count());
-    }
+            // Act
+            var result = await mockHandler.Handle(new GetAllArtsQuery(), default);
 
-    [Fact]
-    public async Task Handle_Should_ReturnsZeroArts_WhenNotExists()
-    {
-        // Arrange
-        var mockHandler = CreateHandler(new List<DAL.Entities.Media.Images.Art>(), new List<ArtDTO>());
+            // Assert
+            Assert.Equal(GetArtsList().Count, result.Value.Count());
+        }
 
-        // Act
-        var result = await mockHandler.Handle(new GetAllArtsQuery(), default);
+        [Fact]
+        public async Task Handle_Should_ReturnsZeroArts_WhenNotExists()
+        {
+            // Arrange
+            var mockHandler = CreateHandler(new List<DAL.Entities.Media.Images.Art>(), new List<ArtDTO>());
 
-        // Assert
-        Assert.Equal(0, result.Value.Count());
-    }
+            // Act
+            var result = await mockHandler.Handle(new GetAllArtsQuery(), default);
 
-    [Fact]
-    public async Task Handle_Should_ReturnsDtoType()
-    {
-        // Arrange
-        var mockHandler = CreateHandler(GetArtsList(), GetArtsDtoList());
+            // Assert
+            Assert.Equal(0, result.Value.Count());
+        }
 
-        // Act
-        var result = await mockHandler.Handle(new GetAllArtsQuery(), CancellationToken.None);
+        [Fact]
+        public async Task Handle_Should_ReturnsDtoType()
+        {
+            // Arrange
+            var mockHandler = CreateHandler(GetArtsList(), GetArtsDtoList());
 
-        // Assert
-        Assert.IsType<Result<IEnumerable<ArtDTO>>>(result);
-    }
+            // Act
+            var result = await mockHandler.Handle(new GetAllArtsQuery(), CancellationToken.None);
 
-    private GetAllArtsHandler CreateHandler(IEnumerable<DAL.Entities.Media.Images.Art> artList, IEnumerable<ArtDTO> artListDto)
-    {
-        MockRepository(artList);
-        MockMapper(artListDto);
+            // Assert
+            Assert.IsType<Result<IEnumerable<ArtDTO>>>(result);
+        }
 
-        return new GetAllArtsHandler(mockRepo.Object, mockMapper.Object, mockLogger.Object);
-    }
+        private GetAllArtsHandler CreateHandler(IEnumerable<DAL.Entities.Media.Images.Art> artList, IEnumerable<ArtDTO> artListDto)
+        {
+            MockRepository(artList);
+            MockMapper(artListDto);
 
-    private static List<DAL.Entities.Media.Images.Art> GetArtsList() => new() { new DAL.Entities.Media.Images.Art { Id = 1, Title = "Title 1" }, new DAL.Entities.Media.Images.Art { Id = 2, Title = "Title 2" } };
+            return new GetAllArtsHandler(mockRepo.Object, mockMapper.Object, mockLogger.Object);
+        }
 
-    private static List<ArtDTO> GetArtsDtoList() => new() { new ArtDTO { Id = 11, Title = "TitleDto 1" }, new ArtDTO { Id = 22, Title = "TitleDto 2" } };
+        private static List<DAL.Entities.Media.Images.Art> GetArtsList() => new() { new DAL.Entities.Media.Images.Art { Id = 1, Title = "Title 1" }, new DAL.Entities.Media.Images.Art { Id = 2, Title = "Title 2" } };
 
-    private void MockRepository(IEnumerable<DAL.Entities.Media.Images.Art> artList)
-    {
-        mockRepo.Setup(repo => repo.ArtRepository.GetAllAsync(
+        private static List<ArtDTO> GetArtsDtoList() => new() { new ArtDTO { Id = 11, Title = "TitleDto 1" }, new ArtDTO { Id = 22, Title = "TitleDto 2" } };
+
+        private void MockRepository(IEnumerable<DAL.Entities.Media.Images.Art> artList)
+        {
+            mockRepo.Setup(repo => repo.ArtRepository.GetAllAsync(
                 It.IsAny<Expression<Func<DAL.Entities.Media.Images.Art, bool>>>(), It.IsAny<Func<IQueryable<DAL.Entities.Media.Images.Art>, IIncludableQueryable<DAL.Entities.Media.Images.Art, object>>>()))
-            .ReturnsAsync(artList);
-    }
+                    .ReturnsAsync(artList);
+        }
 
-    private void MockMapper(IEnumerable<ArtDTO> artListDto)
-    {
-        mockMapper.Setup(mapper => mapper.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<object>>())).Returns(artListDto);
+        private void MockMapper(IEnumerable<ArtDTO> artListDto)
+        {
+            mockMapper.Setup(mapper => mapper.Map<IEnumerable<ArtDTO>>(It.IsAny<IEnumerable<object>>())).Returns(artListDto);
+        }
     }
 }
