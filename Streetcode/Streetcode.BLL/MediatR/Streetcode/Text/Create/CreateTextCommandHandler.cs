@@ -27,7 +27,7 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
 
         if (newText is null)
         {
-            const string errorMsg = "Cannot create new Texts entity!";
+            const string errorMsg = "Cannot create new Text entity!";
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -38,7 +38,7 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
         
         if(!isSuccessResult)
         {
-            const string errorMsg = "Cannot save changes in the database after Texts creation!";
+            const string errorMsg = "Cannot save changes in the database after Text creation!";
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

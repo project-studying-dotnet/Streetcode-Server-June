@@ -1,24 +1,23 @@
-﻿namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Term;
-
-using AutoMapper;
-using FluentResults;
+﻿using AutoMapper;
 using Moq;
+using Xunit;
+
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Mapping.Streetcode.TextContent;
 using Streetcode.BLL.MediatR.Streetcode.Term.GetAll;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
 using Streetcode.XUnitTest.MediatRTests.MapperConfigure;
-using Xunit;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Term;
 
 public class GetAllTermsHandlerTests
     {
-        private static IEnumerable<Term> m_Terms = new List<Term>()
+        private static IEnumerable<DAL.Entities.Streetcode.TextContent.Term> m_Terms = new List<DAL.Entities.Streetcode.TextContent.Term>()
         {
-            new Term() { Id = 1 },
-            new Term() { Id = 2 },
-            new Term() { Id = 3 },
+            new DAL.Entities.Streetcode.TextContent.Term() { Id = 1 },
+            new DAL.Entities.Streetcode.TextContent.Term() { Id = 2 },
+            new DAL.Entities.Streetcode.TextContent.Term() { Id = 3 },
         };
 
         private readonly IMapper? m_Mapper;
@@ -66,7 +65,7 @@ public class GetAllTermsHandlerTests
 
             Mock<ITermRepository> term_Rep_Mock = new Mock<ITermRepository>();
             term_Rep_Mock.Setup(trm => trm.GetAllAsync(default, default)).
-                ReturnsAsync(new List<Term>());
+                ReturnsAsync(new List<DAL.Entities.Streetcode.TextContent.Term>());
 
             Mock<IRepositoryWrapper> wrapperMock = new Mock<IRepositoryWrapper>();
             wrapperMock.Setup(w => w.TermRepository).Returns(term_Rep_Mock.Object);

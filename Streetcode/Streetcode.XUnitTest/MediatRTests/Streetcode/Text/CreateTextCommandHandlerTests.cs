@@ -1,9 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
-using FluentResults;
+﻿using AutoMapper;
 using Moq;
 using Xunit;
+
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.Create;
@@ -31,79 +29,77 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
         public async Task Handle_Should_ReturnsCreatedTextDto_WhenSuccess()
         {
             // Arrange
-            var textCreateDTO = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textCreateDto = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
             var textEntity = new Entity { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
-            var textDTO = new TextDTO { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textDto = new TextDTO { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
 
-            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDTO)).Returns(textEntity);
+            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDto)).Returns(textEntity);
             mockRepo.Setup(repo => repo.TextRepository.CreateAsync(textEntity)).ReturnsAsync(textEntity);
             mockRepo.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
-            mockMapper.Setup(mapper => mapper.Map<TextDTO>(textEntity)).Returns(textDTO);
-
-            var request = new CreateTextCommand(textCreateDTO);
+            mockMapper.Setup(mapper => mapper.Map<TextDTO>(textEntity)).Returns(textDto);
 
             // Act
-            var result = await handler.Handle(request, CancellationToken.None);
+            var result = await handler.Handle(new CreateTextCommand(textCreateDto), CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(textDTO, result.Value);
+            Assert.Equal(textDto, result.Value);
         }
 
         [Fact]
         public async Task Handle_Should_ReturnFailResult_WhenMappingFails()
         {
             // Arrange
-            var textCreateDTO = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textCreateDto = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
 
-            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDTO)).Returns((Entity)null);
+            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDto)).Returns((Entity)null!);
 
-            var request = new CreateTextCommand(textCreateDTO);
+            var request = new CreateTextCommand(textCreateDto);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot create new Texts entity!", result.Errors.First().Message);
-            mockLogger.Verify(logger => logger.LogError(request, "Cannot create new Texts entity!"), Times.Once);
+            Assert.Equal("Cannot create new Text entity!", result.Errors.First().Message);
+            mockLogger.Verify(logger => logger.LogError(request, "Cannot create new Text entity!"), Times.Once);
         }
 
         [Fact]
         public async Task Handle_Should_ReturnFailResult_WhenSavingFails()
         {
             // Arrange
-            var textCreateDTO = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textCreateDto = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
             var textEntity = new Entity { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
 
-            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDTO)).Returns(textEntity);
+            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDto)).Returns(textEntity);
             mockRepo.Setup(repo => repo.TextRepository.CreateAsync(textEntity)).ReturnsAsync(textEntity);
             mockRepo.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
 
-            var request = new CreateTextCommand(textCreateDTO);
+            var request = new CreateTextCommand(textCreateDto);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
-            Assert.Equal("Cannot save changes in the database after Texts creation!", result.Errors.First().Message);
-            mockLogger.Verify(logger => logger.LogError(request, "Cannot save changes in the database after Texts creation!"), Times.Once);
+            Assert.Equal("Cannot save changes in the database after Text creation!", result.Errors.First().Message);
+            mockLogger.Verify(logger => logger.LogError(request, "Cannot save changes in the database after Text creation!"), Times.Once);
         }
 
         [Fact]
         public async Task Handle_Should_ReturnFailResult_WhenMappingToDtoFails()
         {
             // Arrange
-            var textCreateDTO = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textCreateDto = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
             var textEntity = new Entity { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
 
-            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDTO)).Returns(textEntity);
+            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDto)).Returns(textEntity);
             mockRepo.Setup(repo => repo.TextRepository.CreateAsync(textEntity)).ReturnsAsync(textEntity);
             mockRepo.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
-            mockMapper.Setup(mapper => mapper.Map<TextDTO>(textEntity)).Returns((TextDTO)null);
+            mockMapper.Setup(mapper => mapper.Map<TextDTO>(textEntity)).Returns((TextDTO)null!);
 
-            var request = new CreateTextCommand(textCreateDTO);
+            var request = new CreateTextCommand(textCreateDto);
 
             // Act
             var result = await handler.Handle(request, CancellationToken.None);
@@ -118,17 +114,19 @@ namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Text
         public async Task Handle_Should_ThrowException_WhenRepositoryThrowsException()
         {
             // Arrange
-            var textCreateDTO = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
+            var textCreateDto = new TextCreateDTO { Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
             var textEntity = new Entity { Id = 1, Title = "Test Title", TextContent = "Test Content", StreetcodeId = 1 };
 
-            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDTO)).Returns(textEntity);
+            mockMapper.Setup(mapper => mapper.Map<Entity>(textCreateDto)).Returns(textEntity);
             mockRepo.Setup(repo => repo.TextRepository.CreateAsync(textEntity)).ReturnsAsync(textEntity);
             mockRepo.Setup(repo => repo.SaveChangesAsync()).ThrowsAsync(new Exception("Database error"));
 
-            var request = new CreateTextCommand(textCreateDTO);
+            var request = new CreateTextCommand(textCreateDto);
 
-            // Act & Assert
+            // Act
             var exception = await Assert.ThrowsAsync<Exception>(() => handler.Handle(request, CancellationToken.None));
+
+            // Assert
             Assert.Equal("Database error", exception.Message);
         }
     }

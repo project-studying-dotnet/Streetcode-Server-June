@@ -1,70 +1,69 @@
-﻿namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
+﻿using AutoMapper;
+using Moq;
+using Xunit;
+
+using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts;
+
+public class GetAllFactsHandlerTests
 {
-    using System.Collections.Generic;
-    using AutoMapper;
-    using Moq;
-    using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
-    using Streetcode.BLL.Interfaces.Logging;
-    using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
-    using Streetcode.DAL.Entities.Streetcode.TextContent;
-    using Streetcode.DAL.Repositories.Interfaces.Base;
-    using Xunit;
+    private const string ERRORMESSAGE = "Cannot find any fact";
 
-    public class GetAllFactsHandlerTests
+    private readonly Mock<IRepositoryWrapper> mockRepositoryWrapper;
+    private readonly Mock<IMapper> mockMapper;
+    private readonly Mock<ILoggerService> mockLogger;
+    private readonly List<Fact> facts;
+    private readonly List<FactDto> mappedFacts;
+
+    public GetAllFactsHandlerTests()
     {
-        private const string ERRORMESSAGE = "Cannot find any fact";
+        mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
+        mockMapper = new Mock<IMapper>();
+        mockLogger = new Mock<ILoggerService>();
+        facts = new List<Fact> { new Fact { Id = 1, Title = "Test Title", FactContent = "Test Content" } };
+        mappedFacts = new List<FactDto>() { new FactDto { Id = 1, Title = "Test Title", FactContent = "Test Content" } };
+    }
 
-        private readonly Mock<IRepositoryWrapper> mockRepositoryWrapper;
-        private readonly Mock<IMapper> mockMapper;
-        private readonly Mock<ILoggerService> mockLogger;
-        private readonly List<Fact> facts;
-        private readonly List<FactDto> mappedFacts;
+    [Fact]
+    public async Task Handle_Should_ReturnErrorMessage_WhenRepositoryReturnsNull()
+    {
+        // Arrange
+        mockRepositoryWrapper
+            .Setup(repo => repo.FactRepository.GetAllAsync(default, default))
+            .ReturnsAsync((IEnumerable<Fact>)null!);
+        var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
 
-        public GetAllFactsHandlerTests()
-        {
-            mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            mockMapper = new Mock<IMapper>();
-            mockLogger = new Mock<ILoggerService>();
-            facts = new List<Fact> { new Fact { Id = 1, Title = "Test Title", FactContent = "Test Content" } };
-            mappedFacts = new List<FactDto>() { new FactDto { Id = 1, Title = "Test Title", FactContent = "Test Content" } };
-        }
+        // Act
+        var result = await handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
 
-        [Fact]
-        public async Task Handle_Should_ReturnErrorMessage_WhenRepositoryReturnsNull()
-        {
-            // Arrange
-            mockRepositoryWrapper
-                .Setup(repo => repo.FactRepository.GetAllAsync(default, default))
-                .ReturnsAsync((IEnumerable<Fact>)null!);
-            var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
+        // Assert
+        Assert.Multiple(
+            () => Assert.True(result.IsFailed),
+            () => Assert.Equal(ERRORMESSAGE, result.Errors.FirstOrDefault()?.Message));
+    }
 
-            // Act
-            var result = await handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
+    [Fact]
+    public async Task Handle_Should_ReturnsMappedFacts_WhenRepositoryReturnsData()
+    {
+        // Arrange
+        mockRepositoryWrapper.
+            Setup(repo => repo.FactRepository.GetAllAsync(default, default)).ReturnsAsync(facts);
 
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsFailed),
-                () => Assert.Equal(ERRORMESSAGE, result.Errors.FirstOrDefault()?.Message));
-        }
+        mockMapper.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<Fact>>()))
+            .Returns(mappedFacts);
+        var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
 
-        [Fact]
-        public async Task Handle_Should_ReturnsMappedFacts_WhenRepositoryReturnsData()
-        {
-            // Arrange
-            mockRepositoryWrapper.
-                 Setup(repo => repo.FactRepository.GetAllAsync(default, default)).ReturnsAsync(facts);
+        // Act
+        var result = await handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
 
-            mockMapper.Setup(mapper => mapper.Map<IEnumerable<FactDto>>(It.IsAny<IEnumerable<Fact>>()))
-                .Returns(mappedFacts);
-            var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
-
-            // Act
-            var result = await handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
-
-            // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsSuccess),
-                () => Assert.Equal(mappedFacts, result.Value));
-        }
+        // Assert
+        Assert.Multiple(
+            () => Assert.True(result.IsSuccess),
+            () => Assert.Equal(mappedFacts, result.Value));
     }
 }

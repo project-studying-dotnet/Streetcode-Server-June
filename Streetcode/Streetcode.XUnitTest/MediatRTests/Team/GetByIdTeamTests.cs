@@ -1,16 +1,17 @@
-﻿namespace Streetcode.XUnitTest.MediatRTests.Team
-{
-    using System.Linq.Expressions;
-    using AutoMapper;
-    using Microsoft.EntityFrameworkCore.Query;
-    using Moq;
-    using Streetcode.BLL.DTO.Team;
-    using Streetcode.BLL.Interfaces.Logging;
-    using Streetcode.BLL.MediatR.Team.GetById;
-    using Streetcode.DAL.Entities.Team;
-    using Streetcode.DAL.Repositories.Interfaces.Base;
-    using Xunit;
+﻿using System.Linq.Expressions;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using Xunit;
 
+using Streetcode.BLL.DTO.Team;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Team.GetById;
+using Streetcode.DAL.Entities.Team;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+
+namespace Streetcode.XUnitTest.MediatRTests.Team
+{
     /// <summary>
     /// Testing Team GetAll.
     /// </summary>

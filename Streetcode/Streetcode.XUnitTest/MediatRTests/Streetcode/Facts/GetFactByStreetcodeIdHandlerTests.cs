@@ -1,19 +1,16 @@
-﻿// <copyright file="GetFactByStreetcodeIdHandlerTests.cs" company="PlaceholderCompany">
-// Copyright (c) PlaceholderCompany. All rights reserved.
-// </copyright>
+﻿using System.Linq.Expressions;
+using AutoMapper;
+using Moq;
+using Xunit;
 
-namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
+using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
+using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Base;
+
+namespace Streetcode.XUnitTest.MediatRTests.Streetcode.Facts
 {
-    using System.Linq.Expressions;
-    using AutoMapper;
-    using Moq;
-    using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
-    using Streetcode.BLL.Interfaces.Logging;
-    using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
-    using Streetcode.DAL.Entities.Streetcode.TextContent;
-    using Streetcode.DAL.Repositories.Interfaces.Base;
-    using Xunit;
-
     public class GetFactByStreetcodeIdHandlerTests
     {
         private const string ERRORMESSAGE = "Cannot find any fact by the streetcode id: ";
