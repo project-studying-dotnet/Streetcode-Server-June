@@ -9,6 +9,17 @@
 	  <CodeAnalysisRuleSet>../settings.ruleset</CodeAnalysisRuleSet>
 
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\Analytics\**" />
+    <Compile Remove="Controllers\Newss\**" />
+    <Content Remove="Controllers\Analytics\**" />
+    <Content Remove="Controllers\Newss\**" />
+    <EmbeddedResource Remove="Controllers\Analytics\**" />
+    <EmbeddedResource Remove="Controllers\Newss\**" />
+    <None Remove="Controllers\Analytics\**" />
+    <None Remove="Controllers\Newss\**" />
+  </ItemGroup>
 	<ItemGroup>
      <InternalsVisibleTo Include="Streetcode.XIntegrationTest" />
 </ItemGroup>
@@ -61,11 +72,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Streetcode.BLL\Streetcode.BLL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Analytics\" />
-    <Folder Include="Controllers\Newss\" />
   </ItemGroup>
 
 </Project>
