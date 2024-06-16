@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -34,8 +33,17 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
         }
 
         var createdText = await _repository.TextRepository.CreateAsync(newText);
-
-        var isSuccessResult = await _repository.SaveChangesAsync() > 0;
+        bool isSuccessResult;
+        try
+        {
+            isSuccessResult = await _repository.SaveChangesAsync() > 0;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+        
 
         if(!isSuccessResult)
         {
