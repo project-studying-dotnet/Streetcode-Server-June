@@ -25,6 +25,7 @@ public class GetTextByStreetcodeIdHandler : IRequestHandler<GetTextByStreetcodeI
         _logger = logger;
     }
 
+    // TODO: should be updated to return all TextDTO by StreetcodeId ???
     public async Task<Result<TextDTO?>> Handle(GetTextByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
         var text = await _repositoryWrapper.TextRepository

@@ -60,7 +60,7 @@ public class StreetcodeContent
 
     public int? AudioId { get; set; }
 
-    public Text? Text { get; set; }
+    public List<Text> Texts { get; set; } = new();
 
     public Audio? Audio { get; set; }
 

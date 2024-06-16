@@ -281,9 +281,9 @@ public class StreetcodeDbContext : DbContext
                     .WithOne(p => p.Streetcode)
                     .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne(d => d.Text)
+            entity.HasMany(d => d.Texts)
                     .WithOne(p => p.Streetcode)
-                    .HasForeignKey<Text>(d => d.StreetcodeId)
+                    .HasForeignKey(d => d.StreetcodeId)
                     .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(d => d.TransactionLink)
@@ -307,5 +307,11 @@ public class StreetcodeDbContext : DbContext
             .HasValue<Coordinate>("coordinate_base")
             .HasValue<StreetcodeCoordinate>("coordinate_streetcode")
             .HasValue<ToponymCoordinate>("coordinate_toponym");
+
+        modelBuilder.Entity<Text>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.StreetcodeId).IsUnique(false);
+        });
     }
 }

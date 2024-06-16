@@ -27,27 +27,18 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
 
         if (newText is null)
         {
-            const string errorMsg = "Cannot create new Text entity!";
+            const string errorMsg = "Cannot create new Texts entity!";
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
         var createdText = await _repository.TextRepository.CreateAsync(newText);
-        bool isSuccessResult;
-        try
-        {
-            isSuccessResult = await _repository.SaveChangesAsync() > 0;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
         
-
+        var isSuccessResult = await _repository.SaveChangesAsync() > 0;
+        
         if(!isSuccessResult)
         {
-            const string errorMsg = "Cannot save changes in the database after Text creation!";
+            const string errorMsg = "Cannot save changes in the database after Texts creation!";
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
