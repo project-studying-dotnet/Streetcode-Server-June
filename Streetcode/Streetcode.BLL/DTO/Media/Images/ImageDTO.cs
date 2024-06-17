@@ -9,5 +9,5 @@ public class ImageDTO
     public string BlobName { get; set; } = string.Empty;
     public string Base64 { get; set; } = string.Empty;
     public string MimeType { get; set; } = string.Empty;
-    public ImageDetailsDto? ImageDetails { get; set; }
+    public ImageDetailsDto ImageDetails { get; set; } = new();
 }
