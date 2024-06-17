@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
+using Streetcode.BLL.MediatR.Partners.Create;
+using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
+using Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
 using Streetcode.BLL.MediatR.Streetcode.Facts.Update;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
@@ -27,6 +31,18 @@ public class FactController : BaseApiController
         return HandleResult(await Mediator.Send(new GetFactByStreetcodeIdQuery(streetcodeId)));
     }
 
+    [HttpPatch("{streetcodeId:int}")]
+    public async Task<IActionResult> UpdateFactPositions([FromBody] IEnumerable<FactUpdatePositionDto> facts, [FromRoute] int streetcodeId)
+    {
+        return HandleResult(await Mediator.Send(new ReorderFactsCommand(facts, streetcodeId)));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] FactDto fact)
+    {
+        return HandleResult(await Mediator.Send(new CreateFactCommand(fact)));
+    }
+    
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update([FromBody] FactUpdateCreateDto relatedTerm)
     {
