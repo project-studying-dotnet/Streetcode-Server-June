@@ -27,7 +27,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllMainPage
         {
             var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
                 predicate: sc => sc.Status == DAL.Enums.StreetcodeStatus.Published,
-                include: src => src.Include(item => item.Text).Include(item => item.Images));
+                include: src => src.Include(item => item.Texts).Include(item => item.Images));
 
             if (streetcodes != null)
             {

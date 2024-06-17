@@ -3,6 +3,7 @@ using MediatR;
 using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Entities.Instagram;
+using Streetcode.DAL.Entities.Media.Images;
 
 namespace Streetcode.BLL.MediatR.Instagram.GetAll
 {
@@ -20,6 +21,14 @@ namespace Streetcode.BLL.MediatR.Instagram.GetAll
         public async Task<Result<IEnumerable<InstagramPost>>> Handle(GetAllPostsQuery request, CancellationToken cancellationToken)
         {
             var result = await _instagramService.GetPostsAsync();
+
+            if (result.Count() == 0)
+            {
+                const string errorMsg = $"Cannot find any posts";
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
+            }
+
             return Result.Ok(result);
         }
     }

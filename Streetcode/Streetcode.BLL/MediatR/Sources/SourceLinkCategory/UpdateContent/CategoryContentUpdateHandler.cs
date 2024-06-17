@@ -38,7 +38,7 @@ public class CategoryContentUpdateHandler : IRequestHandler<CategoryContentUpdat
              // _repositoryWrapper.StreetcodeCategoryContentRepository
                             //                .GetFirstOrDefaultAsync(u => u.StreetcodeId == updatedContent.StreetcodeId &&
                                                                          // u.SourceLinkCategoryId == updatedContent.SourceLinkCategoryId);
-            // if(content.Result.Text != updatedContent.Text)
+            // if(content.Result.Texts != updatedContent.Texts)
             // {
             //    string errorMsg = "Failed to update content";
             //    _logger.LogError(request, errorMsg);

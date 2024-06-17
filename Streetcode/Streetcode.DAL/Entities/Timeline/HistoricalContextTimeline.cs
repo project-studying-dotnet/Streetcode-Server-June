@@ -4,10 +4,8 @@ namespace Streetcode.DAL.Entities.Timeline
 {
     public class HistoricalContextTimeline
     {
-        [Required]
         public int HistoricalContextId { get; set; }
 
-        [Required]
         public int TimelineId { get; set; }
 
         public HistoricalContext? HistoricalContext { get; set; }

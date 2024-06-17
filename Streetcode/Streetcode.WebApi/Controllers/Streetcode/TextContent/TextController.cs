@@ -1,6 +1,6 @@
-using FluentResults;
 using Microsoft.AspNetCore.Mvc;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
+using Streetcode.BLL.MediatR.Streetcode.Text.Create;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
@@ -10,6 +10,12 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
 public class TextController : BaseApiController
 {
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] TextCreateDTO newText)
+    {
+        return HandleResult(await Mediator.Send(new CreateTextCommand(newText)));
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {

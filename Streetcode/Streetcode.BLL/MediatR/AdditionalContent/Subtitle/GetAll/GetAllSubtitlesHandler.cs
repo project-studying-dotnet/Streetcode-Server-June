@@ -24,7 +24,7 @@ public class GetAllSubtitlesHandler : IRequestHandler<GetAllSubtitlesQuery, Resu
     {
         var subtitles = await _repositoryWrapper.SubtitleRepository.GetAllAsync();
 
-        if (subtitles is null)
+        if (subtitles.Count() == 0)
         {
             const string errorMsg = $"Cannot find any subtitles";
 
