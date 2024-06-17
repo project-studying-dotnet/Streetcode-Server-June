@@ -36,75 +36,75 @@ public class RepositoryWrapper : IRepositoryWrapper
 {
     private readonly StreetcodeDbContext _streetcodeDbContext;
 
-    private IVideoRepository? _videoRepository;
+    private IVideoRepository? _videoRepository = null;
 
-    private IAudioRepository? _audioRepository;
+    private IAudioRepository? _audioRepository = null;
 
-    private IStreetcodeCoordinateRepository? _streetcodeCoordinateRepository;
+    private IStreetcodeCoordinateRepository? _streetcodeCoordinateRepository = null;
 
-    private IImageRepository? _imageRepository;
+    private IImageRepository? _imageRepository = null;
 
-    private IImageDetailsRepository? _imageDetailsRepository;
+    private IImageDetailsRepository? _imageDetailsRepository = null;
 
-    private IArtRepository? _artRepository;
+    private IArtRepository? _artRepository = null;
 
-    private IStreetcodeArtRepository? _streetcodeArtRepository;
+    private IStreetcodeArtRepository? _streetcodeArtRepository = null;
 
-    private IFactRepository? _factRepository;
+    private IFactRepository? _factRepository = null;
 
-    private IPartnersRepository? _partnersRepository;
+    private IPartnersRepository? _partnersRepository = null;
 
-    private ISourceCategoryRepository? _sourceCategoryRepository;
+    private ISourceCategoryRepository? _sourceCategoryRepository = null;
 
-    private IStreetcodeCategoryContentRepository? _streetcodeCategoryContentRepository;
+    private IStreetcodeCategoryContentRepository? _streetcodeCategoryContentRepository = null;
 
-    private IRelatedFigureRepository? _relatedFigureRepository;
+    private IRelatedFigureRepository? _relatedFigureRepository = null;
 
-    private IRelatedTermRepository? _relatedTermRepository;
+    private IRelatedTermRepository? _relatedTermRepository = null;
 
-    private IStreetcodeRepository? _streetcodeRepository;
+    private IStreetcodeRepository? _streetcodeRepository = null;
 
-    private ISubtitleRepository? _subtitleRepository;
+    private ISubtitleRepository? _subtitleRepository = null;
 
-    private IStatisticRecordRepository? _statisticRecordRepository;
+    private IStatisticRecordRepository? _statisticRecordRepository = null;
 
-    private ITagRepository? _tagRepository;
+    private ITagRepository? _tagRepository = null;
 
-    private ITermRepository? _termRepository;
+    private ITermRepository? _termRepository = null;
 
-    private ITeamRepository? _teamRepository;
+    private ITeamRepository? _teamRepository = null;
 
-    private IPositionRepository? _positionRepository;
+    private IPositionRepository? _positionRepository = null;
 
-    private ITextRepository? _textRepository;
+    private ITextRepository? _textRepository = null;
 
-    private ITimelineRepository? _timelineRepository;
+    private ITimelineRepository? _timelineRepository = null;
 
-    private IToponymRepository? _toponymRepository;
+    private IToponymRepository? _toponymRepository = null;
 
-    private ITransactLinksRepository? _transactLinksRepository;
+    private ITransactLinksRepository? _transactLinksRepository = null;
 
-    private IHistoricalContextRepository? _historyContextRepository;
+    private IHistoricalContextRepository? _historyContextRepository = null;
 
-    private IPartnerSourceLinkRepository? _partnerSourceLinkRepository;
+    private IPartnerSourceLinkRepository? _partnerSourceLinkRepository = null;
 
-    private IUserRepository? _userRepository;
+    private IUserRepository? _userRepository = null;
 
-    private IStreetcodeTagIndexRepository? _streetcodeTagIndexRepository;
+    private IStreetcodeTagIndexRepository? _streetcodeTagIndexRepository = null;
 
-    private IPartnerStreetcodeRepository? _partnerStreetcodeRepository;
+    private IPartnerStreetcodeRepository? _partnerStreetcodeRepository = null;
 
-    private INewsRepository? _newsRepository;
+    private INewsRepository? _newsRepository = null;
 
-    private ITeamLinkRepository? _teamLinkRepository;
+    private ITeamLinkRepository? _teamLinkRepository = null;
 
-    private ITeamPositionRepository? _teamPositionRepository;
+    private ITeamPositionRepository? _teamPositionRepository = null;
 
-    private IHistoricalContextTimelineRepository? _historicalContextTimelineRepository;
+    private IHistoricalContextTimelineRepository? _historicalContextTimelineRepository = null;
 
-    private IStreetcodeToponymRepository? _streetcodeToponymRepository;
+    private IStreetcodeToponymRepository? _streetcodeToponymRepository = null;
 
-    private IStreetcodeImageRepository? _streetcodeImageRepository;
+    private IStreetcodeImageRepository? _streetcodeImageRepository = null;
 
     public RepositoryWrapper(StreetcodeDbContext streetcodeDbContext)
     {
@@ -112,109 +112,123 @@ public class RepositoryWrapper : IRepositoryWrapper
     }
 
     public INewsRepository NewsRepository =>
-          _newsRepository ??= new NewsRepository(_streetcodeDbContext);
+         GetRepository(_newsRepository as NewsRepository);
 
     public IFactRepository FactRepository =>
-          _factRepository ??= new FactRepository(_streetcodeDbContext);
+          GetRepository(_factRepository as FactRepository);
 
     public IImageRepository ImageRepository =>
-          _imageRepository ??= new ImageRepository(_streetcodeDbContext);
+          GetRepository(_imageRepository as ImageRepository);
 
     public ITeamRepository TeamRepository =>
-          _teamRepository ??= new TeamRepository(_streetcodeDbContext);
+          GetRepository(_teamRepository as TeamRepository);
 
     public ITeamPositionRepository TeamPositionRepository =>
-          _teamPositionRepository ??= new TeamPositionRepository(_streetcodeDbContext);
+          GetRepository(_teamPositionRepository as TeamPositionRepository);
 
     public IAudioRepository AudioRepository =>
-          _audioRepository ??= new AudioRepository(_streetcodeDbContext);
+          GetRepository(_audioRepository as AudioRepository);
 
     public IStreetcodeCoordinateRepository StreetcodeCoordinateRepository =>
-          _streetcodeCoordinateRepository ??= new StreetcodeCoordinateRepository(_streetcodeDbContext);
+          GetRepository(_streetcodeCoordinateRepository as StreetcodeCoordinateRepository);
 
     public IVideoRepository VideoRepository =>
-          _videoRepository ??= new VideoRepository(_streetcodeDbContext);
+          GetRepository(_videoRepository as VideoRepository);
 
     public IArtRepository ArtRepository =>
-          _artRepository ??= new ArtRepository(_streetcodeDbContext);
+          GetRepository(_artRepository as ArtRepository);
 
     public IStreetcodeArtRepository StreetcodeArtRepository =>
-          _streetcodeArtRepository ??= new StreetcodeArtRepository(_streetcodeDbContext);
+          GetRepository(_streetcodeArtRepository as StreetcodeArtRepository);
 
     public IPartnersRepository PartnersRepository =>
-          _partnersRepository ??= new PartnersRepository(_streetcodeDbContext);
+          GetRepository(_partnersRepository as PartnersRepository);
 
     public ISourceCategoryRepository SourceCategoryRepository =>
-          _sourceCategoryRepository ??= new SourceCategoryRepository(_streetcodeDbContext);
+          GetRepository(_sourceCategoryRepository as SourceCategoryRepository);
 
     public IStreetcodeCategoryContentRepository StreetcodeCategoryContentRepository =>
-          _streetcodeCategoryContentRepository ??= new StreetcodeCategoryContentRepository(_streetcodeDbContext);
+          GetRepository(_streetcodeCategoryContentRepository as StreetcodeCategoryContentRepository);
 
     public IRelatedFigureRepository RelatedFigureRepository =>
-          _relatedFigureRepository ??= new RelatedFigureRepository(_streetcodeDbContext);
+          GetRepository(_relatedFigureRepository as RelatedFigureRepository);
 
     public IStreetcodeRepository StreetcodeRepository =>
-          _streetcodeRepository ??= new StreetcodeRepository(_streetcodeDbContext);
+          GetRepository(_streetcodeRepository as StreetcodeRepository);
 
     public ISubtitleRepository SubtitleRepository =>
-          _subtitleRepository ??= new SubtitleRepository(_streetcodeDbContext);
+          GetRepository(_subtitleRepository as SubtitleRepository);
 
     public IStatisticRecordRepository StatisticRecordRepository =>
-          _statisticRecordRepository ??= new StatisticRecordsRepository(_streetcodeDbContext);
+          GetRepository(_statisticRecordRepository as StatisticRecordsRepository);
 
     public ITagRepository TagRepository =>
-          _tagRepository ??= new TagRepository(_streetcodeDbContext);
+          GetRepository(_tagRepository as TagRepository);
 
     public ITermRepository TermRepository =>
-          _termRepository ??= new TermRepository(_streetcodeDbContext);
+          GetRepository(_termRepository as TermRepository);
 
     public ITextRepository TextRepository =>
-          _textRepository ??= new TextRepository(_streetcodeDbContext);
+          GetRepository(_textRepository as TextRepository);
 
     public ITimelineRepository TimelineRepository =>
-          _timelineRepository ??= new TimelineRepository(_streetcodeDbContext);
+          GetRepository(_timelineRepository as TimelineRepository);
 
     public IToponymRepository ToponymRepository =>
-          _toponymRepository ??= new ToponymRepository(_streetcodeDbContext);
+          GetRepository(_toponymRepository as ToponymRepository);
 
     public ITransactLinksRepository TransactLinksRepository =>
-          _transactLinksRepository ??= new TransactLinksRepository(_streetcodeDbContext);
+          GetRepository(_transactLinksRepository as TransactLinksRepository);
 
     public IHistoricalContextRepository HistoricalContextRepository =>
-          _historyContextRepository ??= new HistoricalContextRepository(_streetcodeDbContext);
+          GetRepository(_historyContextRepository as HistoricalContextRepository);
 
     public IPartnerSourceLinkRepository PartnerSourceLinkRepository =>
-          _partnerSourceLinkRepository ??= new PartnersourceLinksRepository(_streetcodeDbContext);
+          GetRepository(_partnerSourceLinkRepository as PartnersourceLinksRepository);
 
     public IRelatedTermRepository RelatedTermRepository =>
-          _relatedTermRepository ??= new RelatedTermRepository(_streetcodeDbContext);
+          GetRepository(_relatedTermRepository as RelatedTermRepository);
 
     public IUserRepository UserRepository =>
-          _userRepository ??= new UserRepository(_streetcodeDbContext);
+          GetRepository(_userRepository as UserRepository);
 
     public IStreetcodeTagIndexRepository StreetcodeTagIndexRepository =>
-        _streetcodeTagIndexRepository ??= new StreetcodeTagIndexRepository(_streetcodeDbContext);
+          GetRepository(_streetcodeTagIndexRepository as StreetcodeTagIndexRepository);
 
     public IPartnerStreetcodeRepository PartnerStreetcodeRepository =>
-        _partnerStreetcodeRepository ??= new PartnerStreetodeRepository(_streetcodeDbContext);
+        GetRepository(_partnerStreetcodeRepository as PartnerStreetodeRepository);
 
     public IPositionRepository PositionRepository =>
-        _positionRepository ??= new PositionRepository(_streetcodeDbContext);
+        GetRepository(_positionRepository as PositionRepository);
 
     public ITeamLinkRepository TeamLinkRepository =>
-        _teamLinkRepository ??= new TeamLinkRepository(_streetcodeDbContext);
+          GetRepository(_teamLinkRepository as TeamLinkRepository);
 
     public IImageDetailsRepository ImageDetailsRepository =>
-        _imageDetailsRepository ??= new ImageDetailsRepository(_streetcodeDbContext);
+        GetRepository(_imageDetailsRepository as ImageDetailsRepository);
 
     public IHistoricalContextTimelineRepository HistoricalContextTimelineRepository =>
-        _historicalContextTimelineRepository ??= new HistoricalContextTimelineRepository(_streetcodeDbContext);
+        GetRepository(_historicalContextTimelineRepository as HistoricalContextTimelineRepository);
 
     public IStreetcodeToponymRepository StreetcodeToponymRepository =>
-        _streetcodeToponymRepository ??= new StreetcodeToponymRepository(_streetcodeDbContext);
+        GetRepository(_streetcodeToponymRepository as StreetcodeToponymRepository);
 
     public IStreetcodeImageRepository StreetcodeImageRepository =>
-       _streetcodeImageRepository ??= new StreetcodeImageRepository(_streetcodeDbContext);
+        GetRepository(_streetcodeImageRepository as StreetcodeImageRepository);
+
+    public T GetRepository<T>(T? repo)
+     where T : IStreetcodeDbContextProvider, new()
+    {
+        if (repo is null)
+        {
+            repo = new T()
+            {
+                DbContext = _streetcodeDbContext
+            };
+        }
+
+        return repo;
+    }
 
     public int SaveChanges()
     {
