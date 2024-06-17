@@ -11,4 +11,8 @@ public class StreetcodeCoordinateRepository : RepositoryBase<StreetcodeCoordinat
         : base(dbContext)
     {
     }
+
+    public StreetcodeCoordinateRepository()
+    {
+    }
 }

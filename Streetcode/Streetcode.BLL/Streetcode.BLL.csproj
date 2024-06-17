@@ -39,7 +39,6 @@
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
-    <Folder Include="DTO\Instagram\" />
   </ItemGroup>
 
 </Project>

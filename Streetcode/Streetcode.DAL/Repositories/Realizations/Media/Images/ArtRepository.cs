@@ -11,4 +11,8 @@ public class ArtRepository : RepositoryBase<Art>, IArtRepository
         : base(dbContext)
     {
     }
+    
+    public ArtRepository() 
+    {
+    }
 }

@@ -11,4 +11,8 @@ public class TransactLinksRepository : RepositoryBase<TransactionLink>, ITransac
         : base(dbContext)
     {
     }
+
+    public TransactLinksRepository()
+    {
+    }
 }

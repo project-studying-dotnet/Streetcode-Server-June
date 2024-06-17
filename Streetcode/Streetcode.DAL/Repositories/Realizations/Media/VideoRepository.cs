@@ -11,4 +11,8 @@ public class VideoRepository : RepositoryBase<Video>, IVideoRepository
         : base(dbContext)
     {
     }
+
+    public VideoRepository()
+    {
+    }
 }

@@ -11,4 +11,8 @@ public class TagRepository : RepositoryBase<Tag>, ITagRepository
         : base(dbContext)
     {
     }
+
+    public TagRepository() 
+    {
+    }
 }

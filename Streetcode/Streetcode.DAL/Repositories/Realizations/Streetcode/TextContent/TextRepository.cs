@@ -11,4 +11,8 @@ public class TextRepository : RepositoryBase<Text>, ITextRepository
         : base(dbContext)
     {
     }
+
+    public TextRepository() 
+    {
+    }
 }

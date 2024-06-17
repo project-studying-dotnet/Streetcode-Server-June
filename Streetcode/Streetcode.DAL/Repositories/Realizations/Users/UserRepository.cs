@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Users
             : base(context)
         {
         }
+
+        public UserRepository()
+        {
+        }
     }
 }

@@ -11,4 +11,8 @@ internal class RelatedFigureRepository : RepositoryBase<RelatedFigure>, IRelated
         : base(context)
     {
     }
+
+    public RelatedFigureRepository() 
+    {
+    }
 }

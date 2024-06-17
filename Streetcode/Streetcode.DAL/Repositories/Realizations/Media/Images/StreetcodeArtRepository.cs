@@ -11,4 +11,8 @@ public class StreetcodeArtRepository : RepositoryBase<StreetcodeArt>, IStreetcod
         : base(dbContext)
     {
     }
+
+    public StreetcodeArtRepository()
+    {
+    }
 }

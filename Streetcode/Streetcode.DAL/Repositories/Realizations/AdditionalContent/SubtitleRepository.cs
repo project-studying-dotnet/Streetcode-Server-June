@@ -11,4 +11,8 @@ public class SubtitleRepository : RepositoryBase<Subtitle>, ISubtitleRepository
         : base(dbContext)
     {
     }
+
+    public SubtitleRepository() 
+    {
+    }
 }

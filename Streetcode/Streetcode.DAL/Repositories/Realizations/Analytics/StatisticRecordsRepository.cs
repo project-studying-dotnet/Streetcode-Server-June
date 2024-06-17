@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Analytics
             : base(context)
         {
         }
+
+        public StatisticRecordsRepository() 
+        {
+        }
     }
 }

@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Team
             : base(dbContext)
         {
         }
+
+        public TeamLinkRepository() 
+        {
+        }
     }
 }

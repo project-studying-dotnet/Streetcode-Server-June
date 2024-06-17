@@ -11,4 +11,8 @@ public class TermRepository : RepositoryBase<Term>, ITermRepository
         : base(streetcodeDbContext)
     {
     }
+
+    public TermRepository() 
+    { 
+    }
 }

@@ -11,4 +11,8 @@ public class AudioRepository : RepositoryBase<Audio>, IAudioRepository
         : base(dbContext)
     {
     }
+
+    public AudioRepository()
+    {
+    }
 }

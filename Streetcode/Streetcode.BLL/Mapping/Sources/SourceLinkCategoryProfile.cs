@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Streetcode.BLL.DTO.Media.Images;
 using Streetcode.BLL.DTO.Sources;
+using Streetcode.BLL.DTO.Sources.Create;
 using Streetcode.DAL.Entities.Sources;
 
 namespace Streetcode.BLL.Mapping.Sources;
@@ -24,5 +25,6 @@ public class SourceLinkCategoryProfile : Profile
             .ForMember(dest => dest.StreetcodeCategoryContents, opt => opt.Ignore())
             .ForPath(dest => dest.Image!.Streetcodes, c => c.Ignore())
             .ForMember(dest => dest.ImageId, opt => opt.MapFrom(dto => dto.ImageId));
+        CreateMap<CreateSourceCategoryDTO, SourceLinkCategory>().ReverseMap();
     }
 }

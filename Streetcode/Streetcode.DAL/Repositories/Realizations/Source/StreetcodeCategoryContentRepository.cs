@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Source
         : base(dbContext)
         {
         }
+
+        public StreetcodeCategoryContentRepository()
+        {
+        }
     }
 }

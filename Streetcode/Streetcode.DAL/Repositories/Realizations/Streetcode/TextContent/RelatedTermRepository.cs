@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Streetcode.TextContent
         : base(streetcodeDbContext)
         {
         }
+
+        public RelatedTermRepository()
+        {
+        }
     }
 }

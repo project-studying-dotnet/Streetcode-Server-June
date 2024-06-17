@@ -11,4 +11,8 @@ public class ToponymRepository : RepositoryBase<Toponym>, IToponymRepository
         : base(dbContext)
     {
     }
+
+    public ToponymRepository() 
+    {
+    }
 }

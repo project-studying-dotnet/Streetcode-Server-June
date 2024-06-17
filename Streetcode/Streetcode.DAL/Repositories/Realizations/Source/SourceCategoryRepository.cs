@@ -11,4 +11,8 @@ public class SourceCategoryRepository : RepositoryBase<SourceLinkCategory>, ISou
         : base(dbContext)
     {
     }
+
+    public SourceCategoryRepository()
+    {
+    }
 }

@@ -11,4 +11,8 @@ public class FactRepository : RepositoryBase<Fact>, IFactRepository
         : base(streetcodeDbContext)
     {
     }
+
+    public FactRepository()
+    {
+    }
 }

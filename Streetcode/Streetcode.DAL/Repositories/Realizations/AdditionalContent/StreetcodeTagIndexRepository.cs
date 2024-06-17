@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.AdditionalContent
             : base(context)
         {
         }
+
+        public StreetcodeTagIndexRepository() 
+        {
+        }
     }
 }

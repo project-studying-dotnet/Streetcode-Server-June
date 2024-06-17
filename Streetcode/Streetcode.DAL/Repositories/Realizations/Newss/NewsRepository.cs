@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Newss
         : base(dbContext)
         {
         }
+
+        public NewsRepository()
+        {
+        }
     }
 }

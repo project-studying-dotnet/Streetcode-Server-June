@@ -11,4 +11,8 @@ public class TimelineRepository : RepositoryBase<TimelineItem>, ITimelineReposit
         : base(dbContext)
     {
     }
+
+    public TimelineRepository() 
+    {
+    }
 }

@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Timeline
         : base(dbContext)
         {
         }
+
+        public HistoricalContextRepository() 
+        {
+        }
     }
 }

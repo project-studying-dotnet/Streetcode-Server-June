@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Partners
             : base(context)
         {
         }
+
+        public PartnersourceLinksRepository()
+        {
+        }
     }
 }

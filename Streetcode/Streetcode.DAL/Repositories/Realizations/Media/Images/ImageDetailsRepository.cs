@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Media.Images
         : base(dbContext)
         {
         }
+
+        public ImageDetailsRepository()
+        {
+        }
     }
 }

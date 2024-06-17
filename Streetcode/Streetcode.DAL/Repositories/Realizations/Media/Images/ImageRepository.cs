@@ -11,4 +11,8 @@ public class ImageRepository : RepositoryBase<Image>, IImageRepository
         : base(dbContext)
     {
     }
+
+    public ImageRepository()
+    {
+    }
 }

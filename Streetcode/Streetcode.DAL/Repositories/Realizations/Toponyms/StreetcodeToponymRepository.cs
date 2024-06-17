@@ -11,5 +11,9 @@ namespace Streetcode.DAL.Repositories.Realizations.Toponyms
 			: base(context)
 		{
 		}
-	}
+
+		public StreetcodeToponymRepository()
+		{
+		}
+    }
 }

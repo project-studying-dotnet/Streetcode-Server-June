@@ -11,4 +11,8 @@ public class PartnersRepository : RepositoryBase<Partner>, IPartnersRepository
         : base(dbContext)
     {
     }
+
+    public PartnersRepository()
+    {
+    }
 }
