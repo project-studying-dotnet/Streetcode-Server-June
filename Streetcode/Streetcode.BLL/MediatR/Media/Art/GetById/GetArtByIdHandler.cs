@@ -30,7 +30,7 @@ public class GetArtByIdHandler : IRequestHandler<GetArtByIdQuery, Result<ArtDTO>
         {
             var errorMsg = $"Cannot find an art with corresponding id: {request.Id}";
             _logger.LogError(request, errorMsg);
-            throw new RequestException(errorMsg, HttpStatusCode.NotFound);
+            return Result.Fail(new Error(errorMsg));
         }
 
         return Result.Ok(_mapper.Map<ArtDTO>(art));
