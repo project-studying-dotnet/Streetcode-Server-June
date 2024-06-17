@@ -11,14 +11,14 @@ namespace Streetcode.DAL.Entities.Media.Images
         public int Id { get; set; }
 
         [MaxLength(100)]
-        public string? Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [MaxLength(300)]
-        public string? Alt { get; set; }
+        public string Alt { get; set; } = string.Empty;
 
         [Required]
         public int ImageId { get; set; }
 
-        public Image Image { get; set; } = new();
+        public Image? Image { get; set; }
     }
 }
