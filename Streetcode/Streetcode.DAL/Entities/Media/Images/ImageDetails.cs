@@ -19,6 +19,6 @@ namespace Streetcode.DAL.Entities.Media.Images
         [Required]
         public int ImageId { get; set; }
 
-        public Image? Image { get; set; }
+        public Image Image { get; set; } = new();
     }
 }
