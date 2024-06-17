@@ -24,7 +24,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                 oldType: "nvarchar(300)",
                 oldMaxLength: 300);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AlterColumn<string>(
                 name: "Author",
                 schema: "streetcode",
                 table: "texts",
@@ -32,7 +32,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                 maxLength: 200,
                 nullable: true);
 
-            migrationBuilder.AddColumn<string>(
+            migrationBuilder.AlterColumn<string>(
                 name: "VideoUrl",
                 schema: "streetcode",
                 table: "texts",
