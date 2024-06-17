@@ -17,7 +17,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
         private readonly Mock<IRepositoryWrapper> _wrapperMock;
         private readonly Mock<ILoggerService> _loggerMock;
         private PartnerDTO _partnerDTO = new PartnerDTO() { Id = 2 };
-        private Partner _partner = new() { Id = 2 };
+        private Partner _partner = new () { Id = 2 };
         private List<StreetcodeContent> _streetcodes = new()
         {
             new StreetcodeContent()
@@ -32,7 +32,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
             },
         };
 
-        private CreatePartnerDTO _createPartnerDTO = new()
+        private CreatePartnerDTO _createPartnerDTO = new ()
         {
             Id = 2,
             Streetcodes = new List<StreetcodeShortDTO>()
