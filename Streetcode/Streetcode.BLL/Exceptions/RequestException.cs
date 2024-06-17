@@ -14,8 +14,9 @@ public class RequestException : Exception
         StatusCode = statusCode;
     }
 
-    public RequestException(string message, Exception inner, HttpStatusCode statusCode) : base(message, inner)
+    public RequestException(string message, HttpStatusCode statusCode, Exception inner) : base(message, inner)
     {
+        StatusCode = statusCode;
     }
 
     public HttpStatusCode StatusCode { get; }
