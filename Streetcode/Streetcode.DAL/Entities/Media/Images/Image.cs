@@ -8,22 +8,14 @@ using Streetcode.DAL.Entities.Team;
 
 namespace Streetcode.DAL.Entities.Media.Images;
 
-[Table("images", Schema = "media")]
 public class Image
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [NotMapped]
     public string Base64 { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(100)]
     public string BlobName { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(10)]
     public string MimeType { get; set; } = string.Empty;
 
     public ImageDetails ImageDetails { get; set; } = new();

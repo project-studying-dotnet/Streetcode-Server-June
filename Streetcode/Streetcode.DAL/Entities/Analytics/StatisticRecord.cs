@@ -5,18 +5,12 @@ using Streetcode.DAL.Entities.Streetcode;
 
 namespace Streetcode.DAL.Entities.Analytics
 {
-    [Table("qr_coordinates", Schema = "coordinates")]
     public class StatisticRecord
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int QrId { get; set; }
         public int Count { get; set; }
-
-        [MaxLength(150)]
         public string Address { get; set; } = string.Empty;
-
         public int StreetcodeId { get; set; }
         public StreetcodeContent? Streetcode { get; set; }
 

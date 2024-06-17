@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Streetcode.DAL.Entities.Team
 {
-    [Table("team_member_positions", Schema = "team")]
     public class TeamMemberPositions
     {
         public int TeamMemberId { get; set; }

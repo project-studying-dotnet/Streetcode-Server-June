@@ -6,7 +6,6 @@ namespace Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
 
 public class StreetcodeCoordinate : Coordinate
 {
-    [Required]
     public int StreetcodeId { get; set; }
 
     public StreetcodeContent? Streetcode { get; set; }

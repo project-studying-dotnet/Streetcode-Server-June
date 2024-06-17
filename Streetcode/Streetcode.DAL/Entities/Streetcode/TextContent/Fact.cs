@@ -5,7 +5,6 @@ using Streetcode.DAL.Entities.Media.Images;
 
 namespace Streetcode.DAL.Entities.Streetcode.TextContent;
 
-[Table("facts", Schema = "streetcode")]
 public class Fact
 {
     public int Id { get; set; }

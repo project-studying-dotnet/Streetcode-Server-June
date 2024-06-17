@@ -16,35 +16,22 @@ using Streetcode.DAL.Enums;
 
 namespace Streetcode.DAL.Entities.Streetcode;
 
-[Table("streetcodes", Schema = "streetcode")]
-[Index(nameof(TransliterationUrl), IsUnique = true)]
-[Index(nameof(Index), IsUnique = true)]
 public class StreetcodeContent
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Required]
     public int Index { get; set; }
 
-    [MaxLength(650)]
     public string Teaser { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(50)]
     public string DateString { get; set; } = string.Empty;
 
-    [MaxLength(50)]
     public string Alias { get; set; } = string.Empty;
 
     public StreetcodeStatus Status { get; set; }
 
-    [Required]
-    [MaxLength(100)]
     public string Title { get; set; } = string.Empty;
-    [Required]
-    [MaxLength(150)]
+
     public string TransliterationUrl { get; set; } = string.Empty;
 
     public int ViewCount { get; set; }
@@ -53,7 +40,6 @@ public class StreetcodeContent
 
     public DateTime UpdatedAt { get; set; }
 
-    [Required]
     public DateTime EventStartOrPersonBirthDate { get; set; }
 
     public DateTime? EventEndOrPersonDeathDate { get; set; }
@@ -74,7 +60,7 @@ public class StreetcodeContent
 
     public List<Image> Images { get; set; } = new ();
 
-    public List<StreetcodeTagIndex> StreetcodeTagIndices { get; set; } = new ();
+    public List<StreetcodeTagIndex> StreetcodeTagIndices { get; set; } = new (); // typo here Indices
 
     public List<Tag> Tags { get; set; } = new();
 

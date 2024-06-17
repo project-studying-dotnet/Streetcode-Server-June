@@ -5,35 +5,23 @@ using Streetcode.DAL.Entities.Streetcode;
 
 namespace Streetcode.DAL.Entities.Toponyms;
 
-[Table("toponyms", Schema = "toponyms")]
 public class Toponym
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    [Required]
-    [MaxLength(100)]
     public string Oblast { get; set; } = string.Empty;
 
-    [MaxLength(150)]
-    public string? AdminRegionOld { get; set; }
+    public string AdminRegionOld { get; set; } = string.Empty;
 
-    [MaxLength(150)]
-    public string? AdminRegionNew { get; set; }
+    public string AdminRegionNew { get; set; } = string.Empty;
 
-    [MaxLength(150)]
-    public string? Gromada { get; set; }
+    public string Gromada { get; set; } = string.Empty;
 
-    [MaxLength(150)]
-    public string? Community { get; set; }
+    public string Community { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(150)]
     public string StreetName { get; set; } = string.Empty;
 
-    [MaxLength(50)]
-    public string? StreetType { get; set; }
+    public string StreetType { get; set; } = string.Empty;
 
     public List<StreetcodeContent> Streetcodes { get; set; } = new ();
 
