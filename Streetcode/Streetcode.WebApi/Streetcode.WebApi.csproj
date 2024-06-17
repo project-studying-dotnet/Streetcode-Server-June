@@ -63,9 +63,4 @@
     <ProjectReference Include="..\Streetcode.BLL\Streetcode.BLL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\Analytics\" />
-    <Folder Include="Controllers\Newss\" />
-  </ItemGroup>
-
 </Project>

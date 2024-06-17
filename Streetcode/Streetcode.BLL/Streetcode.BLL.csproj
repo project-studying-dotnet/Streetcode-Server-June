@@ -40,9 +40,6 @@
   <ItemGroup>
     <Folder Include="Mapping\Analytics\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="DTO\Instagram\" />
-    <Folder Include="MediatR\Analytics\" />
   </ItemGroup>
 
 </Project>
