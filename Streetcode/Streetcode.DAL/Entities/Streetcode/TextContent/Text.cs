@@ -13,10 +13,8 @@ public class Text
 
     public string? AdditionalText { get; set; }
 
-    [MaxLength(500)]
     public string? VideoUrl { get; set; }
 
-    [MaxLength(200)]
     public string? Author { get; set; }
   
     public int StreetcodeId { get; set; }

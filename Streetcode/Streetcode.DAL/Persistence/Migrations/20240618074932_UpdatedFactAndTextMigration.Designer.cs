@@ -12,8 +12,8 @@ using Streetcode.DAL.Persistence;
 namespace Streetcode.DAL.Persistence.Migrations
 {
     [DbContext(typeof(StreetcodeDbContext))]
-    [Migration("20240616171806_RemoveUniqueConstraintFromStreetcodeId")]
-    partial class RemoveUniqueConstraintFromStreetcodeId
+    [Migration("20240618074932_UpdatedFactAndTextMigration")]
+    partial class UpdatedFactAndTextMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -623,6 +623,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<int?>("ImageId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Position")
+                        .HasColumnType("int");
+
                     b.Property<int>("StreetcodeId")
                         .HasColumnType("int");
 
@@ -1022,8 +1025,6 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.HasIndex("StreetcodeId");
 
-                    b.ToTable("coordinates", "add_content");
-
                     b.HasDiscriminator().HasValue("coordinate_streetcode");
                 });
 
@@ -1038,16 +1039,12 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("[ToponymId] IS NOT NULL");
 
-                    b.ToTable("coordinates", "add_content");
-
                     b.HasDiscriminator().HasValue("coordinate_toponym");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.Types.EventStreetcode", b =>
                 {
                     b.HasBaseType("Streetcode.DAL.Entities.Streetcode.StreetcodeContent");
-
-                    b.ToTable("streetcodes", "streetcode");
 
                     b.HasDiscriminator().HasValue("streetcode-event");
                 });
@@ -1069,8 +1066,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Property<string>("Rank")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.ToTable("streetcodes", "streetcode");
 
                     b.HasDiscriminator().HasValue("streetcode-person");
                 });

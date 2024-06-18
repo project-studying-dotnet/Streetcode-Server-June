@@ -4,7 +4,7 @@
 
 namespace Streetcode.DAL.Persistence.Migrations
 {
-    public partial class StreetcodeTextsChanged : Migration
+    public partial class UpdatedFactAndTextMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,6 +40,13 @@ namespace Streetcode.DAL.Persistence.Migrations
                 maxLength: 500,
                 nullable: true);
 
+            migrationBuilder.AddColumn<int>(
+                name: "Position",
+                schema: "streetcode",
+                table: "facts",
+                type: "int",
+                nullable: true);
+
             migrationBuilder.CreateIndex(
                 name: "IX_texts_StreetcodeId",
                 schema: "streetcode",
@@ -63,6 +70,11 @@ namespace Streetcode.DAL.Persistence.Migrations
                 name: "VideoUrl",
                 schema: "streetcode",
                 table: "texts");
+
+            migrationBuilder.DropColumn(
+                name: "Position",
+                schema: "streetcode",
+                table: "facts");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Title",
