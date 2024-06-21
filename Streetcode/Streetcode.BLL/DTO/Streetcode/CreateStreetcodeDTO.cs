@@ -4,6 +4,7 @@ namespace Streetcode.BLL.DTO.Streetcode
 {
     public class CreateStreetcodeDTO
     {
+        public int Index { get; set; }
         public StreetcodeType StreetcodeType { get; set; } = StreetcodeType.Person;
         public string Title { get; set; } = string.Empty;
         public string? FirstName { get; set; }

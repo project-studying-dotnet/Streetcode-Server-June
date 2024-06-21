@@ -34,7 +34,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.Create
                 return Result.Fail(new Error(errorMsg));
             }
 
-            newStreetcode.DateString = DateToStringConverter.CreateDateString(newStreetcode.EventStartOrPersonBirthDate, newStreetcode.EventEndOrPersonDeathDate);
+            // ..
 
             var entity = await repositoryStreetcode.CreateAsync(newStreetcode);
             var resultIsSuccess = await _repositoryWrapper.SaveChangesAsync() > 0;

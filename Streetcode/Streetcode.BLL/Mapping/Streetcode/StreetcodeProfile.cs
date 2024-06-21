@@ -1,5 +1,6 @@
 using AutoMapper;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Util;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Enums;
@@ -32,7 +33,16 @@ public class StreetcodeProfile : Profile
                     Rank = dto.Rank
                 },
                 _ => new StreetcodeContent(),
-            });
+            }).ForMember(
+            x => x.DateString, 
+            y => y.MapFrom(dto => 
+            DateToStringConverter
+            .CreateDateString(
+                dto.EventStartOrPersonBirthDate,
+                dto.EventEndOrPersonDeathDate))).ReverseMap();
+
+        // CreateMap<EventStreetcode, CreateStreetcodeDTO>();
+        // CreateMap<PersonStreetcode, CreateStreetcodeDTO>();
     }
 
     private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
