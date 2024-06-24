@@ -9,6 +9,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Text.DeleteById;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Resources;
 
 public class DeleteTextByIdHandlerTests
 {
@@ -40,13 +41,14 @@ public class DeleteTextByIdHandlerTests
         // Arrange
         var handler = CreateHandler(false, false);
         var request = new DeleteTextByIdCommand(1);
+        var expectedErrorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal($"Cannot find any text with corresponding id: {request.Id}", result.Errors.First().Message);
+        Assert.Equal(expectedErrorMsg, result.Errors.First().Message);
         mockLogger.Verify(logger => logger.LogError(request, It.IsAny<string>()), Times.Once);
     }
 
