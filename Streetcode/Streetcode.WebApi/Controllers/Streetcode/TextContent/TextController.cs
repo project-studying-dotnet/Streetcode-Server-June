@@ -41,7 +41,7 @@ public class TextController : BaseApiController
         return HandleResult(await Mediator.Send(new GetParsedTextForAdminPreviewCommand(text)));
     }
 
-    [HttpGet("{id:int}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteTextByIdCommand(id)));
