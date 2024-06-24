@@ -10,5 +10,6 @@ public class ArtProfile : Profile
     public ArtProfile()
     {
         CreateMap<Art, ArtDTO>().ReverseMap();
+        CreateMap<Art, ArtCreateUpdateDTO>().ReverseMap();
     }
 }
