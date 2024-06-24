@@ -8,8 +8,8 @@ public class MockDbContext : DbContext
 {
     public MockDbContext(DbContextOptions<MockDbContext> options) : base(options)
     {
-
     }
+
     public DbSet<Entity> Entities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
