@@ -47,11 +47,11 @@ public class UpdateTextHandler : IRequestHandler<UpdateTextCommand, Result<TextD
             return Result.Fail(new Error(errorMsg));
         }
 
-        var createdTextDto = _mapper.Map<TextDTO>(updatedText.Entity);
+        var updatedTextDto = _mapper.Map<TextDTO>(updatedText.Entity);
 
-        if (createdTextDto != null)
+        if (updatedTextDto != null)
         {
-            return Result.Ok(createdTextDto);
+            return Result.Ok(updatedTextDto);
         }
         else
         {
