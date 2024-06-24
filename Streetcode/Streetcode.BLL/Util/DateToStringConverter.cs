@@ -24,7 +24,7 @@ namespace Streetcode.BLL.Util
             return endStr is not null ? $"{startStr} - {endStr}" : startStr;
         }
 
-        public static string GetMonthNounInGenitiveCase(DateTime date) => date.Month switch
+        private static string GetMonthNounInGenitiveCase(DateTime date) => date.Month switch
         {
             1 => "січня",
             2 => "лютого",

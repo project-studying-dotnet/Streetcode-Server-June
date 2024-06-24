@@ -15,8 +15,6 @@ namespace Streetcode.BLL.DTO.Streetcode
         public IEnumerable<int> TagIds { get; init; } = Array.Empty<int>();
         public string? Teaser { get; set; }
         public IEnumerable<int> ImageIds { get; init; } = Array.Empty<int>();
-        public string? InstagramARLink { get; set; }
-        public string? InvolvedPeople { get; set; }
         public int? AudioId { get; init; }
         public string TransliterationUrl { get; set; } = string.Empty;
         public string? Alias { get; set; }

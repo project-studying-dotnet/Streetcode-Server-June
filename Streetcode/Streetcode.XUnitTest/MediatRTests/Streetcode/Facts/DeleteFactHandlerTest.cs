@@ -8,7 +8,7 @@ using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
 
-namespace StreetcodeTest.XUnitTest.MediatRTests.Streetcode.Facts
+namespace StreetcodeTest.XUnitTest.MediatRTests.StreetcodeTest.Facts
 {
     public class DeleteFactHandlerTest
     {

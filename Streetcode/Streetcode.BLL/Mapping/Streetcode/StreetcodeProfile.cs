@@ -33,16 +33,16 @@ public class StreetcodeProfile : Profile
                     Rank = dto.Rank
                 },
                 _ => new StreetcodeContent(),
-            }).ForMember(
-            x => x.DateString, 
-            y => y.MapFrom(dto => 
-            DateToStringConverter
-            .CreateDateString(
-                dto.EventStartOrPersonBirthDate,
-                dto.EventEndOrPersonDeathDate))).ReverseMap();
+            })
+            .ForMember(
+            x => x.DateString,
+            y => y.MapFrom(
+                dto => DateToStringConverter
+                .CreateDateString(
+                    dto.EventStartOrPersonBirthDate, dto.EventEndOrPersonDeathDate)));
 
-        // CreateMap<EventStreetcode, CreateStreetcodeDTO>();
-        // CreateMap<PersonStreetcode, CreateStreetcodeDTO>();
+        CreateMap<EventStreetcode, CreateStreetcodeDTO>();
+        CreateMap<PersonStreetcode, CreateStreetcodeDTO>();
     }
 
     private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
