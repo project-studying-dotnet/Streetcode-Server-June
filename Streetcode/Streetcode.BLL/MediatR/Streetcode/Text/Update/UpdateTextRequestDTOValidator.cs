@@ -6,12 +6,12 @@ public class UpdateTextRequestDTOValidator : AbstractValidator<UpdateTextCommand
 {
     public UpdateTextRequestDTOValidator()
     {
-        RuleFor(x => x.TextCreate).NotEmpty();
-        RuleFor(x => x.TextCreate.Title).NotEmpty().MaximumLength(50);
-        RuleFor(x => x.TextCreate.TextContent).NotEmpty().MaximumLength(15000);
-        RuleFor(x => x.TextCreate.AdditionalText).NotEmpty().MaximumLength(500);
-        RuleFor(x => x.TextCreate.VideoUrl).MaximumLength(500);
-        RuleFor(x => x.TextCreate.Author).MaximumLength(200);
-        RuleFor(x => x.TextCreate.StreetcodeId).NotEmpty().GreaterThan(0);
+        RuleFor(x => x.TextUpdate).NotEmpty();
+        RuleFor(x => x.TextUpdate.Title).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.TextUpdate.TextContent).NotEmpty().MaximumLength(15000);
+        RuleFor(x => x.TextUpdate.AdditionalText).MaximumLength(500);
+        RuleFor(x => x.TextUpdate.VideoUrl).MaximumLength(500);
+        RuleFor(x => x.TextUpdate.Author).MaximumLength(200);
+        RuleFor(x => x.TextUpdate.StreetcodeId).NotEmpty().GreaterThan(0);
     }
 }

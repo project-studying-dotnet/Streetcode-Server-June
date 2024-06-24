@@ -42,15 +42,15 @@ public class TextController : BaseApiController
         return HandleResult(await Mediator.Send(new GetParsedTextForAdminPreviewCommand(text)));
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteById([FromRoute] int id)
-    {
-        return HandleResult(await Mediator.Send(new DeleteTextByIdCommand(id)));
-    }
-
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] TextCreateDTO update)
     {
         return HandleResult(await Mediator.Send(new UpdateTextCommand(id, update)));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteById([FromRoute] int id)
+    {
+        return HandleResult(await Mediator.Send(new DeleteTextByIdCommand(id)));
     }
 }

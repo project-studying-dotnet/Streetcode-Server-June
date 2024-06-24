@@ -34,6 +34,7 @@ public class UpdateTextHandler : IRequestHandler<UpdateTextCommand, Result<TextD
         }
 
         var newText = _mapper.Map<Entity>(request.TextUpdate);
+        newText.Id = request.Id;
 
         var updatedText = _repositoryWrapper.TextRepository.Update(newText);
 
