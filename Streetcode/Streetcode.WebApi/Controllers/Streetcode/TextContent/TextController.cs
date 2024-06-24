@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Streetcode.Text.GetAll;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Text.GetParsed;
+using Streetcode.BLL.MediatR.Streetcode.Text.Update;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -45,5 +46,11 @@ public class TextController : BaseApiController
     public async Task<IActionResult> DeleteById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteTextByIdCommand(id)));
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateById([FromRoute] int id, [FromBody] TextCreateDTO update)
+    {
+        return HandleResult(await Mediator.Send(new UpdateTextCommand(id, update)));
     }
 }
