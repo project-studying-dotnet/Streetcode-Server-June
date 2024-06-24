@@ -79,9 +79,9 @@ public class DeleteTextByIdHandlerTests
             mockRepo.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<Text, bool>>>(),
                     It.IsAny<Func<IQueryable<Text>, IIncludableQueryable<Text, object>>>()))
-                .ReturnsAsync(new Text { Id = 1 });
-
-                mockRepo.Setup(repo => repo.TextRepository.Delete(It.IsAny<Text>()));
+                .ReturnsAsync(new Text { Id = 1 }); 
+            
+            mockRepo.Setup(repo => repo.TextRepository.Delete(It.IsAny<Text>()));
         }
         else
         {
