@@ -23,7 +23,7 @@ public class DeleteTextByIdHandler : IRequestHandler<DeleteTextByIdCommand, Resu
 
         if (text is null)
         {
-            string errorMsg = $"Cannot find any text with corresponding id: {request.Id}";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

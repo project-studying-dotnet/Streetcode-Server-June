@@ -1,5 +1,6 @@
 using AutoMapper;
 using Streetcode.BLL.DTO.Streetcode;
+using Streetcode.BLL.Util;
 using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Entities.Streetcode.Types;
 using Streetcode.DAL.Enums;
@@ -19,6 +20,29 @@ public class StreetcodeProfile : Profile
                 .MapFrom(e => e.Texts.Select(t => t.Title).ToList()))
             .ForPath(dto => dto.ImageId, conf => conf
                 .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
+
+        CreateMap<CreateStreetcodeDTO, StreetcodeContent>()
+            .ConstructUsing((dto, sc) => dto.StreetcodeType
+            switch
+            {
+                StreetcodeType.Event => new EventStreetcode(),
+                StreetcodeType.Person => new PersonStreetcode()
+                {
+                    FirstName = dto.FirstName!,
+                    LastName = dto.LastName!,
+                    Rank = dto.Rank
+                },
+                _ => new StreetcodeContent(),
+            })
+            .ForMember(
+            x => x.DateString,
+            y => y.MapFrom(
+                dto => DateToStringConverter
+                .CreateDateString(
+                    dto.EventStartOrPersonBirthDate, dto.EventEndOrPersonDeathDate)));
+
+        CreateMap<EventStreetcode, CreateStreetcodeDTO>();
+        CreateMap<PersonStreetcode, CreateStreetcodeDTO>();
     }
 
     private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)
