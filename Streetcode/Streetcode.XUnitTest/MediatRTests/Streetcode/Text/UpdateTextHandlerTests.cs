@@ -36,7 +36,7 @@ public class UpdateTextHandlerTests
     {
         // Arrange
         var request = ArrangeMocksForSuccess();
-        var expectedResult = GetTextDto();
+        var expectedResult = GetUpdatedDto();
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
@@ -115,7 +115,7 @@ public class UpdateTextHandlerTests
         var textUpdateDto = GetTextUpdateDto();
         var textEntity = GetTextEntity();
         var updatedTextEntity = GetUpdatedTextEntity();
-        var textDto = GetTextDto();
+        var textDto = GetUpdatedDto();
 
         mockRepo.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -217,5 +217,5 @@ public class UpdateTextHandlerTests
         return context.Entry(updatedEntity);
     }
 
-    private TextDTO GetTextDto() => new TextDTO { Id = 1, Title = "Updated Title", TextContent = "Updated Content", StreetcodeId = 2 };
+    private TextDTO GetUpdatedDto() => new TextDTO { Id = 1, Title = "Updated Title", TextContent = "Updated Content", StreetcodeId = 2 };
 }
