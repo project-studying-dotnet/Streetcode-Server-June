@@ -1,7 +1,6 @@
 ﻿namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Text;
 
 using AutoMapper;
-using FluentResults;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -15,6 +14,7 @@ using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 using System.Linq.Expressions;
 using Streetcode.DAL.Entities.Sources;
 using Microsoft.EntityFrameworkCore;
+using Streetcode.BLL.Resources;
 
 public class UpdateTextHandlerTests
 {
@@ -54,14 +54,15 @@ public class UpdateTextHandlerTests
     {
         // Arrange
         var request = ArrangeMocksForNotFound();
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal($"Entity with id: {request.Id} not found", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, $"Entity with id: {request.Id} not found"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -69,14 +70,15 @@ public class UpdateTextHandlerTests
     {
         // Arrange
         var request = ArrangeMocksForSavingFails();
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToUpdate, request);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Fail to update the entity", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, "Fail to update the entity"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -84,14 +86,15 @@ public class UpdateTextHandlerTests
     {
         // Arrange
         var request = ArrangeMocksForMappingToDtoFails();
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
 
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Fail to map the entity", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, "Fail to map the entity"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
     }
 
     [Fact]
@@ -171,9 +174,9 @@ public class UpdateTextHandlerTests
             .ReturnsAsync(textEntity);
 
         mockMapper.Setup(mapper => mapper.Map<Entity>(textUpdateDto)).Returns(updatedTextEntity.Entity);
-        mockRepo.Setup(repo => repo.TextRepository.Update(It.IsAny<Entity>()));
+        mockRepo.Setup(repo => repo.TextRepository.Update(It.IsAny<Entity>())).Returns(updatedTextEntity);
         mockRepo.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(1);
-        mockMapper.Setup(mapper => mapper.Map<TextDTO>(updatedTextEntity)).Returns((null as TextDTO)!);
+        mockMapper.Setup(mapper => mapper.Map<TextDTO>(updatedTextEntity.Entity)).Returns((null as TextDTO)!);
 
         return new UpdateTextCommand(1, textUpdateDto);
     }

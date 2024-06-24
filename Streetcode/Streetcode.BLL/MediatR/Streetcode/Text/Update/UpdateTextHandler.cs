@@ -28,7 +28,7 @@ public class UpdateTextHandler : IRequestHandler<UpdateTextCommand, Result<TextD
 
         if (text is null)
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request.Id);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
