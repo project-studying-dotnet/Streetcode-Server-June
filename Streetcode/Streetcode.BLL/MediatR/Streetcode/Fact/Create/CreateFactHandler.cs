@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -12,15 +15,20 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
-    public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    private readonly IDistributedCache _distributedCache;
+
+    public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger, IDistributedCache distrCache)
     {
         _mapper = mapper;
         _repositoryWrapper = repositoryWrapper;
         _logger = logger;
+        _distributedCache = distrCache;
     }
 
     public async Task<Result<FactDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)
     {
+        string key = $"FactDTO";
+
         var newFact = _mapper.Map<DAL.Entities.Streetcode.TextContent.Fact>(request.NewFact);
         var repositoryFacts = _repositoryWrapper.FactRepository;
 
@@ -45,6 +53,15 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
 
         if (resultIsSuccess)
         {
+            var old = await _distributedCache.GetStringAsync(key);
+            var list = JsonConvert.DeserializeObject<List<DAL.Entities.Streetcode.TextContent.Fact>>(old!);
+            if (!list!.Any(s => s.Id == entity.Id))
+            {
+                list!.Add(newFact);
+            }
+            
+            await _distributedCache.SetStringAsync(key, JsonConvert.SerializeObject(list), token: cancellationToken);
+           
             return Result.Ok(_mapper.Map<FactDto>(entity));
         }
         else

@@ -10,7 +10,7 @@ namespace Streetcode.WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class BaseApiController : ControllerBase
-{
+{    
     private IMediator? _mediator;
 
     protected IMediator Mediator => _mediator ??=

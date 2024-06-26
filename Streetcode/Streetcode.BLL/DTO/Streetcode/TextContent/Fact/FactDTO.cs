@@ -11,3 +11,11 @@ public class FactDto
     public int StreetcodeId { get; set; }
     public int Position { get; set; }
 }
+
+public class FactDtoComparerById : IComparer<FactDto>
+{
+    public int Compare(FactDto? x, FactDto? y)
+    {
+        return x.Id.CompareTo(y.Id);
+    }
+}

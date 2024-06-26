@@ -46,6 +46,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
         services.AddScoped<ITextService, AddTermsToTextService>();
+        services.AddDistributedRedisCache(conf =>
+        {
+            conf.Configuration = "127.0.0.1:6379";            
+        });
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
