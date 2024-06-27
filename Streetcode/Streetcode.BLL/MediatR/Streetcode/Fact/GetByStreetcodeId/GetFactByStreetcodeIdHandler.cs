@@ -29,9 +29,9 @@ public class GetFactByStreetcodeIdHandler : IRequestHandler<GetFactByStreetcodeI
             return request.CachedResponse;
         }
 
-        var fact = await _repositoryWrapper.FactRepository
+        var facts = await _repositoryWrapper.FactRepository
             .GetAllAsync(f => f.StreetcodeId == request.StreetcodeId);
 
-        return Result.Ok(_mapper.Map<IEnumerable<FactDto>>(fact));
+        return Result.Ok(_mapper.Map<IEnumerable<FactDto>>(facts));
     }
 }
