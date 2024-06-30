@@ -27,13 +27,12 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
 
     public async Task<Result<LoginResultDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
+        // already created User without password but token is generated
+        // "test2.email@com.ua" - username and password
         var user = await _userManager.FindByEmailAsync(request.LoginUser.Login);
-       
-        // We should select between 2 Claims getting options
-        IList<Claim>? claims = await _userManager.GetClaimsAsync(user);
-        List<Claim> TEST = await _tokenService.GetUserClaimsAsync(user);
+        var claims = await _tokenService.GetUserClaimsAsync(user);
 
-        var result = await _tokenService.GenerateAccessToken(user, claims.ToList());
+        var result = await _tokenService.GenerateAccessToken(user, claims);
 
         var loginResult = new LoginResultDTO
         {
