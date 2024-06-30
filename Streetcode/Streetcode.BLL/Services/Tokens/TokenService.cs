@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
@@ -24,7 +23,7 @@ public class TokenService : ITokenService
         _logger = logger;
     }
     
-    public async Task<(string Token, DateTime Expiration)> GenerateAccessToken(User user, List<Claim> claims)
+    public async Task<string> GenerateAccessToken(User user, List<Claim> claims)
     {
         if (user is null)
         {
@@ -50,9 +49,9 @@ public class TokenService : ITokenService
             signingCredentials: signingCredentials);
 
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
-        string token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
+        var token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
 
-        return (token, expiration);
+        return token;
     }
 
     public async Task<List<Claim>> GetUserClaimsAsync(User user)

@@ -5,7 +5,7 @@ namespace Streetcode.BLL.Interfaces.Users
 {
     public interface ITokenService
     {
-        Task<(string Token, DateTime Expiration)> GenerateAccessToken(User user, List<Claim> claims);
+        Task<string> GenerateAccessToken(User user, List<Claim> claims);
         Task<List<Claim>> GetUserClaimsAsync(User user);
         ClaimsPrincipal GetPrincipalFromAccessToken(string? token);
     }
