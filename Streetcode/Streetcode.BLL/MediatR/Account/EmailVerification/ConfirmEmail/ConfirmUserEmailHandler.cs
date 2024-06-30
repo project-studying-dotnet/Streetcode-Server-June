@@ -13,21 +13,20 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail
 {
-    public class ConfirmUserEmailHandler : IRequestHandler<ConfirmUserEmailCommand, Result<string>>
+    public class ConfirmUserEmailHandler : IRequestHandler<ConfirmUserEmailQuery, Result<string>>
     {
         private readonly ILoggerService _logger;
-        private readonly UserManager<User> _userManager;
 
-        public ConfirmUserEmailHandler(UserManager<User> userManager, ILoggerService logger)
+        public ConfirmUserEmailHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
         {
             _logger = logger;
-            _userManager = userManager;
         }
 
-        public async Task<Result<string>> Handle(ConfirmUserEmailCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(ConfirmUserEmailQuery request, CancellationToken cancellationToken)
         {
             string userId = request.userId;
             string token = request.token;
+            UserManager<IdentityUser> userManager = request.userManager; // it may be better to call it through the constructor
 
             if (userId == null || token == null)
             {
@@ -36,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
@@ -44,7 +43,7 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await userManager.ConfirmEmailAsync(user, token);
             if (result.Succeeded)
             {
                 return Result.Ok("Email is confirmed");
