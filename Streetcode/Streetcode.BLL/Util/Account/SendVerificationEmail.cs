@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FluentResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Email;
+using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
-using Streetcode.DAL.Entities.Users;
-using System.Net.Http;
+using System;
 
 namespace Streetcode.BLL.Util.Account
 {
@@ -13,42 +15,42 @@ namespace Streetcode.BLL.Util.Account
     {
         private const string ACTION = "ConfirmEmail";
         private const string CONTROLLER = "Account";
-        private const string SUBJECT = "Confirm your email";
         private const string FROM = "Streetcode";
+        private const string SUBJECT = "Confirm your email";
 
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailService _emailSender;
-        private readonly LinkGenerator _linkGenerator;
+        private readonly IUrlHelper _urlHelper;
 
-        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, LinkGenerator linkGenerator)
+        public SendVerificationEmail(UserManager<IdentityUser> userManager, IEmailService emailSender, IUrlHelper urlHelper)
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            _linkGenerator = linkGenerator;   
+            _urlHelper = urlHelper;
         }
 
-        public async Task SendVerification(string email, HttpContext httpContext)
+        public async void SendVerification(string email)
         {
-            string url = await CreateUrl(email, httpContext);
+            string url = await CreateUrl(email);
+ 
             await SendEmail(email, url);
         }
 
-        public async Task<string> CreateUrl(string email, HttpContext httpContext)
+        public async Task<string> CreateUrl(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var url = _linkGenerator.GetPathByAction(
-                     ACTION, CONTROLLER, new { userId = user.Id, token = token });
-                var fullUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{url}";
+                var url = _urlHelper.Action(
+                    ACTION, CONTROLLER, new { userId = user.Id, token = token });
 
-                return fullUrl!;
+                return url!;
             }
             else
             {
-                throw new Exception("User not found");
+                throw new Exception("");
             }
         }
 
