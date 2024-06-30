@@ -1,13 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Streetcode.BLL.MediatR.Account.Login
+namespace Streetcode.BLL.MediatR.Account.Login;
+
+public class LoginUserRequestDTOValidator : AbstractValidator<LoginUserCommand>
 {
-    public class LoginUserRequestDTOValidator : AbstractValidator<LoginUserCommand>
+    public LoginUserRequestDTOValidator()
     {
-        public LoginUserRequestDTOValidator()
-        {
-            RuleFor(u => u.LoginUser.Login).EmailAddress();
-            RuleFor(u => u.LoginUser.Password).MinimumLength(7);
-        }
+        RuleFor(u => u.LoginUser.Login).EmailAddress();
+        RuleFor(u => u.LoginUser.Password).MinimumLength(7);
     }
 }
