@@ -1,88 +1,97 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using SoftServerCinema.Security.Interfaces;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Interfaces.Users;
-using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
+using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Account.Register
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-    private readonly ILoggerService _logger;
-    private readonly ITokenService _tokenService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public RegisterUserHandler(
-        IMapper mapper, 
-        ILoggerService logger, 
-        UserManager<User> userManager, 
-        ITokenService tokenService, 
-        IHttpContextAccessor contextAccessor)
+    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<UserDTO>>
     {
-        _mapper = mapper;
-        _logger = logger;
-        _userManager = userManager;
-        _tokenService = tokenService;
-        _httpContextAccessor = contextAccessor;
-    }
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly ITokenService _tokenService;
+        private readonly IMapper _mapper;
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly ILoggerService _logger;
 
-    public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
-    {
-        var req = request.newUser;
-        var httpContext = _httpContextAccessor.HttpContext;
-
-        if (await IsEmailUse(req.Email))
+        public RegisterUserHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger, UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenservice)
         {
-            var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.EmailIsUse, request);
-            _logger.LogError(request, errorMessage);
-            return Result.Fail(new Error(errorMessage));
+            _repositoryWrapper = repositoryWrapper;
+            _mapper = mapper;
+            _logger = logger;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _tokenService = tokenservice;
+        }
+        //AuthenticationResponseDto - userdto
+
+        public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        {
+            var req = request.newUser;
+            if (await IsEmailUse(req.Email))
+            {
+                string errorMessage = "A user with this email is already registered.";
+                _logger.LogError(request, errorMessage);
+
+                return Result.Fail(errorMessage);
+            }
+
+            User user = _mapper.Map<User>(req);
+            
+            IdentityResult newUser = await _userManager.CreateAsync(user, req.Password);
+            //
+            if (!newUser.Succeeded)
+            {
+                string errorMessage = string.Join(
+            Environment.NewLine,
+            newUser.Errors.Select(e => e.Description));
+
+                return Result.Fail(errorMessage);
+            }
+
+            // sign-in
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            // add user role
+            IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.Moderator.ToString());
+
+            if (!addingRoleResult.Succeeded)
+            {
+                string errorMessage = string.Join(
+           Environment.NewLine,
+           addingRoleResult.Errors.Select(e => e.Description));
+
+                return Result.Fail(errorMessage);
+            }
+
+            var claims = await _tokenService.GetUserClaimsAsync(user);
+
+            var response = _tokenService.GenerateAccessToken(user, claims);
+
+
+            if (await _repositoryWrapper.SaveChangesAsync() <= 0)
+            {
+                var errorMessage = "Failed to save refresh token.";
+
+                _logger.LogError(response, errorMessage);
+
+                return Result.Fail(errorMessage);
+            }
+
+            return Result.Ok();
         }
 
-        if (await IsLoginUse(req.Username))
+        private async Task<bool> IsEmailUse(string email)
         {
-            var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.LoginIsUse, request);
-            _logger.LogError(request, errorMessage);
-            return Result.Fail(errorMessage);
+            User? user = await _userManager.FindByEmailAsync(email);
+
+            return user is not null;
         }
-
-        var user = _mapper.Map<User>(req);
-        IdentityResult newUserResult = await _userManager.CreateAsync(user, req.Password);
-        if (!newUserResult.Succeeded)
-        {
-            var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailCreateUser, request);
-            _logger.LogError(request, errorMessage);
-            return Result.Fail(errorMessage);
-        }
-
-        IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
-        if (!addingRoleResult.Succeeded)
-        {
-            var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailAddRole, request);
-            _logger.LogError(request, errorMessage);
-            return Result.Fail(errorMessage);
-        }
-
-        await _tokenService.GenerateAndSetTokensAsync(user, httpContext!.Response);
-
-
-        return Result.Ok(_mapper.Map<UserDTO>(user));
-    }
-
-    private async Task<bool> IsEmailUse(string email)
-    {
-        User? user = await _userManager.FindByEmailAsync(email);
-        return user is not null;
-    }
-
-    private async Task<bool> IsLoginUse(string login)
-    {
-        User? user = await _userManager.FindByNameAsync(login);
-        return user is not null;
     }
 }
