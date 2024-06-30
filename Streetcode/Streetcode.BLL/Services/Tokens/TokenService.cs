@@ -24,7 +24,7 @@ public class TokenService : ITokenService
         _logger = logger;
     }
     
-    public async Task<string> GenerateAccessToken(User user, List<Claim> claims)
+    public async Task<(string Token, DateTime Expiration)> GenerateAccessToken(User user, List<Claim> claims)
     {
         if (user is null)
         {
@@ -52,7 +52,7 @@ public class TokenService : ITokenService
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
         string token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
 
-        return token;
+        return (token, expiration);
     }
 
     public async Task<List<Claim>> GetUserClaimsAsync(User user)
