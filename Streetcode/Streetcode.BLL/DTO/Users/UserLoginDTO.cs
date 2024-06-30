@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Streetcode.BLL.DTO.Users
+﻿namespace Streetcode.BLL.DTO.Users
 {
     public class UserLoginDTO
     {

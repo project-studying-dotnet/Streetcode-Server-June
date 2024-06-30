@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.MediatR.Account.Logout;
 using Streetcode.BLL.MediatR.Account.Register;
 
@@ -17,6 +18,12 @@ namespace Streetcode.WebApi.Controllers.Account
         public async Task<IActionResult> Logout()
         {
             return HandleResult(await Mediator.Send(new LogoutUserCommand()));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register([FromBody] UserLoginDTO loginUser)
+        {
+            return HandleResult(await Mediator.Send(new LoginUserCommand(loginUser)));
         }
     }
 }
