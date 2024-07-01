@@ -28,9 +28,7 @@ namespace Streetcode.WebApi.Extensions
     {
         private static async Task SeedIdentityDataAsync(IServiceProvider serviceProvider)
         {
-            // Constants for roles
-            const string adminRoleName = "admin";
-            const string userRoleName = "user";
+            // Constants for roles            
             const string adminRoleId = "563b4777-0615-4c3c-8a7d-8858412b6562";
             const string userRoleId = "12444183-0753-495b-a34f-c5a622d8fc6d";
 
@@ -53,13 +51,13 @@ namespace Streetcode.WebApi.Extensions
                 if (!context.Roles.Any())
                 {
                     await rm.CreateAsync(
-                        new IdentityRole<Guid>(adminRoleName)
+                        new IdentityRole<Guid>(UserRole.Admin.ToString())
                         {
                             Id = Guid.Parse(adminRoleId)
                         });
 
                     await rm.CreateAsync(
-                        new IdentityRole<Guid>(userRoleName)
+                        new IdentityRole<Guid>(UserRole.User.ToString())
                         {
                             Id = Guid.Parse(userRoleId)
                         });                    

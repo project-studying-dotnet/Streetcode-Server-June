@@ -22,7 +22,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
         private readonly AccessTokenConfiguration _accessTokenConfiguration;
         private readonly ILoggerService _logger;
         private readonly RefreshTokensHandler _handler;
-        private User _user = new User { Id = Guid.NewGuid(), UserName = "testUser", Email = "testuser@example.com", RefreshToken = "string", Token = "string2" };
+        private User _user = new User { Id = Guid.NewGuid(), UserName = "testUser", Email = "testuser@example.com", RefreshToken = "string" };
 
         public RefreshTokensHandlerTests()
         {

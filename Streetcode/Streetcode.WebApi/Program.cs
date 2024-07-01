@@ -18,7 +18,6 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
-builder.Services.AddIdentityService();
 builder.Services.AddAccessTokenConfiguration(builder.Configuration);
 builder.Services.AddAuthorization();
 

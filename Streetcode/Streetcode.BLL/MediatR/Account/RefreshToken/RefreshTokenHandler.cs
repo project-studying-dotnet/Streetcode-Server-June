@@ -67,10 +67,6 @@ namespace Streetcode.BLL.MediatR.Account.RefreshTokens
                 return Result.Fail(new Error(errorMsgNull));
             }
 
-            await _tokenService.SetRefreshToken(tokens.RefreshToken, user);
-            user.Token = tokens.AccessToken;
-            await _userManager.UpdateAsync(user);
-
             return Result.Ok(user);
         }
     }

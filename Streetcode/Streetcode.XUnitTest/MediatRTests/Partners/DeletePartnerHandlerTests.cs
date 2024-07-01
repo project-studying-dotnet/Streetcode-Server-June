@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using AutoMapper;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
@@ -58,4 +58,5 @@ namespace Streetcode.XUnitTest.MediatRTests.Partners
             Assert.False(result.IsSuccess);
         }
     }
+
 }
