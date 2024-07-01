@@ -2,6 +2,7 @@
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json.Linq;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
@@ -52,15 +53,13 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
             return Result.Fail(new Error(errorMsg));
         }
 
-        var claims = await _tokenService.GetUserClaimsAsync(user);
-        var accessToken = await _tokenService.GenerateAccessToken(user, claims);
-        var refreshToken = _tokenService.GenerateRefreshToken();
+        var tokens = await _tokenService.GenerateTokens(user);
 
         var loginResult = new LoginResultDTO
         {
             User = _mapper.Map<UserDTO>(user),
-            AccessToken = accessToken,
-            RefreshToken = refreshToken
+            AccessToken = tokens.AccessToken,
+            RefreshToken = tokens.RefreshToken
         };
 
         return Result.Ok(loginResult);
