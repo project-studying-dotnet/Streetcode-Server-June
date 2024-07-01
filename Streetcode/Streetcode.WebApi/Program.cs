@@ -4,6 +4,7 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
+using Streetcode.BLL.Services.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
@@ -18,7 +19,8 @@ builder.Services.ConfigurePayment(builder);
 builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
-builder.Services.AddAccessTokenConfiguration(builder.Configuration);
+builder.Services.AddIdentityService();
+builder.Services.AddTokensConfiguration(builder.Configuration);
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
@@ -55,6 +57,8 @@ if (app.Environment.EnvironmentName != "Local")
         wp => wp.ParseZipFileFromWebAsync(), Cron.Monthly);
     RecurringJob.AddOrUpdate<BlobService>(
         b => b.CleanBlobStorage(), Cron.Monthly);
+    RecurringJob.AddOrUpdate<TokenService>(
+        ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly);
 }
 
 app.MapControllers();

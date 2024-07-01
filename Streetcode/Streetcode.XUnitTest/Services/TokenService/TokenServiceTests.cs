@@ -18,7 +18,7 @@ namespace Streetcode.XUnitTest.Services.TokenService;
 public class TokenServiceTests
 {
       private readonly Mock<UserManager<User>> _userManagerMock;
-      private readonly AccessTokenConfiguration _accessTokenConfiguration;
+      private readonly TokensConfiguration _tokensConfiguration;
       private readonly BLL.Services.Tokens.TokenService _tokenService;
       private readonly ILoggerService _logger;
 
@@ -26,15 +26,16 @@ public class TokenServiceTests
       {
         var userStoreMock = new Mock<IUserStore<User>>();
         _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-        _accessTokenConfiguration = new AccessTokenConfiguration
+        _tokensConfiguration = new TokensConfiguration
         {
             SecretKey = "supersecretkeythatshouldbeatleast32characters-long",
+            RefreshTokenExpirationDays = 7,
             AccessTokenExpirationMinutes = 30,
             Issuer = "Streetcode",
             Audience = "StreetcodeClient"
         };
         _logger = new LoggerService(new LoggerConfiguration().CreateLogger());
-        _tokenService = new BLL.Services.Tokens.TokenService(_userManagerMock.Object, _accessTokenConfiguration, _logger);
+        _tokenService = new BLL.Services.Tokens.TokenService(_userManagerMock.Object, _tokensConfiguration, _logger);
       }
 
       [Fact]
@@ -67,13 +68,13 @@ public class TokenServiceTests
               new Claim(ClaimTypes.Email, user.Email),
               new Claim(ClaimTypes.Role, "Admin")
           };
-          var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenConfiguration.SecretKey!));
+          var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokensConfiguration.SecretKey!));
           var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
           var tokenGenerator = new JwtSecurityToken(
-              issuer: _accessTokenConfiguration.Issuer,
-              audience: _accessTokenConfiguration.Audience,
+              issuer: _tokensConfiguration.Issuer,
+              audience: _tokensConfiguration.Audience,
               claims: claims,
-              expires: DateTime.UtcNow.AddMinutes(_accessTokenConfiguration.AccessTokenExpirationMinutes),
+              expires: DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
               signingCredentials: signingCredentials);
           var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
           var token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
