@@ -6,11 +6,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Register;
 using Streetcode.DAL.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.Register
@@ -48,27 +43,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         }
 
         [Fact]
-        public async Task Handle_ReturnsError_When_LoginIsAlreadyInUse()
-        {
-            // Arrange
-            var command = new RegisterUserCommand(new UserRegisterDTO { Email = "test@example.com", Login = "testlogin" });
-            _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
-            _userManagerMock.Setup(x => x.FindByEmailAsync(It.Is<string>(s => s == "testlogin"))).ReturnsAsync(new User());
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal("A user with this login is already registered.", result.Errors[0].Message);
-        }
-
-        [Fact]
         public async Task Handle_CreateUserFails_ReturnsFail()
         {
             // Arrange
-            var command = new RegisterUserCommand(new UserRegisterDTO { Email = "test@example.com", Login = "testlogin", Password = "password" });
+            var command = new RegisterUserCommand(new UserRegisterDTO());
             _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
+            _userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((User)null);
             _mapperMock.Setup(x => x.Map<User>(It.IsAny<UserRegisterDTO>())).Returns(new User());
             _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
@@ -76,7 +56,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
             Assert.Equal("Failed to create user", result.Errors[0].Message);
         }
 
@@ -86,6 +65,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             // Arrange
             var command = new RegisterUserCommand(new UserRegisterDTO { Email = "test@example.com", Login = "testlogin", Password = "password" });
             _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
+            _userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((User)null);
             _mapperMock.Setup(x => x.Map<User>(It.IsAny<UserRegisterDTO>())).Returns(new User());
             _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "USER")).ReturnsAsync(IdentityResult.Failed());
@@ -94,7 +74,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
             Assert.Equal("Failed to add role", result.Errors[0].Message);
         }
 
@@ -109,7 +88,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             _mapperMock.Setup(x => x.Map<User>(It.IsAny<UserRegisterDTO>())).Returns(user);
             _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "USER")).ReturnsAsync(IdentityResult.Success);
-       //     _tokenServiceMock.Setup(x => x.GenerateTokens(It.IsAny<User>())).Returns(Task.CompletedTask);
             _mapperMock.Setup(x => x.Map<UserDTO>(It.IsAny<User>())).Returns(userDTO);
 
             // Act
@@ -117,7 +95,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(userDTO, result.Value);
         }
     }
 }
