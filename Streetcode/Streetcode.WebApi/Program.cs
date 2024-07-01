@@ -4,6 +4,7 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
+using Streetcode.DAL.Enums;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
@@ -19,7 +20,6 @@ builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
 builder.Services.AddAccessTokenConfiguration(builder.Configuration);
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

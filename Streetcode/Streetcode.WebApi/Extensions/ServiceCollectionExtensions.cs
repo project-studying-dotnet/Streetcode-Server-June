@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
 using StackExchange.Redis;
+using Streetcode.DAL.Enums;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.Logging;
 using Streetcode.DAL.Persistence;
@@ -107,7 +108,12 @@ public static class ServiceCollectionExtensions
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
             });
-        
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
+            options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
+        });
     }
     
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
