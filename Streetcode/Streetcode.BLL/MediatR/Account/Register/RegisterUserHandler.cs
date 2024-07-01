@@ -2,9 +2,11 @@
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using SoftServerCinema.Security.Interfaces;
+using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
+using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -14,22 +16,17 @@ namespace Streetcode.BLL.MediatR.Account.Register
     public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<UserDTO>>
     {
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
 
-        public RegisterUserHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger, UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenservice)
+        public RegisterUserHandler(IMapper mapper, ILoggerService logger, UserManager<User> userManager, ITokenService tokenservice)
         {
-            _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _logger = logger;
             _userManager = userManager;
-            _signInManager = signInManager;
             _tokenService = tokenservice;
         }
-        //AuthenticationResponseDto - userdto
 
         public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
@@ -42,30 +39,34 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(errorMessage);
             }
 
-            User user = _mapper.Map<User>(req);
-            
-            IdentityResult newUser = await _userManager.CreateAsync(user, req.Password);
-            //
-            if (!newUser.Succeeded)
+            if (await IsEmailUse(req.Login))
             {
-                string errorMessage = string.Join(
-            Environment.NewLine,
-            newUser.Errors.Select(e => e.Description));
+                string errorMessage = "A user with this login is already registered.";
+                _logger.LogError(request, errorMessage);
 
                 return Result.Fail(errorMessage);
             }
 
-            // sign-in
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            var user = _mapper.Map<User>(req);
 
-            // add user role
-            IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.Moderator.ToString());
+            IdentityResult newUser = await _userManager.CreateAsync(user, req.Password);
+            
+            if (!newUser.Succeeded)
+            {
+                var errorMessage = "Failed to create user";
+
+                _logger.LogError(request, errorMessage);
+
+                return Result.Fail(errorMessage);
+            }
+
+            IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, "USER");
 
             if (!addingRoleResult.Succeeded)
             {
-                string errorMessage = string.Join(
-           Environment.NewLine,
-           addingRoleResult.Errors.Select(e => e.Description));
+                var errorMessage = "Failed to add role";
+
+                _logger.LogError(request, errorMessage);
 
                 return Result.Fail(errorMessage);
             }
@@ -74,17 +75,7 @@ namespace Streetcode.BLL.MediatR.Account.Register
 
             var response = _tokenService.GenerateAccessToken(user, claims);
 
-
-            if (await _repositoryWrapper.SaveChangesAsync() <= 0)
-            {
-                var errorMessage = "Failed to save refresh token.";
-
-                _logger.LogError(response, errorMessage);
-
-                return Result.Fail(errorMessage);
-            }
-
-            return Result.Ok();
+            return Result.Ok(_mapper.Map<UserDTO>(user));
         }
 
         private async Task<bool> IsEmailUse(string email)
