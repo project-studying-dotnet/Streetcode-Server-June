@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
+using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 
@@ -15,14 +18,19 @@ namespace Streetcode.BLL.MediatR.Account.Register
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly ILoggerService _logger;
-        private readonly IMediator _mediator;
+        private readonly ITokenService _tokenService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly TokensConfiguration _tokensConfiguration;
 
-        public RegisterUserHandler(IMapper mapper, ILoggerService logger, UserManager<User> userManager, IMediator mediator)
+
+        public RegisterUserHandler(IMapper mapper, ILoggerService logger, UserManager<User> userManager, TokensConfiguration tokensConfiguration, ITokenService tokenService, IHttpContextAccessor context)
         {
             _mapper = mapper;
             _logger = logger;
             _userManager = userManager;
-            _mediator = mediator;
+            _tokensConfiguration = tokensConfiguration;
+            _tokenService = tokenService;
+            _contextAccessor = context;
         }
 
         public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -68,7 +76,21 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(errorMessage);
             }
 
-           // _mediator.Send(new LoginQueryCommand(UserRegisterDTO user));
+            var tokens = await _tokenService.GenerateTokens(user);
+            _contextAccessor.HttpContext!.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+            _contextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions
+            {
+                Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
 
             return Result.Ok(_mapper.Map<UserDTO>(user));
         }
