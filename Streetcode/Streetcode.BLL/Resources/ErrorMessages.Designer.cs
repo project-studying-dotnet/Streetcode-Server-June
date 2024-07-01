@@ -88,6 +88,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A user with this email is already registered.
+        /// </summary>
+        public static string EmailIsUse {
+            get {
+                return ResourceManager.GetString("EmailIsUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Instagram settings are not configured properly..
         /// </summary>
         public static string EmptyInstagramSettings {
@@ -165,6 +174,24 @@ namespace Streetcode.BLL.Resources {
         public static string EntityWithStreetcodeTagNotFound {
             get {
                 return ResourceManager.GetString("EntityWithStreetcodeTagNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add role.
+        /// </summary>
+        public static string FailAddRole {
+            get {
+                return ResourceManager.GetString("FailAddRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create user.
+        /// </summary>
+        public static string FailCreateUser {
+            get {
+                return ResourceManager.GetString("FailCreateUser", resourceCulture);
             }
         }
         
@@ -277,6 +304,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A user with this login is already registered.
+        /// </summary>
+        public static string LoginIsUse {
+            get {
+                return ResourceManager.GetString("LoginIsUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         public static string NoCustomError {
@@ -354,94 +390,6 @@ namespace Streetcode.BLL.Resources {
         public static string UserNotFound {
             get {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
-        /// </summary>
-        public static string ExpiredToken
-        {
-            get
-            {
-                return ResourceManager.GetString("TokenExpired", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
-        /// </summary>
-        public static string ClaimsNotExist
-        {
-            get
-            {
-                return ResourceManager.GetString("ClaimsNotExist", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
-        /// </summary>
-        public static string AccessTokenNotFound
-        {
-            get
-            {
-                return ResourceManager.GetString("AccessTokenNotFound", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
-        /// </summary>
-        public static string UserUpdateFailed
-        {
-            get
-            {
-                return ResourceManager.GetString("UserUpdateFailed", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
-        /// </summary>
-        public static string FailedToSetTokenInBlackList
-        {
-            get
-            {
-                return ResourceManager.GetString("Failed to set token in black list", resourceCulture);
-            }
-        }
-        public static string LoginIsUse
-        {
-            get
-            {
-                return ResourceManager.GetString("LoginIsUse", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to A user with this login is already registere.
-        /// </summary>
-        public static string EmailIsUse
-        {
-            get
-            {
-                return ResourceManager.GetString("EmailIsUse", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to A user with this login is already registere.
-        /// </summary>
-        public static string FailAddRole
-        {
-            get
-            {
-                return ResourceManager.GetString("FailAddRole", resourceCulture);
-            }
-        }
-        /// <summary>
-        ///   Looks up a localized string similar to A user with this login is already registere.
-        /// </summary>
-        public static string FailCreateUser
-        {
-            get
-            {
-                return ResourceManager.GetString("FailCreateUser", resourceCulture);
             }
         }
     }

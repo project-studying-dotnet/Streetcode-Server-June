@@ -44,7 +44,7 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(new Error(errorMessage));
             }
 
-            if (await IsLoginUse(req.Login))
+            if (await IsLoginUse(req.Username))
             {
                 var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.LoginIsUse, request);
                 _logger.LogError(request, errorMessage);
