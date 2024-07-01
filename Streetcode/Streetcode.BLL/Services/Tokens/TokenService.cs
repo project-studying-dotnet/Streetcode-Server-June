@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Users;
@@ -19,7 +18,6 @@ public class TokenService : ITokenService
     private readonly UserManager<User> _userManager;
     private readonly AccessTokenConfiguration _accessTokenConfiguration;
     private readonly ILoggerService _logger;
-    public readonly IResponseCookies _responseCookies;
 
     public TokenService(UserManager<User> userManager, AccessTokenConfiguration accessTokenConfiguration, ILoggerService logger)
     {

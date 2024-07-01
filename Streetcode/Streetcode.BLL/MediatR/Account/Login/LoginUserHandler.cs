@@ -10,7 +10,7 @@ using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Account.Login;
 
-public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginResultDTO>>
+public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO>>
 {
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
@@ -27,7 +27,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
         _logger = logger;
     }
 
-    public async Task<Result<LoginResultDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         // Already created User 
         // UserName = "SuperAdmin"
@@ -60,13 +60,6 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
             return Result.Fail(new Error(errorMsg));
         }
 
-        var loginResult = new LoginResultDTO
-        {
-            User = userDto,
-            AccessToken = tokens.AccessToken,
-            RefreshToken = tokens.RefreshToken
-        };
-
-        return Result.Ok(loginResult);
+        return Result.Ok(userDto);
     }
 }

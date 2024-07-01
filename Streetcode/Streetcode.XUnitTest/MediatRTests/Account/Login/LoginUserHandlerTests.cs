@@ -127,9 +127,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(userDto, result.Value.User);
-            Assert.Equal(tokens.AccessToken, result.Value.AccessToken);
-            Assert.Equal(tokens.RefreshToken.Token, result.Value.RefreshToken.Token);
+            Assert.Equal(userDto, result.Value);
         }
     }
 }
