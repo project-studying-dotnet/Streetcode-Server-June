@@ -10,7 +10,7 @@ namespace Streetcode.BLL.Mapping.Users
         {
             CreateMap<UserRegisterDTO, User>()
                 .ForPath(
-                dest => dest.UserName, conf => conf.MapFrom(src => src.Login))                            
+                dest => dest.UserName, conf => conf.MapFrom(src => src.Username))                            
                 .ForPath(
                 dest => dest.FirstName, conf => conf.MapFrom(src => src.FirstName))
                 .ForPath(
@@ -25,7 +25,7 @@ namespace Streetcode.BLL.Mapping.Users
 
             CreateMap<UserDTO, User>()
                 .ForPath(
-                dest => dest.UserName, conf => conf.MapFrom(src => src.Login))
+                dest => dest.UserName, conf => conf.MapFrom(src => src.Username))
                 .ForPath(
                 dest => dest.FirstName, conf => conf.MapFrom(src => src.FirstName))
                 .ForPath(

@@ -1,40 +1,66 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Account.Login;
 
 public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginResultDTO>>
 {
+    private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
+    private readonly SignInManager<User> _signInManager;
     private readonly ITokenService _tokenService;
+    private readonly ILoggerService _logger;
 
-    public LoginUserHandler(UserManager<User> userManager, ITokenService tokenService)
+    public LoginUserHandler(UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenService, IMapper mapper, ILoggerService logger)
     {
         _userManager = userManager;
+        _signInManager = signInManager;
         _tokenService = tokenService;
+        _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<Result<LoginResultDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        // already created User without password but token is generated
-        // "test2.email@com.ua" - username and password
-        var user = await _userManager.FindByEmailAsync(request.LoginUser.Login);
+        // Already created User 
+        // UserName = "SuperAdmin"
+        // adminPass = "*Superuser18"
 
-        // here we 
+        var user = await _userManager.FindByNameAsync(request.LoginUser.Username);
+
+        if (user == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidUsernameOrPassword, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.LoginUser.Password, false);
+
+        if (!result.Succeeded)
+        {
+
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidUsernameOrPassword, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
 
         var claims = await _tokenService.GetUserClaimsAsync(user);
-
         var accessToken = await _tokenService.GenerateAccessToken(user, claims);
+        var refreshToken = _tokenService.GenerateRefreshToken();
 
         var loginResult = new LoginResultDTO
         {
+            User = _mapper.Map<UserDTO>(user),
             AccessToken = accessToken,
-            // RefreshToken will be implemented in other story
-            RefreshToken = null!
+            RefreshToken = refreshToken
         };
 
         return Result.Ok(loginResult);
