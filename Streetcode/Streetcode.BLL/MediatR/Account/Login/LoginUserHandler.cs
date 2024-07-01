@@ -50,7 +50,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
             return Result.Fail(new Error(errorMsg));
         }
 
-        var tokens = await _tokenService.GenerateTokens(user);
+        TokenResponseDTO tokens = await _tokenService.GenerateTokens(user);
 
         var userDto = _mapper.Map<UserDTO>(user);
         if (userDto == null)
