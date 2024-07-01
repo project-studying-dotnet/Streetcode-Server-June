@@ -1,13 +1,8 @@
-﻿using FluentResults;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Streetcode.BLL.DTO.Users;
+using Microsoft.Extensions.Configuration;
 using Streetcode.BLL.Interfaces.Email;
-using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
-using System;
 
 namespace Streetcode.BLL.Util.Account
 {
@@ -15,24 +10,25 @@ namespace Streetcode.BLL.Util.Account
     {
         private const string ACTION = "ConfirmEmail";
         private const string CONTROLLER = "Account";
-        private const string FROM = "Streetcode";
         private const string SUBJECT = "Confirm your email";
 
+        private readonly string _from;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailService _emailSender;
         private readonly IUrlHelper _urlHelper;
 
-        public SendVerificationEmail(UserManager<IdentityUser> userManager, IEmailService emailSender, IUrlHelper urlHelper)
+        public SendVerificationEmail(UserManager<IdentityUser> userManager, IEmailService emailSender, IUrlHelper urlHelper, IConfiguration configuration)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _urlHelper = urlHelper;
+            _from = configuration.GetSection("EmailConfiguration").GetSection("From").ToString() !;
         }
 
         public async void SendVerification(string email)
         {
             string url = await CreateUrl(email);
- 
+
             await SendEmail(email, url);
         }
 
@@ -50,7 +46,7 @@ namespace Streetcode.BLL.Util.Account
             }
             else
             {
-                throw new Exception("");
+                throw new Exception("User not found");
             }
         }
 
@@ -58,7 +54,7 @@ namespace Streetcode.BLL.Util.Account
         {
             await _emailSender
                     .SendEmailAsync(
-                    new Message(new List<string> { email }, FROM, SUBJECT, url!));
+                    new Message(new List<string> { email }, _from, SUBJECT, url!));
         }
     }
 }
