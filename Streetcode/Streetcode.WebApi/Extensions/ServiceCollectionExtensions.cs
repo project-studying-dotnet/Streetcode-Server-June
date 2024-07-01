@@ -1,4 +1,3 @@
-using System.Net.Http;
 using FluentValidation;
 using Hangfire;
 using MediatR;
@@ -63,7 +62,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITextService, AddTermsToTextService>(); 
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     }
 
     public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
