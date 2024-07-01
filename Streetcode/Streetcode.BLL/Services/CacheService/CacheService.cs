@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
+using Streetcode.BLL.Services.Tokens;
 
 namespace Streetcode.BLL.Services.CacheService
 {
@@ -8,12 +9,14 @@ namespace Streetcode.BLL.Services.CacheService
         private readonly IDatabase _cache;
         private readonly IConnectionMultiplexer _redis;
         private readonly ILogger<CacheService> _logger;
+        private readonly TokensConfiguration _authSettings;
 
-        public CacheService(IConnectionMultiplexer redis, ILogger<CacheService> logger)
+        public CacheService(IConnectionMultiplexer redis, ILogger<CacheService> logger, TokensConfiguration authSettings)
         {
             _redis = redis;
             _cache = _redis.GetDatabase();
             _logger = logger;
+            _authSettings = authSettings;
         }
 
         public async Task InvalidateCacheAsync(string pattern)
@@ -115,6 +118,20 @@ namespace Streetcode.BLL.Services.CacheService
             {
                 _logger.LogError(ex, $"Error deleting cache for key: {key}");
             }
+        }
+
+        public async Task<bool> SetBlacklistedTokenAsync(string accessToken, string userId)
+        {
+            var key = $"blacklisted:{accessToken}";
+            var isSuccess = await _cache.StringSetAsync(key, userId, TimeSpan.FromMinutes(_authSettings.AccessTokenExpirationMinutes));
+            return isSuccess;
+        }
+
+        public async Task<bool> IsBlacklistedTokenAsync(string accessToken)
+        {
+            var key = $"blacklisted:{accessToken}";
+            var isBlacklisted = await _cache.KeyExistsAsync(key);
+            return isBlacklisted;
         }
     }
 }

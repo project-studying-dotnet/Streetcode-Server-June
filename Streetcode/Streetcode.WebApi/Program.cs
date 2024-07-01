@@ -1,10 +1,10 @@
 using Hangfire;
 using Streetcode.BLL.Services.BlobStorageService;
+using Streetcode.BLL.Services.Tokens;
 using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
-using Streetcode.BLL.Services.Tokens;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 

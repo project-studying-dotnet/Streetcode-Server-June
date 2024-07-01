@@ -7,24 +7,23 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Partners.Create;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Account.Register
+namespace Streetcode.BLL.MediatR.Account.Register;
+
+public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<UserDTO>>
 {
-    public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<UserDTO>>
+    private readonly IMapper _mapper;
+    private readonly IRepositoryWrapper _repositoryWrapper;
+    private readonly ILoggerService _logger;
+
+    public RegisterUserHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
     {
-        private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
+        _repositoryWrapper = repositoryWrapper;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public RegisterUserHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
-        {
-            _repositoryWrapper = repositoryWrapper;
-            _mapper = mapper;
-            _logger = logger;
-        }
-
-        public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
-        {
-            return Result.Ok();
-        }
+    public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    {
+        return Result.Ok();
     }
 }
