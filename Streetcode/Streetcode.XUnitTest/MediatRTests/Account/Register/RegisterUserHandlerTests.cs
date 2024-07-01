@@ -114,7 +114,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         public async Task Handle_Success_ReturnsSuccessResult()
         {
             // Arrange
-            var request = new RegisterUserCommand(new UserRegisterDTO { Email = "test@test.com", Login = "testlogin", Password = "Test@123" });
+            var request = new RegisterUserCommand(new UserRegisterDTO { Email = "test@test.com", Password = "Test@123" });
             var user = new User();
             var userDto = new UserDTO();
             var tokenResponse = new TokenResponseDTO
