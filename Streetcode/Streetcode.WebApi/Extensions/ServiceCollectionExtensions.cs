@@ -114,8 +114,11 @@ public static class ServiceCollectionExtensions
             options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
             options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
         });
+
+        services.AddScoped<AdminPolicyAttribute>();
+
     }
-    
+
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
     {
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
