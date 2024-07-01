@@ -76,7 +76,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
 
         _contextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions
         {
-            Expires = DateTimeOffset.UtcNow.AddDays(7),
+            Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None
