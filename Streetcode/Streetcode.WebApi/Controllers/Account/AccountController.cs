@@ -14,7 +14,7 @@ namespace Streetcode.WebApi.Controllers.Account
         }
 
         [HttpGet]
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmEmail([FromRoute]string userId, [FromRoute]string token)
         {
             return HandleResult(await Mediator.Send(new ConfirmUserEmailCommand(userId, token)));
         }
