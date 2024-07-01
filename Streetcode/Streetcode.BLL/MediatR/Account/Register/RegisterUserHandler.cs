@@ -67,8 +67,6 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(errorMessage);
             }
 
-            await _tokenService.GenerateTokens(user);
-
             return Result.Ok(_mapper.Map<UserDTO>(user));
         }
 
