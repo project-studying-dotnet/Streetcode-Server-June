@@ -1,8 +1,10 @@
 ﻿using FluentResults;
-using MediatR;
 using Streetcode.BLL.DTO.Partners;
+using Streetcode.BLL.Services.CacheService;
 
-namespace Streetcode.BLL.MediatR.Partners.GetAllPartnerShort
+namespace Streetcode.BLL.MediatR.Partners.GetAllPartnerShort;
+
+public record GetAllPartnersShortQuery : ICachibleQueryBehavior<Result<IEnumerable<PartnerShortDTO>>>
 {
-    public record GetAllPartnersShortQuery : IRequest<Result<IEnumerable<PartnerShortDTO>>>;
+    public Result<IEnumerable<PartnerShortDTO>>? CachedResponse { get; set; }
 }

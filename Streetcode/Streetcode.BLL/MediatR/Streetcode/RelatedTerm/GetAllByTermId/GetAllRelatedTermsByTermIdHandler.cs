@@ -2,49 +2,49 @@
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.DTO.Streetcode.TextContent.RelatedTerm;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
-namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId
+namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.GetAllByTermId;
+
+public record GetAllRelatedTermsByTermIdHandler : IRequestHandler<GetAllRelatedTermsByTermIdQuery, Result<IEnumerable<RelatedTermDTO>>>
 {
-    public record GetAllRelatedTermsByTermIdHandler : IRequestHandler<GetAllRelatedTermsByTermIdQuery, Result<IEnumerable<RelatedTermDTO>>>
+    private readonly IMapper _mapper;
+    private readonly IRepositoryWrapper _repository;
+    private readonly ILoggerService _logger;
+
+    public GetAllRelatedTermsByTermIdHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
     {
-        private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repository;
-        private readonly ILoggerService _logger;
+        _mapper = mapper;
+        _repository = repositoryWrapper;
+        _logger = logger;
+    }
 
-        public GetAllRelatedTermsByTermIdHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
-        {
-            _mapper = mapper;
-            _repository = repositoryWrapper;
-            _logger = logger;
-        }
-
-        public async Task<Result<IEnumerable<RelatedTermDTO>>> Handle(GetAllRelatedTermsByTermIdQuery request, CancellationToken cancellationToken)
-        {
-            var relatedTerms = await _repository.RelatedTermRepository
-                .GetAllAsync(
-                predicate: rt => rt.TermId == request.id,
+    public async Task<Result<IEnumerable<RelatedTermDTO>>> Handle(GetAllRelatedTermsByTermIdQuery request, CancellationToken cancellationToken)
+    {
+        var relatedTerms = await _repository.RelatedTermRepository
+            .GetAllAsync(
+                predicate: rt => rt.TermId == request.TermId,
                 include: rt => rt.Include(rt => rt.Term));
 
-            if (relatedTerms is null)
-            {
-                const string errorMsg = "Cannot get words by term id";
-                _logger.LogError(request, errorMsg);
-                return new Error(errorMsg);
-            }
-
-            var relatedTermsDTO = _mapper.Map<IEnumerable<RelatedTermDTO>>(relatedTerms);
-
-            if (relatedTermsDTO is null)
-            {
-                const string errorMsg = "Cannot create DTOs for related words!";
-                _logger.LogError(request, errorMsg);
-                return new Error(errorMsg);
-            }
-
-            return Result.Ok(relatedTermsDTO);
+        if (!relatedTerms.Any())
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
+            _logger.LogError(request, errorMsg);
+            return new Error(errorMsg);
         }
+
+        var relatedTermsDto = _mapper.Map<IEnumerable<RelatedTermDTO>>(relatedTerms);
+
+        if (relatedTermsDto is null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return new Error(errorMsg);
+        }
+
+        return Result.Ok(relatedTermsDto);
     }
 }

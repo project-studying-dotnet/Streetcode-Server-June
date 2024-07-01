@@ -1,71 +1,72 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Streetcode.BLL.DTO.Streetcode.TextContent.RelatedTerm;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
-namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create
-{
-    public class CreateRelatedTermHandler : IRequestHandler<CreateRelatedTermCommand, Result<RelatedTermDTO>>
-    {
-        private readonly IRepositoryWrapper _repository;
-        private readonly IMapper _mapper;
-        private readonly ILoggerService _logger;
 
-        public CreateRelatedTermHandler(IRepositoryWrapper repository, IMapper mapper, ILoggerService logger)
+namespace Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Create;
+
+public class CreateRelatedTermHandler : IRequestHandler<CreateRelatedTermCommand, Result<RelatedTermDTO>>
+{
+    private readonly IRepositoryWrapper _repository;
+    private readonly IMapper _mapper;
+    private readonly ILoggerService _logger;
+
+    public CreateRelatedTermHandler(IRepositoryWrapper repository, IMapper mapper, ILoggerService logger)
+    {
+        _repository = repository;
+        _mapper = mapper;
+        _logger = logger;
+    }
+
+    public async Task<Result<RelatedTermDTO>> Handle(CreateRelatedTermCommand request, CancellationToken cancellationToken)
+    {
+        var relatedTerm = _mapper.Map<Entity>(request.RelatedTerm);
+
+        if (relatedTerm is null)
         {
-            _repository = repository;
-            _mapper = mapper;
-            _logger = logger;
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
         }
 
-        public async Task<Result<RelatedTermDTO>> Handle(CreateRelatedTermCommand request, CancellationToken cancellationToken)
+        var existingTerms = await _repository.RelatedTermRepository
+            .GetAllAsync(
+                predicate: rt => rt.Word != null && rt.TermId == request.RelatedTerm.TermId && rt.Word.ToLower().Equals(request.RelatedTerm.Word.ToLower()));
+
+        if (existingTerms.Any())
         {
-            var relatedTerm = _mapper.Map<Entity>(request.RelatedTerm);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.TermAlreadyExist, request.RelatedTerm);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
 
-            if (relatedTerm is null)
-            {
-                const string errorMsg = "Cannot create new related word for a term!";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+        var createdRelatedTerm = await _repository.RelatedTermRepository.CreateAsync(relatedTerm);
 
-            var existingTerms = await _repository.RelatedTermRepository
-                .GetAllAsync(
-                predicate: rt => rt.TermId == request.RelatedTerm.TermId && rt.Word == request.RelatedTerm.Word);
+        var isSuccessResult = await _repository.SaveChangesAsync() > 0;
 
-            if (existingTerms is null || existingTerms.Any())
-            {
-                const string errorMsg = "Word already exists for this term!";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+        if (!isSuccessResult)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotCreate, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
 
-            var createdRelatedTerm = _repository.RelatedTermRepository.Create(relatedTerm);
+        var createdRelatedTermDto = _mapper.Map<RelatedTermDTO>(createdRelatedTerm);
 
-            var isSuccessResult = await _repository.SaveChangesAsync() > 0;
-
-            if(!isSuccessResult)
-            {
-                const string errorMsg = "Cannot save changes in the database after related word creation!";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
-
-            var createdRelatedTermDTO = _mapper.Map<RelatedTermDTO>(createdRelatedTerm);
-
-            if(createdRelatedTermDTO != null)
-            {
-                return Result.Ok(createdRelatedTermDTO);
-            }
-            else
-            {
-                const string errorMsg = "Cannot map entity!";
-                _logger.LogError(request, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
+        if(createdRelatedTermDto != null)
+        {
+            return Result.Ok(createdRelatedTermDto);
+        }
+        else
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
         }
     }
 }

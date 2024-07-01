@@ -27,6 +27,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="NLog" Version="5.1.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -39,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mapping\Analytics\" />
     <Folder Include="MediatR\AdditionalContent\Tag\" />
   </ItemGroup>
 

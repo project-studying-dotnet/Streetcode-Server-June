@@ -14,7 +14,6 @@ namespace Streetcode.BLL.MediatR.Partners.Create
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ILoggerService _logger;
-
         public CreatePartnerHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, ILoggerService logger)
         {
             _repositoryWrapper = repositoryWrapper;
@@ -33,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Partners.Create
                     _logger.LogError(request, errorMsgNull);
                     return Result.Fail(new Error(errorMsgNull));
                 }
-
+                
                 newPartner.Streetcodes.Clear();
                 newPartner = await _repositoryWrapper.PartnersRepository.CreateAsync(newPartner);
                 _repositoryWrapper.SaveChanges();

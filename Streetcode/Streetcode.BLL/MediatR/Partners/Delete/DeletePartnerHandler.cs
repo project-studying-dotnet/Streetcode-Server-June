@@ -30,19 +30,17 @@ namespace Streetcode.BLL.MediatR.Partners.Delete
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
-            else
+
+            _repositoryWrapper.PartnersRepository.Delete(partner);
+            try
             {
-                _repositoryWrapper.PartnersRepository.Delete(partner);
-                try
-                {
-                    _repositoryWrapper.SaveChanges();
-                    return Result.Ok(_mapper.Map<PartnerDTO>(partner));
-                }
-                catch(Exception ex)
-                {
-                    _logger.LogError(request, ex.Message);
-                    return Result.Fail(ex.Message);
-                }
+                _repositoryWrapper.SaveChanges();
+                return Result.Ok(_mapper.Map<PartnerDTO>(partner));
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(request, ex.Message);
+                return Result.Fail(ex.Message);
             }
         }
     }

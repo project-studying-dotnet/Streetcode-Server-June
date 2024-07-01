@@ -311,6 +311,15 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("StreetcodeUrlNotFound", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add word because such term already exists.
+        /// </summary>
+        public static string TermAlreadyExist {
+            get {
+                return ResourceManager.GetString("TermAlreadyExist", resourceCulture);
+            }
+        }
         /// <summary>
         ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
         /// </summary>
@@ -333,6 +342,16 @@ namespace Streetcode.BLL.Resources {
         public static string InvalidToken {
             get {
                 return ResourceManager.GetString("InvalidToken", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
+        /// </summary>
+        public static string ExpiredToken
+        {
+            get
+            {
+                return ResourceManager.GetString("TokenExpired", resourceCulture);
             }
         }
     }

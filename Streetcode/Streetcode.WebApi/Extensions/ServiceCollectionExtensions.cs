@@ -6,28 +6,31 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Streetcode.BLL.Behavior;
-using Streetcode.BLL.Interfaces.BlobStorage;
-using Streetcode.BLL.Interfaces.Email;
-using Streetcode.BLL.Interfaces.Instagram;
+using StackExchange.Redis;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.Interfaces.Payment;
-using Streetcode.BLL.Interfaces.Text;
-using Streetcode.BLL.Services.BlobStorageService;
-using Streetcode.BLL.Services.Email;
-using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Services.Logging;
-using Streetcode.BLL.Services.Payment;
-using Streetcode.BLL.Interfaces.Users;
-using Streetcode.BLL.Services.Text;
-using Streetcode.BLL.Services.Tokens;
-using Streetcode.DAL.Entities.AdditionalContent.Email;
-using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Persistence;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Realizations.Base;
+using Streetcode.BLL.Interfaces.Email;
+using Streetcode.BLL.Services.Email;
+using Streetcode.DAL.Entities.AdditionalContent.Email;
+using Streetcode.BLL.Interfaces.BlobStorage;
+using Streetcode.BLL.Services.BlobStorageService;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Streetcode.BLL.Behavior;
+using Streetcode.BLL.Interfaces.Instagram;
+using Streetcode.BLL.Services.Instagram;
+using Streetcode.BLL.Interfaces.Payment;
+using Streetcode.BLL.Services.Payment;
+using Streetcode.BLL.Interfaces.Text;
+using Streetcode.BLL.Services.Text;
+using Streetcode.BLL.Interfaces.Users;
+using Streetcode.DAL.Entities.Users;
+using Streetcode.BLL.Services.CacheService;
+using Streetcode.BLL.Services.Tokens;
+
 namespace Streetcode.WebApi.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -38,7 +41,7 @@ public static class ServiceCollectionExtensions
             .AddEntityFrameworkStores<StreetcodeDbContext>()
             .AddDefaultTokenProviders();
     }
-
+    
     public static void AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
@@ -51,15 +54,30 @@ public static class ServiceCollectionExtensions
         var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
-        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddMediatR(currentAssemblies);
         services.AddScoped<IBlobService, BlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
-        services.AddScoped<ITextService, AddTermsToTextService>();
-        services.AddTransient<ITokenService, TokenService>();
+        services.AddScoped<ITextService, AddTermsToTextService>(); 
+        services.AddScoped<ICacheService, CacheService>();
+        services.AddScoped<ITokenService, TokenService>();
+    }
+
+    public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Local";
+
+        var redisConnectionString = configuration.GetSection(environment).GetConnectionString("ReddisConnection");
+        var multiplexer = ConnectionMultiplexer.Connect(redisConnectionString);
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+    }
+
+    public static void AddPipelineBehaviors(this IServiceCollection services)
+    {
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachibleQueryBehavior<,>));
     }
     
     public static void AddAccessTokenConfiguration(this IServiceCollection services, IConfiguration configuration)

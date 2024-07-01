@@ -24,8 +24,13 @@ public class GetPartnersByStreetcodeIdHandler : IRequestHandler<GetPartnersByStr
 
     public async Task<Result<IEnumerable<PartnerDTO>>> Handle(GetPartnersByStreetcodeIdQuery request, CancellationToken cancellationToken)
     {
+        if (request.CachedResponse?.IsSuccess == true)
+        {
+            return request.CachedResponse;
+        }
+
         var streetcode = await _repositoryWrapper.StreetcodeRepository
-            .GetSingleOrDefaultAsync(st => st.Id == request.StreetcodeId);
+            .GetFirstOrDefaultAsync(st => st.Id == request.StreetcodeId);
 
         if (streetcode is null)
         {
@@ -38,13 +43,6 @@ public class GetPartnersByStreetcodeIdHandler : IRequestHandler<GetPartnersByStr
             .GetAllAsync(
                 predicate: p => p.Streetcodes.Any(sc => sc.Id == streetcode.Id) || p.IsVisibleEverywhere,
                 include: p => p.Include(pl => pl.PartnerSourceLinks));
-
-        if (partners is null)
-        {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request, request.StreetcodeId);
-            _logger.LogError(request, errorMsg);
-            return Result.Fail(new Error(errorMsg));
-        }
 
         return Result.Ok(value: _mapper.Map<IEnumerable<PartnerDTO>>(partners));
     }

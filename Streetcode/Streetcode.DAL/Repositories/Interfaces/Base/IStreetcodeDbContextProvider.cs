@@ -1,9 +1,8 @@
 ﻿using Streetcode.DAL.Persistence;
 
-namespace Streetcode.DAL.Repositories.Interfaces.Base
+namespace Streetcode.DAL.Repositories.Interfaces.Base;
+
+public interface IStreetcodeDbContextProvider
 {
-    public interface IStreetcodeDbContextProvider
-    {
-        StreetcodeDbContext DbContext { init; }
-    }
+    StreetcodeDbContext DbContext { init; }
 }

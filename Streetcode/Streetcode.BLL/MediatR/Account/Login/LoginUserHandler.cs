@@ -23,6 +23,9 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
         // already created User without password but token is generated
         // "test2.email@com.ua" - username and password
         var user = await _userManager.FindByEmailAsync(request.LoginUser.Login);
+
+        // here we 
+
         var claims = await _tokenService.GetUserClaimsAsync(user);
 
         var accessToken = await _tokenService.GenerateAccessToken(user, claims);

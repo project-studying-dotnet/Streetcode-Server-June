@@ -12,12 +12,14 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
     private readonly IMapper _mapper;
     private readonly IRepositoryWrapper _repositoryWrapper;
     private readonly ILoggerService _logger;
+
     public CreateFactHandler(IMapper mapper, IRepositoryWrapper repositoryWrapper, ILoggerService logger)
     {
         _mapper = mapper;
         _repositoryWrapper = repositoryWrapper;
         _logger = logger;
     }
+
 
     public async Task<Result<FactDto>> Handle(CreateFactCommand request, CancellationToken cancellationToken)
     {
@@ -45,7 +47,7 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
 
         if (resultIsSuccess)
         {
-            return Result.Ok(_mapper.Map<FactDto>(entity));
+           return Result.Ok(_mapper.Map<FactDto>(entity));
         }
         else
         {

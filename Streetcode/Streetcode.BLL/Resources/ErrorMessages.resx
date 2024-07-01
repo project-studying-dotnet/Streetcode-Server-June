@@ -189,6 +189,9 @@
   <data name="StreetcodeAlreadyExist" xml:space="preserve">
     <value>Cannot add records because such streetcode already exists</value>
   </data>
+  <data name="TermAlreadyExist" xml:space="preserve">
+    <value>Cannot add word because such term already exists</value>
+  </data>
   <data name="StreetcodeIndexNotFound" xml:space="preserve">
     <value>Cannot find any streetcode with corresponding index: {1}</value>
   </data>

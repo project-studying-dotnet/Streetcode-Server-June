@@ -3,12 +3,14 @@
 using System.Linq.Expressions;
 using AutoMapper;
 using Moq;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
+using Xunit;
+
+using Streetcode.BLL.DTO.Streetcode.TextContent.RelatedTerm;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.RelatedTerm.Delete;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
-using Xunit;
+
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
 
 public class DeleteRelatedTermHandlerTests
@@ -28,20 +30,20 @@ public class DeleteRelatedTermHandlerTests
     public async Task Handle_ShouldReturnError_WhenTermNotFound()
     {
         // Arrange
-        string word = "test";
+        var request = new DeleteRelatedTermCommand("test");
         MockRepositorySetup(true);
-
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
         var handler = new DeleteRelatedTermHandler(
             _mockRepository.Object,
             _mockMapper.Object,
             _mockLogger.Object);
 
         // Act
-        var result = await handler.Handle(new DeleteRelatedTermCommand(word), CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.HasError(e => e.Message == $"Cannot find a related term: {word}"));
-        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), $"Cannot find a related term: {word}"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.FirstOrDefault()?.Message);
+        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), errorMsg), Times.Once);
     }
 
     [Fact]
@@ -72,31 +74,31 @@ public class DeleteRelatedTermHandlerTests
     public async Task Handle_ShouldReturnFail_WhenSaveChangesFails()
     {
         // Arrange
-        string word = "test";
-        MockRepositorySetup(false, word);
+        var request = new DeleteRelatedTermCommand("test");
+        MockRepositorySetup(false, "test");
         _mockRepository.Setup(x => x.SaveChangesAsync()).ReturnsAsync(0);
-        MockMapperSetup(false, word);
-
+        MockMapperSetup(false, "test");
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToDeleteA, request);
         var handler = new DeleteRelatedTermHandler(
             _mockRepository.Object,
             _mockMapper.Object,
             _mockLogger.Object);
 
         // Act
-        var result = await handler.Handle(new DeleteRelatedTermCommand(word), CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.HasError(e => e.Message == "Failed to delete a related term"));
-        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), "Failed to delete a related term"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.FirstOrDefault()?.Message);
+        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), errorMsg), Times.Once);
     }
 
     [Fact]
     public async Task Handle_ShouldReturnFail_WhenMappingFails()
     {
         // Arrange
-        string word = "test";
-
-        MockRepositorySetup(false, word);
+        var request = new DeleteRelatedTermCommand("test");
+        MockRepositorySetup(false, "test");
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToDeleteA, request);
         _mockRepository.Setup(x => x.SaveChangesAsync()).ReturnsAsync(1);
         MockMapperSetup(true);
 
@@ -106,11 +108,11 @@ public class DeleteRelatedTermHandlerTests
         _mockLogger.Object);
 
         // Act
-        var result = await handler.Handle(new DeleteRelatedTermCommand(word), CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.HasError(e => e.Message == "Failed to delete a related term"));
-        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), "Failed to delete a related term"), Times.Once);
+        Assert.Equal(errorMsg, result.Errors.FirstOrDefault()?.Message);
+        _mockLogger.Verify(x => x.LogError(It.IsAny<object>(), errorMsg), Times.Once);
     }
 
     private void MockRepositorySetup(bool returnNull, string word = "")

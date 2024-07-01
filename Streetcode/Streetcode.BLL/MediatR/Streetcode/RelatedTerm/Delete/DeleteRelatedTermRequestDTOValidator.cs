@@ -6,6 +6,6 @@ public class DeleteRelatedTermRequestDTOValidator : AbstractValidator<DeleteRela
 {
     public DeleteRelatedTermRequestDTOValidator()
     {
-        RuleFor(x => x.word).NotEmpty().Length(1, 50);
+        RuleFor(x => x.Word).NotEmpty().Length(1, 50);
     }
 }

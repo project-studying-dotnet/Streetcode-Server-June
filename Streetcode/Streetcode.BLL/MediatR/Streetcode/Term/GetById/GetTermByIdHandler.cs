@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Streetcode.BLL.DTO.Streetcode.TextContent;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.DTO.Streetcode.TextContent.Term;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Term.GetById;
 
@@ -23,7 +23,7 @@ public class GetTermByIdHandler : IRequestHandler<GetTermByIdQuery, Result<TermD
 
     public async Task<Result<TermDTO>> Handle(GetTermByIdQuery request, CancellationToken cancellationToken)
     {
-        var term = await _repositoryWrapper.TermRepository.GetFirstOrDefaultAsync(f => f.Id == request.Id);
+        var term = await _repositoryWrapper.TermRepository.GetFirstOrDefaultAsync(t => t.Id == request.Id);
 
         if (term is null)
         {
@@ -32,6 +32,15 @@ public class GetTermByIdHandler : IRequestHandler<GetTermByIdQuery, Result<TermD
             return Result.Fail(new Error(errorMsg));
         }
 
-        return Result.Ok(_mapper.Map<TermDTO>(term));
+        var termDto = _mapper.Map<TermDTO>(term);
+
+        if (termDto is null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return new Error(errorMsg);
+        }
+
+        return Result.Ok(termDto);
     }
 }

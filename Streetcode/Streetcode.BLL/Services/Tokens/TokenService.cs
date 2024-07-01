@@ -1,10 +1,13 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Users;
+using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
@@ -16,6 +19,8 @@ public class TokenService : ITokenService
     private readonly UserManager<User> _userManager;
     private readonly AccessTokenConfiguration _accessTokenConfiguration;
     private readonly ILoggerService _logger;
+    public readonly IResponseCookies _responseCookies;
+
     public TokenService(UserManager<User> userManager, AccessTokenConfiguration accessTokenConfiguration, ILoggerService logger)
     {
         _userManager = userManager;
@@ -117,5 +122,34 @@ public class TokenService : ITokenService
         ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
 
         return principal;
+    }
+
+    public RefreshTokenDTO GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshTokenDTO
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Expires = DateTime.Now.AddDays(7)
+        };
+
+        return refreshToken;
+    }
+
+    public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
+    {
+        user.RefreshToken = newRefreshToken.Token;
+        user.Created = newRefreshToken.Created;
+        user.Expires = newRefreshToken.Expires;
+        await _userManager.UpdateAsync(user);
+    }
+
+    public async Task<TokenResponseDTO> GenerateTokens(User user)
+    {
+        var tokenResponse = new TokenResponseDTO();
+        var userClaims = await GetUserClaimsAsync(user);
+        tokenResponse.AccessToken = await GenerateAccessToken(user, userClaims);
+        tokenResponse.RefreshToken = GenerateRefreshToken();
+
+        return tokenResponse;
     }
 }

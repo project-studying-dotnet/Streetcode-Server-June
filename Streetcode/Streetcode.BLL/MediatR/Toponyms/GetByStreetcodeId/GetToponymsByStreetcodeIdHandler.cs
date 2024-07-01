@@ -29,7 +29,7 @@ public class GetToponymsByStreetcodeIdHandler : IRequestHandler<GetToponymsByStr
             .GetAllAsync(
                 predicate: sc => sc.Streetcodes.Any(s => s.Id == request.StreetcodeId),
                 include: scl => scl
-                    .Include(sc => sc.Coordinate));
+                    .Include(sc => sc.Coordinate)!);
         if (toponyms is null)
         {
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request, request.StreetcodeId);

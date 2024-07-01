@@ -24,6 +24,11 @@ public class GetPartnerByIdHandler : IRequestHandler<GetPartnerByIdQuery, Result
 
     public async Task<Result<PartnerDTO>> Handle(GetPartnerByIdQuery request, CancellationToken cancellationToken)
     {
+        if (request.CachedResponse?.IsSuccess == true)
+        {
+            return request.CachedResponse;
+        }
+        
         var partner = await _repositoryWrapper
             .PartnersRepository
             .GetSingleOrDefaultAsync(

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Streetcode.DAL.Entities.Streetcode;
-using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
+using TextEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
+using RelatedTermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.RelatedTerm;
+using TermEntity = Streetcode.DAL.Entities.Streetcode.TextContent.Term;
 
 namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Text;
 
@@ -10,7 +12,9 @@ public class MockDbContext : DbContext
     {
     }
 
-    public DbSet<Entity> Entities { get; set; }
+    public DbSet<TextEntity> TextEntities { get; set; }
+    public DbSet<RelatedTermEntity> RelatedTermEntityEntities { get; set; }
+    public DbSet<TermEntity> TermEntityEntities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

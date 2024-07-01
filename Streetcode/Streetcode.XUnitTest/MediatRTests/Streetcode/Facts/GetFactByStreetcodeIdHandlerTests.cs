@@ -1,4 +1,4 @@
-﻿// <copyright file="GetFactByStreetcodeIdHandlerTests.cs" company="PlaceholderCompany">
+﻿﻿// <copyright file="GetFactByStreetcodeIdHandlerTests.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
