@@ -2,7 +2,6 @@
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json.Linq;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
@@ -35,7 +34,6 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
         // adminPass = "*Superuser18"
 
         var user = await _userManager.FindByNameAsync(request.LoginUser.Username);
-
         if (user == null)
         {
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidUsernameOrPassword, request);
@@ -44,7 +42,6 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.LoginUser.Password, false);
-
         if (!result.Succeeded)
         {
 
@@ -55,9 +52,17 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<LoginRe
 
         var tokens = await _tokenService.GenerateTokens(user);
 
+        var userDto = _mapper.Map<UserDTO>(user);
+        if (userDto == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
+
         var loginResult = new LoginResultDTO
         {
-            User = _mapper.Map<UserDTO>(user),
+            User = userDto,
             AccessToken = tokens.AccessToken,
             RefreshToken = tokens.RefreshToken
         };
