@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
 
-public class AdminPolicyAttribute : AuthorizeAttribute, IAsyncAuthorizationFilter
+public class AdminPolicyAttribute : Attribute, IAsyncAuthorizationFilter
 {
-    public AdminPolicyAttribute()
+    private readonly IAuthorizationService _authorizationService;
+
+    public AdminPolicyAttribute(IAuthorizationService authorizationService)
     {
-        Policy = "AdminPolicy";
+        _authorizationService = authorizationService;
     }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
@@ -19,17 +21,15 @@ public class AdminPolicyAttribute : AuthorizeAttribute, IAsyncAuthorizationFilte
         if (actionDescriptor != null)
         {
             var methodName = actionDescriptor.ActionName;
-            var methodInfo = actionDescriptor.MethodInfo;
 
-            var createDeleteUpdateMethods = methodInfo.DeclaringType
-                .GetMethods()
-                .Where(m => m.Name.StartsWith("Create") || m.Name.StartsWith("Delete") || m.Name.StartsWith("Update"))
-                .Select(m => m.Name);
-
-            if (createDeleteUpdateMethods.Contains(methodName))
+            if (methodName.StartsWith("Create") || methodName.StartsWith("Delete") || methodName.StartsWith("Update"))
             {
-                var authorizeFilter = new AuthorizeFilter(Policy);
-                await authorizeFilter.OnAuthorizationAsync(context);
+                var authorized = await _authorizationService.AuthorizeAsync(context.HttpContext.User, null, "AdminPolicy");
+
+                if (!authorized.Succeeded)
+                {
+                    context.Result = new ForbidResult(); 
+                }
             }
         }
     }

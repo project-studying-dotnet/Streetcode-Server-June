@@ -116,7 +116,6 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<AdminPolicyAttribute>();
-
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)

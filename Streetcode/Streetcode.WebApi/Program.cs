@@ -4,7 +4,6 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
-using Streetcode.DAL.Enums;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
