@@ -2,14 +2,10 @@
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
-using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Enums;
-using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Account.Register
 {
@@ -39,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(errorMessage);
             }
 
-            if (await IsEmailUse(req.Login))
+            if (await IsLoginUse(req.Login))
             {
                 string errorMessage = "A user with this login is already registered.";
                 _logger.LogError(request, errorMessage);
@@ -50,7 +46,7 @@ namespace Streetcode.BLL.MediatR.Account.Register
             var user = _mapper.Map<User>(req);
 
             IdentityResult newUser = await _userManager.CreateAsync(user, req.Password);
-            
+
             if (!newUser.Succeeded)
             {
                 var errorMessage = "Failed to create user";
@@ -71,9 +67,7 @@ namespace Streetcode.BLL.MediatR.Account.Register
                 return Result.Fail(errorMessage);
             }
 
-            var claims = await _tokenService.GetUserClaimsAsync(user);
-
-            var response = _tokenService.GenerateAccessToken(user, claims);
+            await _tokenService.GenerateTokens(user);
 
             return Result.Ok(_mapper.Map<UserDTO>(user));
         }
@@ -81,6 +75,13 @@ namespace Streetcode.BLL.MediatR.Account.Register
         private async Task<bool> IsEmailUse(string email)
         {
             User? user = await _userManager.FindByEmailAsync(email);
+
+            return user is not null;
+        }
+
+        private async Task<bool> IsLoginUse(string login)
+        {
+            User? user = await _userManager.FindByNameAsync(login);
 
             return user is not null;
         }
