@@ -407,6 +407,42 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("Failed to set token in black list", resourceCulture);
             }
         }
-
+        public static string LoginIsUse
+        {
+            get
+            {
+                return ResourceManager.GetString("LoginIsUse", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to A user with this login is already registere.
+        /// </summary>
+        public static string EmailIsUse
+        {
+            get
+            {
+                return ResourceManager.GetString("EmailIsUse", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to A user with this login is already registere.
+        /// </summary>
+        public static string FailAddRole
+        {
+            get
+            {
+                return ResourceManager.GetString("FailAddRole", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to A user with this login is already registere.
+        /// </summary>
+        public static string FailCreateUser
+        {
+            get
+            {
+                return ResourceManager.GetString("FailCreateUser", resourceCulture);
+            }
+        }
     }
 }
