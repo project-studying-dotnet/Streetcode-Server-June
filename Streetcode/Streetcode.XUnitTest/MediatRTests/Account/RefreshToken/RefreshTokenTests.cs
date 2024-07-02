@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Moq;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
-using Streetcode.BLL.MediatR.Account.RefreshTokens;
+using Streetcode.BLL.MediatR.Account.RefreshToken;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
@@ -38,7 +38,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             _tokenServiceMock = new Mock<ITokenService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _mapperMock = new Mock<IMapper>();
-            _handler = new RefreshTokensHandler(_userManagerMock.Object, _loggerMock.Object, _tokenServiceMock.Object, _httpContextAccessorMock.Object, _mapperMock.Object);
+            _handler = new RefreshTokensHandler(_userManagerMock.Object, _loggerMock.Object, _tokenServiceMock.Object, _httpContextAccessorMock.Object);
         }
 
         [Fact]

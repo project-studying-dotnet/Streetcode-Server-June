@@ -1,7 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -10,7 +7,7 @@ using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 
-namespace Streetcode.BLL.MediatR.Account.RefreshTokens
+namespace Streetcode.BLL.MediatR.Account.RefreshToken
 {
     public class RefreshTokensHandler : IRequestHandler<RefreshTokensCommand, Result<string>>
     {
@@ -18,14 +15,13 @@ namespace Streetcode.BLL.MediatR.Account.RefreshTokens
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMapper _mapper;
-        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+
+        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _userManager = userManager;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
-            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)

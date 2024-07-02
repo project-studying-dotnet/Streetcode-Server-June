@@ -12,7 +12,6 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.Resources;
-using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.Login
@@ -141,7 +140,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             Assert.True(result.IsSuccess);
             Assert.Equal(userDto, result.Value);
             _httpContextAccessor.Verify(x => x.HttpContext!.Response.Cookies.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()));
-            // _httpContextAccessor.Verify(x => x.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()));
+            _httpContextAccessor.Verify(x => x.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()));
         }
     }
 }
