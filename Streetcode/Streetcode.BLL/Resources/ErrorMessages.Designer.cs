@@ -356,6 +356,7 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
+        
         /// <summary>
         ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
         /// </summary>
