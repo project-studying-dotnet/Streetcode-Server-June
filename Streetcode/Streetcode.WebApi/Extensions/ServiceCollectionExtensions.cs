@@ -30,6 +30,7 @@ using Streetcode.BLL.Interfaces.Users;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.BLL.Services.CacheService;
 using Streetcode.BLL.Services.Tokens;
+using Streetcode.WebApi.Events;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -60,7 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IInstagramService, InstagramService>();
-        services.AddScoped<ITextService, AddTermsToTextService>(); 
+        services.AddScoped<ITextService, AddTermsToTextService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -96,19 +97,22 @@ public static class ServiceCollectionExtensions
             ClockSkew = TimeSpan.Zero,
             IssuerSigningKey = key
         };
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = tokenValidationParameters;
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
+                options.EventsType = typeof(JwtTokenValidationEvents);
             });
-
+      
         services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
@@ -116,6 +120,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<AdminPolicyAttribute>();
+        services.AddScoped<JwtTokenValidationEvents>();
     }
 
     public static void AddApplicationServices(this IServiceCollection services, ConfigurationManager configuration)
