@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,15 +17,14 @@ namespace Streetcode.BLL.MediatR.Account.Logout
         private readonly ILoggerService _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
-        private readonly IMapper _mapper;
-        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, IMapper mapper, ITokenService tokenService)
+
+        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, ITokenService tokenService)
         {
             _userManager = userManager;
             _cacheService = cacheService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _tokenService = tokenService;
-            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
@@ -47,7 +45,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var userId = await _tokenService.GetUserIdFromAccessToken(accessToken);
+            var userId = _tokenService.GetUserIdFromAccessToken(accessToken);
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -57,8 +55,6 @@ namespace Streetcode.BLL.MediatR.Account.Logout
             }
 
             user.RefreshToken = null!;
-
-            await _userManager.UpdateAsync(user);
 
             ClearCookies();
        

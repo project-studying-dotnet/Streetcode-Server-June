@@ -51,7 +51,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILoggerService>();
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
-           
+
             _handler = new LoginUserHandler(
                 _userManagerMock.Object,
                 _signInManagerMock.Object,
@@ -131,7 +131,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             _tokenServiceMock.Setup(x => x.GenerateTokens(user)).ReturnsAsync(tokens);
             _mapperMock.Setup(x => x.Map<UserDTO>(user)).Returns(userDto);
 
-            _httpContextAccessor.Setup(x => x.HttpContext!.Response.Cookies.Append(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CookieOptions>()));
+            var httpContext = new Mock<HttpContext>();
+            var response = new Mock<HttpResponse>();
+            var cookies = new Mock<IResponseCookies>();
+
+            response.Setup(x => x.Cookies).Returns(cookies.Object);
+            httpContext.Setup(x => x.Response).Returns(response.Object);
+            _httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext.Object);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -139,8 +145,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(userDto, result.Value);
-            _httpContextAccessor.Verify(x => x.HttpContext!.Response.Cookies.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()));
-            _httpContextAccessor.Verify(x => x.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()));
+            cookies.Verify(x => x.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()), Times.Once);
+            cookies.Verify(x => x.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()), Times.Once);
         }
     }
 }

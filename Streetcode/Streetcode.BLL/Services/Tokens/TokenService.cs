@@ -27,23 +27,23 @@ public class TokenService : ITokenService
         _logger = logger;
     }
     
-    public async Task<string> GenerateAccessToken(User user, List<Claim> claims)
+    public string GenerateAccessToken(User user, List<Claim> claims)
     {
         if (user is null)
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, user);
             _logger.LogError(user!, errorMsg);
             throw new ArgumentNullException(errorMsg);
         }
 
         if (!claims.Any())
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.ClaimsNotExist);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.ClaimsNotExist, claims);
             _logger.LogError(user!, errorMsg);
             throw new ArgumentNullException(errorMsg);
         }
 
-        DateTime expiration = DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes);
+        var expiration = DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes);
         SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_tokensConfiguration.SecretKey!));
         SigningCredentials signingCredentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -120,7 +120,7 @@ public class TokenService : ITokenService
             ValidateLifetime = true
         };
 
-        ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
         return principal;
     }
@@ -136,19 +136,12 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
-    public async Task<string?> GetUserIdFromAccessToken(string accessToken)
+    public string? GetUserIdFromAccessToken(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        try
-        {
-            var jwtToken = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
-            var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
-            return userIdClaim;
-        }
-        catch (SecurityTokenException)
-        {
-            return null;
-        }
+        var jwtToken = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
+        var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+        return userIdClaim;
     }
     
     public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
@@ -163,7 +156,7 @@ public class TokenService : ITokenService
     {
         var tokenResponse = new TokenResponseDTO();
         var userClaims = await GetUserClaimsAsync(user);
-        tokenResponse.AccessToken = await GenerateAccessToken(user, userClaims);
+        tokenResponse.AccessToken = GenerateAccessToken(user, userClaims);
         tokenResponse.RefreshToken = GenerateRefreshToken();
         await SetRefreshToken(tokenResponse.RefreshToken, user);
 
