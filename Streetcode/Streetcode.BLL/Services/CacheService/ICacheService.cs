@@ -8,4 +8,6 @@ public interface ICacheService
      Task<bool> CacheKeyPatternExist(string pattern);
      Task<string?> GetCacheAsync(string key);
      Task DeleteCacheAsync(string key);
+     Task<bool> SetBlacklistedTokenAsync(string accessToken, string userId);
+     Task<bool> IsBlacklistedTokenAsync(string accessToken);
 }
