@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddRepositoryServices();
         services.AddFeatureManagement();
-        var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var currentAssemblies = AppDomain.CurrentDomain.GetAssemblies().Where(p => !p.IsDynamic).ToArray();
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
         services.AddMediatR(currentAssemblies);
