@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Streetcode.BLL.Interfaces.Email;
 using Streetcode.BLL.Interfaces.Logging;
@@ -20,10 +19,11 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.SendEmail
         public SendVerificationEmailHandler(
             UserManager<User> userManager,
             IEmailService emailSender,
+            IConfiguration configuration,
             ILoggerService logger,
-            LinkGenerator linkGenerator)
+            IUrlHelper urlHelper)
         {
-            _sender = new SendVerificationEmail(userManager, emailSender, linkGenerator);
+            _sender = new SendVerificationEmail(userManager, emailSender, configuration, urlHelper);
             _logger = logger;
         }
 
@@ -31,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.SendEmail
         {
             try
             {
-                await _sender.SendVerification(request.email, request.httpContext);
+                await _sender.SendVerification(request.email);
                 return Result.Ok(request.email);
             }
             catch (Exception ex)
