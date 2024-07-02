@@ -13,6 +13,7 @@ using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
+using FluentResults;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.Login
 {
@@ -145,6 +146,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal(userDto, result.Value);
+            _tokenServiceMock.Verify(x => x.GenerateAndSetTokensAsync(user, response.Object), Times.Once);
             cookies.Verify(x => x.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()), Times.Once);
             cookies.Verify(x => x.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()), Times.Once);
         }
