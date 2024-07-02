@@ -33,7 +33,6 @@ public static class CustomSeeding
     {
         // Constants for roles
         const string adminRoleId = "563b4777-0615-4c3c-8a7d-8858412b6562";
-        const string userRoleId = "12444183-0753-495b-a34f-c5a622d8fc6d";
 
         // Constants for Admin
         const string adminUserName = "SuperAdmin";
@@ -46,14 +45,6 @@ public static class CustomSeeding
             await roleManager.CreateAsync(new IdentityRole<Guid>("Admin")
             {
                 Id = Guid.Parse(adminRoleId)
-            });
-        }
-
-        if (!await roleManager.RoleExistsAsync("User"))
-        {
-            await roleManager.CreateAsync(new IdentityRole<Guid>("User")
-            {
-                Id = Guid.Parse(userRoleId)
             });
         }
 
@@ -74,8 +65,5 @@ public static class CustomSeeding
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
         }
-
-
     }
-
 }

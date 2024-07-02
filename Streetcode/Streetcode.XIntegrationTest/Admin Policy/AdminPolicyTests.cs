@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Streetcode.BLL.Interfaces.Users;
+using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
 
@@ -25,21 +27,21 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     public void Dispose()
     {
        // _client.Dispose();
-       // _factory.Dispose();
+        //_factory.Dispose();
     }
 
     private async Task<string> GetAdminToken()
     {
         using var scope = _factory.Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-        var token = await LoginAdminUserAsync(userManager);
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var token = await LoginAdminUserAsync(userManager, tokenService);
         return token;
     }
 
-    private async Task<string> LoginAdminUserAsync(UserManager<User> userManager)
+    private async Task<string> LoginAdminUserAsync(UserManager<User> userManager, ITokenService tokenService)
     {
         const string adminUserName = "SuperAdmin";
-        const string adminPass = "*Superuser18";
 
         var adminUser = await userManager.FindByNameAsync(adminUserName);
         if (adminUser == null)
@@ -47,36 +49,9 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
             throw new Exception("Admin user not found.");
         }
 
-        var token = await GenerateJwtToken(adminUser, userManager);
+        var claims = await tokenService.GetUserClaimsAsync(adminUser);
+        var token = await tokenService.GenerateAccessToken(adminUser, claims);
         return token;
-    }
-
-    private async Task<string> GenerateJwtToken(User user, UserManager<User> userManager)
-    {
-        var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName)
-        };
-
-        var roles = await userManager.GetRolesAsync(user);
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YourSuperSecretKey"));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.Now.AddMinutes(30);
-
-        var token = new JwtSecurityToken(
-            issuer: "yourIssuer",
-            audience: "yourAudience",
-            claims: claims,
-            expires: expires,
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     private void AddAuthorizationHeader(HttpClient client, string token)
