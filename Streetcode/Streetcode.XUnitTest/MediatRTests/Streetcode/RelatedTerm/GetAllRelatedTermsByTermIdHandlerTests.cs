@@ -79,7 +79,7 @@ public class GetAllRelatedTermsByTermIdHandlerTests
             _mockLogger.Object);
 
         // Act
-        var result = await handler.Handle(new GetAllRelatedTermsByTermIdQuery(15), CancellationToken.None);
+        var result = await handler.Handle(new GetAllRelatedTermsByTermIdQuery(1), CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
