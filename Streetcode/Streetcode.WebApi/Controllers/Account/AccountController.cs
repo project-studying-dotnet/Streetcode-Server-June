@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.MediatR.Account.Login;
-using Streetcode.BLL.MediatR.Account.RefreshTokens;
 using Streetcode.BLL.MediatR.Account.Logout;
+using Streetcode.BLL.MediatR.Account.RefreshToken;
 using Streetcode.BLL.MediatR.Account.Register;
 
 namespace Streetcode.WebApi.Controllers.Account

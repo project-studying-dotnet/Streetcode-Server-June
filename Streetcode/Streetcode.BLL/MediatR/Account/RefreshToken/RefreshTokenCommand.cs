@@ -1,8 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
-using Streetcode.DAL.Entities.Users;
 
-namespace Streetcode.BLL.MediatR.Account.RefreshTokens
+namespace Streetcode.BLL.MediatR.Account.RefreshToken
 {
     public record RefreshTokensCommand : IRequest<Result<string>>;
 }

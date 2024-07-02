@@ -7,7 +7,6 @@ using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
-using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Account.Login;
@@ -50,7 +49,6 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
-
 
         var userDto = _mapper.Map<UserDTO>(user);
         if (userDto == null)
