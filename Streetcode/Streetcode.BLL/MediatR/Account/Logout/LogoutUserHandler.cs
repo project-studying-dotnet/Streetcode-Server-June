@@ -1,8 +1,9 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
@@ -18,21 +19,22 @@ namespace Streetcode.BLL.MediatR.Account.Logout
         private readonly ILoggerService _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
-
-        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, ITokenService tokenService)
+        private readonly IMapper _mapper;
+        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, IMapper mapper, ITokenService tokenService)
         {
             _userManager = userManager;
             _cacheService = cacheService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _tokenService = tokenService;
+            _mapper = mapper;
         }
 
         public async Task<Result<string>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) && string.IsNullOrEmpty(accessToken))
+            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) || string.IsNullOrEmpty(accessToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
@@ -46,17 +48,18 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var userId = _tokenService.GetUserIdFromAccessToken(accessToken);
-            var user = await _userManager.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.Id == new Guid(userId));
-
-            if (httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) && !string.IsNullOrEmpty(refreshToken))
+            var userId = await _tokenService.GetUserIdFromAccessToken(accessToken);
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
             {
-                var refreshTokenEntity = user.RefreshTokens.FirstOrDefault(rt => rt.Token == refreshToken);
-                if (refreshTokenEntity != null)
-                {
-                    user.RefreshTokens.Remove(refreshTokenEntity);
-                }
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
+                _logger.LogError(user!, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
+
+            user.RefreshToken = null!;
+
+            await _userManager.UpdateAsync(user);
 
             ClearCookies();
        

@@ -7,13 +7,13 @@ namespace Streetcode.BLL.Interfaces.Users
 {
     public interface ITokenService
     {
-        string GenerateAccessToken(User user, List<Claim> claims);
+        Task<string> GenerateAccessToken(User user, List<Claim> claims);
         Task<List<Claim>> GetUserClaimsAsync(User user);
         ClaimsPrincipal GetPrincipalFromAccessToken(string? token);
         RefreshTokenDTO GenerateRefreshToken();
         Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user);
         Task<TokenResponseDTO> GenerateTokens(User user);
         Task GenerateAndSetTokensAsync(User user, HttpResponse httpContext);
-        string? GetUserIdFromAccessToken(string accessToken);
+        Task<string?> GetUserIdFromAccessToken(string accessToken);
     }
 }
