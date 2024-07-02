@@ -80,7 +80,7 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
                 hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
             });
         });
-        builder.UseEnvironment("ASPNETCORE_ENVIRONMENT");
+        builder.UseEnvironment("IntegrationTests");
 
     }
 }
