@@ -129,7 +129,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             _userManagerMock.Setup(x => x.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(user);
             _signInManagerMock.Setup(x => x.CheckPasswordSignInAsync(user, command.LoginUser.Password, false))
                 .ReturnsAsync(SignInResult.Success);
-            _tokenServiceMock.Setup(x => x.GenerateTokens(user)).ReturnsAsync(tokens);
             _mapperMock.Setup(x => x.Map<UserDTO>(user)).Returns(userDto);
 
             var httpContext = new Mock<HttpContext>();
@@ -139,6 +138,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             response.Setup(x => x.Cookies).Returns(cookies.Object);
             httpContext.Setup(x => x.Response).Returns(response.Object);
             _httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext.Object);
+
+            _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))
+                .Callback<User, HttpResponse>((_, response) =>
+                {
+                    response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions());
+                    response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions());
+                });
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
