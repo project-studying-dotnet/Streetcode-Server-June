@@ -1,16 +1,13 @@
-﻿using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
+using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
-using Serilog;
-using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.RefreshTokens;
-using Streetcode.BLL.Services.Logging;
-using Streetcode.BLL.Services.Tokens;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
 
@@ -19,90 +16,140 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
     public class RefreshTokensHandlerTests
     {
         private readonly Mock<UserManager<User>> _userManagerMock;
-        private readonly TokensConfiguration _tokensConfiguration;
-        private readonly ILoggerService _logger;
+        private readonly Mock<ILoggerService> _loggerMock;
+        private readonly Mock<ITokenService> _tokenServiceMock;
         private readonly RefreshTokensHandler _handler;
-        private User _user = new User { Id = Guid.NewGuid(), UserName = "testUser", Email = "testuser@example.com", RefreshToken = "string" };
+        private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        private readonly Mock<IMapper> _mapperMock;
+
+        private User _user = new User
+        {
+            Id = Guid.Parse("563b4777-0615-4c3c-8a7d-8858412b6562"),
+            UserName = "testUser",
+            Email = "testuser@example.com",
+            RefreshToken = "string"
+        };
 
         public RefreshTokensHandlerTests()
         {
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-            _tokensConfiguration = new TokensConfiguration
-            {
-                SecretKey = "supersecretkeythatshouldbeatleast32characters-long",
-                AccessTokenExpirationMinutes = 30,
-                Issuer = "Streetcode",
-                Audience = "StreetcodeClient"
-            };
-            _logger = new LoggerService(new LoggerConfiguration().CreateLogger());
-            _handler = new RefreshTokensHandler(_userManagerMock.Object, _logger, _tokensConfiguration);
+            _loggerMock = new Mock<ILoggerService>();
+            _tokenServiceMock = new Mock<ITokenService>();
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _mapperMock = new Mock<IMapper>();
+            _handler = new RefreshTokensHandler(_userManagerMock.Object, _loggerMock.Object, _tokenServiceMock.Object, _httpContextAccessorMock.Object, _mapperMock.Object);
         }
 
         [Fact]
         public async Task Handle_ValidRequest_ShouldReturnOkResult()
         {
             // Arrange
-            var token = GetAccessTokenForGetPrincipal();
-            var tokenResponse = new TokenResponseDTO
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Cookies = new MockRequestCookieCollection(new Dictionary<string, string>
             {
-                AccessToken = token,
-                RefreshToken = new RefreshTokenDTO
-                {
-                    Token = "refToken"
-                }
-            };
-            List<string> role = new() { "user" };
-            var command = new RefreshTokensCommand(tokenResponse);
-            _userManagerMock.Setup(obj => obj.FindByEmailAsync("testuser@example.com")).ReturnsAsync(_user);
-            _userManagerMock.Setup(obj => obj.GetRolesAsync(_user)).ReturnsAsync(role);
+                { "accessToken", "validAccessToken" },
+                { "refreshToken", "string" }
+            });
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, _user.Id.ToString())
+            }));
+
+            _tokenServiceMock.Setup(x => x.GetPrincipalFromAccessToken(It.IsAny<string>())).Returns(claimsPrincipal);
+            _userManagerMock.Setup(x => x.Users).Returns((new List<User> { _user }).AsQueryable());
+            _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(_user, httpContext.Response)).Returns(Task.CompletedTask);
+
+            var command = new RefreshTokensCommand();
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
+            _tokenServiceMock.Verify(x => x.GenerateAndSetTokensAsync(_user, httpContext.Response), Times.Once);
         }
 
         [Fact]
         public async Task Handle_EmptyTokenResponse_ShouldReturnFailed()
         {
             // Arrange
-            var token = GetAccessTokenForGetPrincipal();
-            List<string> role = new() { "user" };
-            var command = new RefreshTokensCommand(null);
-            _userManagerMock.Setup(obj => obj.FindByEmailAsync("testuser@example.com")).ReturnsAsync(_user);
-            _userManagerMock.Setup(obj => obj.GetRolesAsync(_user)).ReturnsAsync(role);
+            var httpContext = new DefaultHttpContext();
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            var command = new RefreshTokensCommand();
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.False(result.IsSuccess);
+            Assert.Equal(ErrorMessages.EntityNotFound, result.Errors.First().Message);
         }
 
-        private string GetAccessTokenForGetPrincipal()
+        [Fact]
+        public async Task Handle_MissingAccessToken_ShouldReturnFailed()
         {
-            var claims = new List<Claim>
-          {
-              new Claim(JwtRegisteredClaimNames.Sub, _user.Id.ToString()),
-              new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-              new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
-              new Claim(ClaimTypes.NameIdentifier, _user.Email),
-              new Claim(ClaimTypes.Name, _user.UserName),
-              new Claim(ClaimTypes.Email, _user.Email),
-              new Claim(ClaimTypes.Role, "Admin")
-          };
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokensConfiguration.SecretKey!));
-            var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var tokenGenerator = new JwtSecurityToken(
-                issuer: _tokensConfiguration.Issuer,
-                audience: _tokensConfiguration.Audience,
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
-                signingCredentials: signingCredentials);
-            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-            return jwtSecurityTokenHandler.WriteToken(tokenGenerator);
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            var command = new RefreshTokensCommand();
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(ErrorMessages.AccessTokenNotFound, result.Errors.First().Message);
+        }
+
+        [Fact]
+        public async Task Handle_MissingRefreshToken_ShouldReturnFailed()
+        {
+            // Arrange
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Cookies = new MockRequestCookieCollection(new Dictionary<string, string>
+            {
+                { "accessToken", "validAccessToken" }
+            });
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+
+            var command = new RefreshTokensCommand();
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.False(result.IsSuccess);
+            Assert.Equal(ErrorMessages.RefreshTokenNotFound, result.Errors.First().Message);
+        }
+
+        // MockRequestCookieCollection implementation
+        public class MockRequestCookieCollection : IRequestCookieCollection
+        {
+            private readonly Dictionary<string, string> _cookies;
+
+            public MockRequestCookieCollection(Dictionary<string, string> cookies)
+            {
+                _cookies = cookies;
+            }
+
+            public string this[string key] => _cookies.ContainsKey(key) ? _cookies[key] : null;
+
+            public int Count => _cookies.Count;
+
+            public ICollection<string> Keys => _cookies.Keys;
+
+            public bool ContainsKey(string key) => _cookies.ContainsKey(key);
+
+            public IEnumerator<KeyValuePair<string, string>> GetEnumerator() => _cookies.GetEnumerator();
+
+            public bool TryGetValue(string key, out string value) => _cookies.TryGetValue(key, out value);
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _cookies.GetEnumerator();
         }
     }
 }

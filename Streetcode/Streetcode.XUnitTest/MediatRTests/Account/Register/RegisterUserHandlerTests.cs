@@ -22,7 +22,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         private readonly Mock<ILoggerService> _loggerMock;
         private readonly Mock<ITokenService> _tokenServiceMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
-        private readonly TokensConfiguration _tokensConfiguration;
         private readonly RegisterUserHandler _handler;
 
         public RegisterUserHandlerTests()
@@ -34,16 +33,13 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             _loggerMock = new Mock<ILoggerService>();
             _tokenServiceMock = new Mock<ITokenService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _tokensConfiguration = new TokensConfiguration();
 
             _handler = new RegisterUserHandler(
                 _mapperMock.Object,
                 _loggerMock.Object,
                 _userManagerMock.Object,
-                _tokensConfiguration,
                 _tokenServiceMock.Object,
-                _httpContextAccessorMock.Object
-            );
+                _httpContextAccessorMock.Object);
         }
 
         [Fact]
@@ -65,7 +61,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         {
             // Arrange
             var request = new RegisterUserCommand(new UserRegisterDTO());
-            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
+            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))!.ReturnsAsync((User)null);
             _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>())).ReturnsAsync(new User());
 
             // Act
@@ -80,8 +76,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         {
             // Arrange
             var request = new RegisterUserCommand(new UserRegisterDTO ());
-            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
-            _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((User)null);
+            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))!.ReturnsAsync((User)null);
+            _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>()))!.ReturnsAsync((User)null);
             _mapperMock.Setup(m => m.Map<User>(It.IsAny<UserRegisterDTO>())).Returns(new User());
             _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
 
@@ -97,8 +93,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         {
             // Arrange
             var request = new RegisterUserCommand(new UserRegisterDTO ());
-            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);
-            _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>())).ReturnsAsync((User)null);
+            _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>()))!.ReturnsAsync((User)null);
+            _userManagerMock.Setup(um => um.FindByNameAsync(It.IsAny<string>()))!.ReturnsAsync((User)null);
             _mapperMock.Setup(m => m.Map<User>(It.IsAny<UserRegisterDTO>())).Returns(new User());
             _userManagerMock.Setup(um => um.CreateAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
             _userManagerMock.Setup(um => um.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());

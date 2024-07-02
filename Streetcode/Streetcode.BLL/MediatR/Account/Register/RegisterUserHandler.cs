@@ -7,7 +7,6 @@ using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
-using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 
@@ -17,29 +16,27 @@ namespace Streetcode.BLL.MediatR.Account.Register
     private readonly IMapper _mapper;
     private readonly ILoggerService _logger;
     private readonly ITokenService _tokenService;
-    private readonly IHttpContextAccessor _contextAccessor;
-    private readonly TokensConfiguration _tokensConfiguration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public RegisterUserHandler(
         IMapper mapper, 
         ILoggerService logger, 
         UserManager<User> userManager, 
-        TokensConfiguration tokensConfiguration, 
         ITokenService tokenService, 
         IHttpContextAccessor contextAccessor)
     {
         _mapper = mapper;
         _logger = logger;
         _userManager = userManager;
-        _tokensConfiguration = tokensConfiguration;
         _tokenService = tokenService;
-        _contextAccessor = contextAccessor;
+        _httpContextAccessor = contextAccessor;
     }
 
     public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var req = request.newUser;
-        
+        var httpContext = _httpContextAccessor.HttpContext;
+
         if (await IsEmailUse(req.Email))
         {
             var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.EmailIsUse, request);
@@ -56,7 +53,6 @@ namespace Streetcode.BLL.MediatR.Account.Register
 
         var user = _mapper.Map<User>(req);
         IdentityResult newUserResult = await _userManager.CreateAsync(user, req.Password);
-
         if (!newUserResult.Succeeded)
         {
             var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailCreateUser, request);
@@ -65,7 +61,6 @@ namespace Streetcode.BLL.MediatR.Account.Register
         }
 
         IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
-
         if (!addingRoleResult.Succeeded)
         {
             var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailAddRole, request);
@@ -73,23 +68,8 @@ namespace Streetcode.BLL.MediatR.Account.Register
             return Result.Fail(errorMessage);
         }
 
-        var tokens = await _tokenService.GenerateTokens(user);
+        await _tokenService.GenerateAndSetTokensAsync(user, httpContext!.Response);
 
-        _contextAccessor.HttpContext!.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
-
-        _contextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
 
         return Result.Ok(_mapper.Map<UserDTO>(user));
     }

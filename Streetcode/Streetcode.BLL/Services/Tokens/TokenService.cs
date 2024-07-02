@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Users;
@@ -37,7 +38,9 @@ public class TokenService : ITokenService
 
         if (!claims.Any())
         {
-            claims = await GetUserClaimsAsync(user);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.ClaimsNotExist);
+            _logger.LogError(user!, errorMsg);
+            throw new ArgumentNullException(errorMsg);
         }
 
         DateTime expiration = DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes);
@@ -133,6 +136,21 @@ public class TokenService : ITokenService
         return refreshToken;
     }
 
+    public async Task<string?> GetUserIdFromAccessToken(string accessToken)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        try
+        {
+            var jwtToken = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
+            var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
+            return userIdClaim;
+        }
+        catch (SecurityTokenException)
+        {
+            return null;
+        }
+    }
+    
     public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
     {
         user.RefreshToken = newRefreshToken.Token;
@@ -160,5 +178,26 @@ public class TokenService : ITokenService
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
         }
+    }
+    
+    public async Task GenerateAndSetTokensAsync(User user, HttpResponse response)
+    {
+        var tokens = await GenerateTokens(user);
+
+        response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
+        {
+            Expires = DateTimeOffset.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
+
+        response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions
+        {
+            Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None
+        });
     }
 }

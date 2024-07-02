@@ -1,39 +1,45 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using AutoMapper;
+﻿using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.CacheService;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Account.Logout
 {
-    public class LogoutUserHandler : IRequestHandler<LogoutUserCommand, Result<UserDTO>>
+    public class LogoutUserHandler : IRequestHandler<LogoutUserCommand, Result<string>>
     {
         private readonly UserManager<User> _userManager;
         private readonly ICacheService _cacheService;
         private readonly ILoggerService _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
-        public LogoutUserHandler(UserManager<User> userManager,
-            ICacheService cacheService, ILoggerService logger,
-            IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, IMapper mapper, ITokenService tokenService)
         {
-            _mapper = mapper;
             _userManager = userManager;
             _cacheService = cacheService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+            _tokenService = tokenService;
+            _mapper = mapper;
         }
 
-        public async Task<Result<UserDTO>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
         {
-            var accessToken = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) || string.IsNullOrEmpty(accessToken))
+            {
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
+            }
             
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -41,17 +47,9 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 _logger.LogError(accessToken!, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
-            
-            var claims = _httpContextAccessor.HttpContext?.User.Claims.ToList();
-            if(!claims!.Any())
-            {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.ClaimsNotExist, request);
-                _logger.LogError(claims!, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
-            
-            var userIdClaim = claims!.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
-            var user = await _userManager.FindByIdAsync(userIdClaim);
+
+            var userId = await _tokenService.GetUserIdFromAccessToken(accessToken);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
@@ -61,8 +59,10 @@ namespace Streetcode.BLL.MediatR.Account.Logout
 
             user.RefreshToken = null!;
 
+            await _userManager.UpdateAsync(user);
+
             ClearCookies();
-            
+       
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
             {
@@ -79,7 +79,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 return Result.Fail(new Error(errorMsg));
             }
             
-            return Result.Ok(_mapper.Map<UserDTO>(user));
+            return Result.Ok("User logged out successfully");
         }
         
         private void ClearCookies()
@@ -94,7 +94,6 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                     SameSite = SameSiteMode.None
                 });
             }
-
         }
     }
 }

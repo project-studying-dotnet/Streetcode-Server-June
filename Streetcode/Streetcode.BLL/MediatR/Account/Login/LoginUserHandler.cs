@@ -19,26 +19,22 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
     private readonly SignInManager<User> _signInManager;
     private readonly ITokenService _tokenService;
     private readonly ILoggerService _logger;
-    private readonly IHttpContextAccessor _contextAccessor;
-    private readonly TokensConfiguration _tokensConfiguration;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public LoginUserHandler(UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenService, IMapper mapper, ILoggerService logger, IHttpContextAccessor contextAccessor, TokensConfiguration tokensConfiguration)
+    public LoginUserHandler(UserManager<User> userManager, SignInManager<User> signInManager, ITokenService tokenService, IMapper mapper, ILoggerService logger, IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _tokenService = tokenService;
         _mapper = mapper;
         _logger = logger;
-        _contextAccessor = contextAccessor;
-        _tokensConfiguration = tokensConfiguration;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<Result<UserDTO>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        // Already created User 
-        // UserName = "SuperAdmin"
-        // adminPass = "*Superuser18"
-
+        var httpContext = _httpContextAccessor.HttpContext;
+        
         var user = await _userManager.FindByNameAsync(request.LoginUser.Username);
         if (user == null)
         {
@@ -50,13 +46,11 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.LoginUser.Password, false);
         if (!result.Succeeded)
         {
-
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidUsernameOrPassword, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
-        var tokens = await _tokenService.GenerateTokens(user);
 
         var userDto = _mapper.Map<UserDTO>(user);
         if (userDto == null)
@@ -66,21 +60,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
             return Result.Fail(new Error(errorMsg));
         }
 
-        _contextAccessor.HttpContext!.Response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
-
-        _contextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions
-        {
-            Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None
-        });
+        await _tokenService.GenerateAndSetTokensAsync(user, httpContext!.Response);
 
         return Result.Ok(userDto);
     }

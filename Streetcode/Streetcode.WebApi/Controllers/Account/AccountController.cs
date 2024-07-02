@@ -16,9 +16,9 @@ namespace Streetcode.WebApi.Controllers.Account
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> RefreshTokens(TokenResponseDTO response)
+        public async Task<ActionResult<string>> RefreshTokens()
         {
-            return HandleResult(await Mediator.Send(new RefreshTokensCommand(response)));
+            return HandleResult(await Mediator.Send(new RefreshTokensCommand()));
         }
         
         [HttpPost]
