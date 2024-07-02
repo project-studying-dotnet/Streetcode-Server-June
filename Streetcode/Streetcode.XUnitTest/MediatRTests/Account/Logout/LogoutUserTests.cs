@@ -61,13 +61,22 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
         {
             // Arrange
             var command = new LogoutUserCommand();
-            var httpContext = new DefaultHttpContext();
-            httpContext.Response.Cookies.Append("accessToken", "validToken", new CookieOptions());
-            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+            var cookiesMock = new Mock<IRequestCookieCollection>();
+            cookiesMock.Setup(x => x.TryGetValue("accessToken", out It.Ref<string>.IsAny!)).Returns((string key, out string value) =>
+            {
+                value = "validToken";
+                return true;
+            });
+
+            var httpContext = new Mock<HttpContext>();
+            httpContext.Setup(x => x.Request.Cookies).Returns(cookiesMock.Object);
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext.Object);
             _tokenServiceMock.Setup(x => x.GetUserIdFromAccessToken(It.IsAny<string>())).Returns("userId");
 
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, command);
             _userManagerMock.Setup(x => x.FindByIdAsync(It.IsAny<string>()))!.ReturnsAsync((User)null!);
+
+            _loggerMock.Setup(logger => logger.LogError(It.IsAny<object>(), errorMsg)).Verifiable();
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -75,6 +84,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
             // Assert
             Assert.True(result.IsFailed);
             Assert.Equal(errorMsg, result.Errors[0].Message);
+            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
         }
 
         [Fact]
@@ -139,6 +149,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
                 value = "validToken";
                 return true;
             });
+            requestCookies.Setup(x => x.Keys).Returns(new List<string> { "accessToken", "refreshToken" });
 
             var responseCookiesMock = new Mock<IResponseCookies>();
             var responseMock = new Mock<HttpResponse>();
@@ -163,7 +174,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
             // Assert
             Assert.True(result.IsSuccess);
             Assert.Equal("User logged out successfully", result.Value);
-            responseCookiesMock.Verify(x => x.Delete(It.IsAny<string>(), It.IsAny<CookieOptions>()), Times.AtLeastOnce);
+            responseCookiesMock.Verify(x => x.Delete(It.IsAny<string>(), It.IsAny<CookieOptions>()), Times.AtLeast(2));
         }
+
     }
 }
