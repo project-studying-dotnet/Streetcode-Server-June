@@ -34,6 +34,7 @@ namespace Streetcode.WebApi.Extensions
 
             // Constants for Admin
             const string adminUserName = "SuperAdmin";
+            const string adminUserEmail = "SuperAdmin@test.com";
             const string adminId = "4eb10d27-a950-45ef-9ebe-f730a07ce5e9";
             const string adminPass = "*Superuser18";
             
@@ -70,6 +71,7 @@ namespace Streetcode.WebApi.Extensions
                         new User()
                         {
                             UserName = adminUserName,
+                            Email = adminUserEmail,
                             Id = Guid.Parse(adminId),
                         }, adminPass);
                 }

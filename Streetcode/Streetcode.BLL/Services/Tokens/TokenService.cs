@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Users;
@@ -17,14 +16,13 @@ namespace Streetcode.BLL.Services.Tokens;
 public class TokenService : ITokenService
 {
     private readonly UserManager<User> _userManager;
-    private readonly AccessTokenConfiguration _accessTokenConfiguration;
+    private readonly TokensConfiguration _tokensConfiguration;
     private readonly ILoggerService _logger;
-    public readonly IResponseCookies _responseCookies;
 
-    public TokenService(UserManager<User> userManager, AccessTokenConfiguration accessTokenConfiguration, ILoggerService logger)
+    public TokenService(UserManager<User> userManager, TokensConfiguration tokensConfiguration, ILoggerService logger)
     {
         _userManager = userManager;
-        _accessTokenConfiguration = accessTokenConfiguration;
+        _tokensConfiguration = tokensConfiguration;
         _logger = logger;
     }
     
@@ -42,19 +40,19 @@ public class TokenService : ITokenService
             claims = await GetUserClaimsAsync(user);
         }
 
-        DateTime expiration = DateTime.UtcNow.AddMinutes(_accessTokenConfiguration.AccessTokenExpirationMinutes);
-        SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_accessTokenConfiguration.SecretKey!));
+        DateTime expiration = DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes);
+        SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_tokensConfiguration.SecretKey!));
         SigningCredentials signingCredentials = new(securityKey, SecurityAlgorithms.HmacSha256);
 
         JwtSecurityToken tokenGenerator = new(
-            issuer: _accessTokenConfiguration.Issuer,
-            audience: _accessTokenConfiguration.Audience,
+            issuer: _tokensConfiguration.Issuer,
+            audience: _tokensConfiguration.Audience,
             claims: claims,
             expires: expiration,
             signingCredentials: signingCredentials);
 
         JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
-        string token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
+        var token = jwtSecurityTokenHandler.WriteToken(tokenGenerator);
 
         return token;
     }
@@ -111,11 +109,11 @@ public class TokenService : ITokenService
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = true,
-            ValidAudience = _accessTokenConfiguration.Audience,
+            ValidAudience = _tokensConfiguration.Audience,
             ValidateIssuer = true,
-            ValidIssuer = _accessTokenConfiguration.Issuer,
+            ValidIssuer = _tokensConfiguration.Issuer,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_accessTokenConfiguration.SecretKey!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokensConfiguration.SecretKey!)),
             ValidateLifetime = true
         };
 
@@ -129,7 +127,7 @@ public class TokenService : ITokenService
         var refreshToken = new RefreshTokenDTO
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.Now.AddDays(7)
+            Expires = DateTime.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
         };
 
         return refreshToken;
@@ -152,5 +150,15 @@ public class TokenService : ITokenService
         await SetRefreshToken(tokenResponse.RefreshToken, user);
 
         return tokenResponse;
+    }
+
+    public async Task RemoveExpiredRefreshToken()
+    {
+        var users = _userManager.Users.Where(u => u.Expires < DateTime.UtcNow);
+        foreach (var user in users)
+        {
+            user.RefreshToken = null;
+            await _userManager.UpdateAsync(user);
+        }
     }
 }

@@ -15,14 +15,14 @@ namespace Streetcode.BLL.MediatR.Account.RefreshTokens
         private readonly ILoggerService _logger;
         private TokenService _tokenService;
         private UserManager<User> _userManager;
-        private AccessTokenConfiguration _accessTokenConfiguration;
+        private TokensConfiguration _tokensConfiguration;
 
-        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, AccessTokenConfiguration accessTokenConfiguration)
+        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, TokensConfiguration accessTokenConfiguration)
         {
             _logger = logger;
             _userManager = userManager;
-            _accessTokenConfiguration = accessTokenConfiguration;
-            _tokenService = new(_userManager, _accessTokenConfiguration, _logger);
+            _tokensConfiguration = accessTokenConfiguration;
+            _tokenService = new(_userManager, _tokensConfiguration, _logger);
         }
 
         public async Task<Result<User>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
@@ -66,10 +66,6 @@ namespace Streetcode.BLL.MediatR.Account.RefreshTokens
                 _logger.LogError(request, errorMsgNull);
                 return Result.Fail(new Error(errorMsgNull));
             }
-
-            await _tokenService.SetRefreshToken(tokens.RefreshToken, user);
-            user.Token = tokens.AccessToken;
-            await _userManager.UpdateAsync(user);
 
             return Result.Ok(user);
         }

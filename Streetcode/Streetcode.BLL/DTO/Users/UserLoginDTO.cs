@@ -1,10 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Streetcode.BLL.DTO.Users
+﻿namespace Streetcode.BLL.DTO.Users
 {
     public class UserLoginDTO
     {
-        public string Login { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,3 @@
-using System.Net.Http;
 using FluentValidation;
 using Hangfire;
 using MediatR;
@@ -64,6 +63,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITextService, AddTermsToTextService>(); 
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
     }
 
     public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
@@ -81,16 +81,16 @@ public static class ServiceCollectionExtensions
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(CachibleQueryBehavior<,>));
     }
     
-    public static void AddAccessTokenConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static void AddTokensConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["AccessToken:SecretKey"] !));
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["TokensConfiguration:SecretKey"] !));
 
         var tokenValidationParameters = new TokenValidationParameters()
         {
             ValidateIssuer = true,
-            ValidIssuer = configuration["AccessToken:Issuer"],
+            ValidIssuer = configuration["TokensConfiguration:Issuer"],
             ValidateAudience = true,
-            ValidAudience = configuration["AccessToken:Audience"],
+            ValidAudience = configuration["TokensConfiguration:Audience"],
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ClockSkew = TimeSpan.Zero,
@@ -108,8 +108,8 @@ public static class ServiceCollectionExtensions
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
             });
-
-        services.AddAuthorization(options =>
+	    
+	    services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
             options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
@@ -131,10 +131,10 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(emailConfig);
         }
         
-        var accessTokenConfig = configuration.GetSection("AccessToken").Get<AccessTokenConfiguration>();
-        if(accessTokenConfig != null)
+        var tokensConfig = configuration.GetSection("TokensConfiguration").Get<TokensConfiguration>();
+        if(tokensConfig != null)
         {
-            services.AddSingleton(accessTokenConfig);
+            services.AddSingleton(tokensConfig);
         }
         
         services.AddDbContext<StreetcodeDbContext>(options =>

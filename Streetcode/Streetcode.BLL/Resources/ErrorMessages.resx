@@ -204,4 +204,16 @@
   <data name="StreetcodeUrlNotFound" xml:space="preserve">
     <value>Cannot find streetcode by transliteration url: {1}</value>
   </data>
+  <data name="InvalidUsernameOrPassword" xml:space="preserve">
+    <value>Invalid username or password</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found</value>
+  </data>
+  <data name="InvalidToken" xml:space="preserve">
+    <value>Invalid token</value>
+  </data>
+  <data name="RolesNotFound" xml:space="preserve">
+    <value>Roles not found</value>
+  </data>
 </root>
