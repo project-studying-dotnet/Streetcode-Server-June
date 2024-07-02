@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Streetcode.BLL.Interfaces.Email;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
+using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.Util.Account
 {
@@ -13,19 +14,19 @@ namespace Streetcode.BLL.Util.Account
         private const string SUBJECT = "Confirm your email";
 
         private readonly string _from;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailSender;
-        private readonly IUrlHelper _urlHelper;
+        private IUrlHelper _urlHelper;
 
-        public SendVerificationEmail(UserManager<IdentityUser> userManager, IEmailService emailSender, IUrlHelper urlHelper, IConfiguration configuration)
+        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, IConfiguration configuration, IUrlHelper urlHelper)
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            _urlHelper = urlHelper;
             _from = configuration.GetSection("EmailConfiguration").GetSection("From").ToString() !;
+            _urlHelper = urlHelper;
         }
 
-        public async void SendVerification(string email)
+        public async Task SendVerification(string email)
         {
             string url = await CreateUrl(email);
 
