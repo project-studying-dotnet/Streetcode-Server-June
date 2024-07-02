@@ -56,7 +56,6 @@ public static class CustomSeeding
                 UserName = adminUserName,
                 Id = Guid.Parse(adminId),
                 Email = "admin@example.com",
-                Token = "admin-token" // Ensure Token is set
             };
 
             var result = await userManager.CreateAsync(adminUser, adminPass);
