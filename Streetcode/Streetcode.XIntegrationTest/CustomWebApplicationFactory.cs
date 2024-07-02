@@ -32,6 +32,14 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 services.Remove(descriptor);
             }
 
+            // Remove the AddApplicationServices registration
+            var applicationServiceDescriptor = services.SingleOrDefault(
+                d => d.ImplementationFactory != null && d.ImplementationFactory.Method.Name.Contains("AddApplicationServices"));
+            if (applicationServiceDescriptor != null)
+            {
+                services.Remove(applicationServiceDescriptor);
+            }
+
             // Add an in-memory database context.
             services.AddDbContext<StreetcodeDbContext>(options =>
             {

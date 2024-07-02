@@ -108,8 +108,8 @@ public static class ServiceCollectionExtensions
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
             });
-	    
-	    services.AddAuthorization(options =>
+
+        services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
             options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
