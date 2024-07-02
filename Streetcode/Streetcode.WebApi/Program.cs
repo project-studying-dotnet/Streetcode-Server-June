@@ -20,7 +20,6 @@ builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
 builder.Services.AddTokensConfiguration(builder.Configuration);
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -38,7 +37,7 @@ app.UseMiddleware<GenericExceptionHandlerMiddleware>();
 
 await app.ApplyMigrations();
 
-//await app.SeedDataAsync(); // uncomment for seeding data in local
+// await app.SeedDataAsync(); // uncomment for seeding data in local
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
