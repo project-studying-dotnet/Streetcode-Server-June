@@ -42,7 +42,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             var authenticationDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IConfigureOptions<AuthenticationOptions>));
             if (authenticationDescriptor == null)
             {
-                services.AddAccessTokenConfiguration(context.Configuration);
+                services.AddTokensConfiguration(context.Configuration);
             }
 
             // Build the service provider.
