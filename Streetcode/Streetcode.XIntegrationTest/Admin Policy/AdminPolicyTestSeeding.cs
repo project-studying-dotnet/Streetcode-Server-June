@@ -11,7 +11,7 @@ public static class CustomSeeding
     public static async Task SeedFactsAsync(StreetcodeDbContext context)
     {
 
-        // Clear existing data (if needed)
+        // Clear existing data
         context.Facts.RemoveRange(context.Facts);
         await context.SaveChangesAsync();
 

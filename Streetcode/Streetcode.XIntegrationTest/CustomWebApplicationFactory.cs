@@ -16,7 +16,8 @@ using Streetcode.WebApi.Extensions;
 using System.Linq;
 using System.Text;
 
-public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> where TEntryPoint : class
+public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> 
+    where TEntryPoint : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -43,6 +44,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
             {
                 services.AddAccessTokenConfiguration(context.Configuration);
             }
+
             // Build the service provider.
             var sp = services.BuildServiceProvider();
 
@@ -69,6 +71,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                     logger.LogError(ex, "An error occurred seeding the database.");
                 }
             }
+
             services.Configure<HostOptions>(hostOptions =>
             {
                 hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
