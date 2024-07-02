@@ -1,16 +1,11 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Streetcode.BLL.Interfaces.Logging;
+﻿using Microsoft.AspNetCore.Identity;
 using Streetcode.DAL.Entities.Users;
-using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
 
 public static class CustomSeeding
 {
     public static async Task SeedFactsAsync(StreetcodeDbContext context)
     {
-
         // Clear existing data
         context.Facts.RemoveRange(context.Facts);
         await context.SaveChangesAsync();
@@ -24,7 +19,6 @@ public static class CustomSeeding
 
         context.Terms.Add(new Streetcode.DAL.Entities.Streetcode.TextContent.Term { Id = 1 });
         context.Terms.Add(new Streetcode.DAL.Entities.Streetcode.TextContent.Term { Id = 2 });
-
 
         await context.SaveChangesAsync();
     }

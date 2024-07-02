@@ -1,15 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Streetcode.BLL.Interfaces.Users;
-using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
 
