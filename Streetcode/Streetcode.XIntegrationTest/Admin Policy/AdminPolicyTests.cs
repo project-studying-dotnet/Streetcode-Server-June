@@ -89,7 +89,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     public async Task Delete_Fact_AuthorizedAsAdmin_ReturnsOk()
     {
         // Arrange
-        var token = await GetAdminToken();
+        var token = await GetAdminToken(); // simulate admin user
         AddAuthorizationHeader(_client, token);
         var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Fact/Delete/1");
 
