@@ -13,7 +13,7 @@ using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
 
-public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Program>>, IDisposable
+public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
     private readonly CustomWebApplicationFactory<Program> _factory;
@@ -22,12 +22,6 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     {
         _factory = factory;
         _client = factory.CreateClient();
-    }
-
-    public void Dispose()
-    {
-       // _client.Dispose();
-        //_factory.Dispose();
     }
 
     private async Task<string> GetAdminToken()
@@ -72,11 +66,8 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         };
         request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-
         // Act
         var response = await _client.SendAsync(request);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Response: {responseContent}"); // Log the response content
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -91,7 +82,6 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/Position/Create")
         {
             Content = new StringContent("{\"Position\": \"New Fact\"}", Encoding.UTF8, "application/json")
-
         };
 
         // Act
@@ -162,8 +152,6 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
 
         // Act
         var response = await _client.SendAsync(request);
-        var responseContent = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"Response: {responseContent}"); // Log the response content
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);

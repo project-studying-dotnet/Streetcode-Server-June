@@ -74,7 +74,5 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
             });
         });
-
-       
     }
 }
