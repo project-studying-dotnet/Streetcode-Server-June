@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main    # long-lived main branch
-      - develop # long-lived development branch
+      - dev # long-lived development branch
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
