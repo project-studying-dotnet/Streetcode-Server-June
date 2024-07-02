@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Moq;
 using Serilog;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.Logging;
 using Streetcode.BLL.Services.Tokens;
@@ -39,18 +40,30 @@ public class TokenServiceTests
       }
 
       [Fact]
-      public async Task GenerateAccessToken_ShouldReturnToken_WhenUserValid()
+      public void GenerateAccessToken_ShouldReturnToken_WhenUserValid()
       {
         // Arrange
-        var user = new User { Id = Guid.NewGuid(), UserName = "testUser", Email = "testuser@example.com" };
+        var expectedUserId = Guid.NewGuid();
+        var user = new User { Id = expectedUserId, UserName = "testUser", Email = "testuser@example.com" };
         _userManagerMock.Setup(um => um.GetRolesAsync(user)).ReturnsAsync(new List<string> { "Admin" });
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)),
+            new Claim(ClaimTypes.NameIdentifier, user.Email),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, "Admin")
+        };
 
         // Act
-        var token = await _tokenService.GenerateAccessToken(user, new List<Claim>());
+        var token = _tokenService.GenerateAccessToken(user, claims);
+        var actualUserId = _tokenService.GetUserIdFromAccessToken(token);
 
         // Assert
         Assert.NotNull(token);
-        Assert.IsType<string>(token);
+        Assert.Equal(expectedUserId.ToString(), actualUserId);
       }
       
       [Fact]

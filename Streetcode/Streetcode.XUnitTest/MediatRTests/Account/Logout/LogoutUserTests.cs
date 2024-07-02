@@ -1,26 +1,23 @@
 using System.Security.Claims;
-
-using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Moq;
-using Streetcode.BLL.DTO.Users;
+using Xunit;
+
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Logout;
 using Streetcode.BLL.Services.CacheService;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.XUnitTest.MediatRTests.Account.RefreshToken;
-using Xunit;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
 {
     public class LogoutUserHandlerTests
     {
         private readonly Mock<UserManager<User>> _userManagerMock;
-        private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<ILoggerService> _loggerMock;
         private readonly Mock<ICacheService> _cacheServiceMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
@@ -32,7 +29,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
             var store = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
-            _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILoggerService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _cacheServiceMock = new Mock<ICacheService>();
@@ -43,7 +39,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
                 _cacheServiceMock.Object,
                 _loggerMock.Object,
                 _httpContextAccessorMock.Object,
-                _mapperMock.Object,
                 _tokenServiceMock.Object);
         }
 
@@ -90,7 +85,6 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Logout
             _userManagerMock.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(user);
             _userManagerMock.Setup(x => x.UpdateAsync(It.IsAny<User>())).ReturnsAsync(IdentityResult.Success);
             _cacheServiceMock.Setup(x => x.SetBlacklistedTokenAsync(accessToken, userId)).ReturnsAsync(true);
-            _mapperMock.Setup(x => x.Map<UserDTO>(It.IsAny<User>())).Returns(new UserDTO { Email = userEmail });
 
             var request = new LogoutUserCommand();
 
