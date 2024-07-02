@@ -6,11 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
+using Xunit.Abstractions;
 
 public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client;
-    private readonly CustomWebApplicationFactory<Program> _factory;
+    private HttpClient _client;
+    private CustomWebApplicationFactory<Program> _factory;
 
     public AdminPolicyTests(CustomWebApplicationFactory<Program> factory)
     {
@@ -68,7 +69,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task Create_Position_Unauthorized_ReturnsForbidden()
+    public async Task Create_Position_Unauthorized_ReturnsUnauthorized()
     {
         // Arrange
         var token = "SomeInvalidToken"; // Simulate non-admin user
@@ -82,7 +83,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         var response = await _client.SendAsync(request);
 
         // Assert
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
@@ -101,7 +102,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task Delete_Fact_Unauthorized_ReturnsForbidden()
+    public async Task Delete_Fact_Unauthorized_ReturnsUnauthorized()
     {
         // Arrange
         var token = "SomeInvalidToken"; // Simulate non-admin user
@@ -112,7 +113,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         var response = await _client.SendAsync(request);
 
         // Assert
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
@@ -134,7 +135,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
     }
 
     [Fact]
-    public async Task Update_Term_Unauthorized_ReturnsForbidden()
+    public async Task Update_Term_Unauthorized_ReturnsUnauthorized()
     {
         // Arrange
         var token = "SomeInvalidToken"; // Simulate non-admin user
@@ -148,6 +149,6 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         var response = await _client.SendAsync(request);
 
         // Assert
-        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Term;
 using Streetcode.BLL.MediatR.Streetcode.Term.Create;
@@ -12,6 +13,7 @@ namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 public class TermController : BaseApiController
 {
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Create([FromBody] TermCreateDTO term)
     {
         return HandleResult(await Mediator.Send(new CreateTermCommand(term)));
@@ -30,18 +32,21 @@ public class TermController : BaseApiController
     }
 
     [HttpPut]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Update([FromBody] TermDTO term)
     {
         return HandleResult(await Mediator.Send(new UpdateTermCommand(term)));
     }
 
     [HttpDelete("{title}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Delete([FromRoute] string title)
     {
         return HandleResult(await Mediator.Send(new DeleteTermCommand(title)));
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> DeleteById([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteTermByIdCommand(id)));

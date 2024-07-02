@@ -11,8 +11,8 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Persistence;
 using Streetcode.WebApi.Extensions;
 
-public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> 
-    where TEntryPoint : class
+public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> 
+    where TProgram : class
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -70,7 +70,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 }
                 catch (Exception ex)
                 {
-                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TEntryPoint>>>();
+                    var logger = scopedServices.GetRequiredService<ILogger<CustomWebApplicationFactory<TProgram>>>();
                     logger.LogError(ex, "An error occurred seeding the database.");
                 }
             }
@@ -80,5 +80,7 @@ public class CustomWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TE
                 hostOptions.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
             });
         });
+        builder.UseEnvironment("ASPNETCORE_ENVIRONMENT");
+
     }
 }

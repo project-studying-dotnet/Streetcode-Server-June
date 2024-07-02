@@ -119,7 +119,6 @@ public static class ServiceCollectionExtensions
             options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
         });
 
-        services.AddScoped<AdminPolicyAttribute>();
         services.AddScoped<JwtTokenValidationEvents>();
     }
 

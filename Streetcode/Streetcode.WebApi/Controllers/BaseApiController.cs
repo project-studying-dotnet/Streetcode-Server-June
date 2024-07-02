@@ -1,5 +1,6 @@
 ﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.MediatR.ResultVariations;
 
@@ -7,7 +8,6 @@ namespace Streetcode.WebApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]/[action]")]
-    [ServiceFilter(typeof(AdminPolicyAttribute))]
     public class BaseApiController : ControllerBase
     {
         private IMediator? _mediator;
