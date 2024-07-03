@@ -6,13 +6,15 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Specification.Media.ArtSpec.GetByStreetcode;
 using Streetcode.BLL.Specification.Streetcode.Streetcode.GetByFilter;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.DAL.Repositories.Interfaces.Streetcode.TextContent;
+using Streetcode.DAL.Repositories.Interfaces.Streetcode;
+using Streetcode.DAL.Repositories.Interfaces.Timeline;
 using Streetcode.BLL.Specification.Streetcode.TextContent.FactSpec.GetAll;
 using Streetcode.BLL.Specification.TimeLine;
 using AutoMapper;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Specification.Streetcode.TextSec.GetAll;
-using Ardalis.Specification;
-using Streetcode.DAL.Entities.Media.Images;
+using Streetcode.DAL.Entities.Timeline;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
 
@@ -32,14 +34,14 @@ public class GetStreetcodeByFilterHandler : IRequestHandler<GetStreetcodeByFilte
     public async Task<Result<List<StreetcodeFilterResultDTO>>> Handle(GetStreetcodeByFilterQuery request, CancellationToken cancellationToken)
     {
         string searchQuery = request.Filter.SearchQuery;
-        if (string.IsNullOrEmpty(searchQuery))
+        var results = new List<StreetcodeFilterResultDTO>();
+
+        if (string.IsNullOrEmpty(searchQuery)) 
         {
             string errorMsg = ErrorMessages.EmptyQuery;
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }
-
-        var results = new List<StreetcodeFilterResultDTO>();
 
         var streetcodeRepository = _repositoryWrapper.StreetcodeRepository;
         var textRepository = _repositoryWrapper.TextRepository;
@@ -47,44 +49,68 @@ public class GetStreetcodeByFilterHandler : IRequestHandler<GetStreetcodeByFilte
         var timelineRepository = _repositoryWrapper.TimelineRepository;
         var artRepository = _repositoryWrapper.ArtRepository;
 
-        await AddResultsAsync(streetcodeRepository, new StreetcodesFilteredByQuerySpec(searchQuery), results);
-        await AddResultsAsync(textRepository, new TextFilteredByQuerySpec(searchQuery), results);
-        await AddResultsAsync(factRepository, new FactsFilteredByQuerySpec(searchQuery), results);
-        await AddResultsAsync(timelineRepository, new TimeLinesIncludePublishStreetcodeSpec(searchQuery), results);
-        await AddArtResultsAsync(artRepository, new ArtsFilteredByQuerySpec(searchQuery), results);
+        await AddStreetcodeResultsAsync(streetcodeRepository, searchQuery, results);
+        await AddTextResultsAsync(textRepository, searchQuery, results);
+        await AddFactResultsAsync(factRepository, searchQuery, results);
+        await AddTimelineResultsAsync(timelineRepository, searchQuery, results);
+        await AddArtResultsAsync(artRepository, searchQuery, results);
 
         return results;
     }
 
-    private async Task AddResultsAsync<T>(DAL.Repositories.Interfaces.Base.IRepositoryBase<T> repository, Specification<T> spec, List<StreetcodeFilterResultDTO> results)
-        where T : class
+    private async Task AddStreetcodeResultsAsync(IStreetcodeRepository repository, string searchQuery, List<StreetcodeFilterResultDTO> results)
     {
-        var items = await repository.GetAllWithSpecAsync(spec);
-        foreach (var item in items!)
+        var streetcodes = await repository.GetAllWithSpecAsync(new StreetcodesFilteredByQuerySpec(searchQuery));
+
+        foreach (var streetcode in streetcodes!)
         {
-            if(item != null)
-            {
-                results.Add(_mapper.Map<StreetcodeFilterResultDTO>(item));
-            }
+           results.Add(_mapper.Map<StreetcodeFilterResultDTO>(streetcode));
         }
     }
 
-    private async Task AddArtResultsAsync(IArtRepository repository, Specification<Art> spec, List<StreetcodeFilterResultDTO> results)
+    private async Task AddTextResultsAsync(ITextRepository repository, string searchQuery, List<StreetcodeFilterResultDTO> results)
     {
-        var streetcodeArts = await repository.GetAllWithSpecAsync(spec);
+        var texts = await repository.GetAllWithSpecAsync(new TextFilteredByQuerySpec(searchQuery));
+
+        foreach (var text in texts!)
+        {
+            results.Add(_mapper.Map<StreetcodeFilterResultDTO>(text));
+        }
+    }
+
+    private async Task AddFactResultsAsync(IFactRepository repository, string searchQuery, List<StreetcodeFilterResultDTO> results)
+    {
+        var facts = await repository.GetAllWithSpecAsync(new FactsFilteredByQuerySpec(searchQuery));
+
+        foreach (var fact in facts!)
+        {
+            results.Add(_mapper.Map<StreetcodeFilterResultDTO>(fact));
+        }
+    }
+
+    private async Task AddTimelineResultsAsync(ITimelineRepository repository, string searchQuery, List<StreetcodeFilterResultDTO> results)
+    {
+        var timelineItems = await repository.GetAllWithSpecAsync(new TimeLinesIncludePublishStreetcodeSpec(searchQuery));
+
+        foreach (var timelineItem in timelineItems!)
+        {
+            results.Add(_mapper.Map<StreetcodeFilterResultDTO>(timelineItem));
+        }
+    }
+
+    private async Task AddArtResultsAsync(IArtRepository repository, string searchQuery, List<StreetcodeFilterResultDTO> results)
+    {
+        var streetcodeArts = await repository.GetAllWithSpecAsync(new ArtsFilteredByQuerySpec(searchQuery));
 
         foreach (var streetcodeArt in streetcodeArts!)
         {
-            if (streetcodeArt != null)
+            streetcodeArt.StreetcodeArts.ForEach(art =>
             {
-                streetcodeArt.StreetcodeArts.ForEach(art =>
+                if (art.Streetcode != null)
                 {
-                    if (art.Streetcode != null)
-                    {
-                        results.Add(_mapper.Map<StreetcodeFilterResultDTO>(streetcodeArt));
-                    }
-                });
-            }
+                    results.Add(_mapper.Map<StreetcodeFilterResultDTO>(streetcodeArt));
+                }
+            });
         }
     }
 }
