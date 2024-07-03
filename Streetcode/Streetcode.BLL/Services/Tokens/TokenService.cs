@@ -11,6 +11,9 @@ using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
+using FluentResults;
+using Org.BouncyCastle.Asn1.Ocsp;
+using Newtonsoft.Json.Linq;
 
 namespace Streetcode.BLL.Services.Tokens;
 
@@ -146,6 +149,20 @@ public class TokenService : ITokenService
     
     public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
     {
+        if(user == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound);
+            _logger.LogError(user, errorMsg);
+            throw new ArgumentNullException(errorMsg);
+        }
+
+        if(newRefreshToken == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken);
+            _logger.LogError(newRefreshToken, errorMsg);
+            throw new ArgumentNullException(errorMsg);
+        }
+
         user.RefreshToken = newRefreshToken.Token;
         user.Created = newRefreshToken.Created;
         user.Expires = newRefreshToken.Expires;
@@ -154,6 +171,13 @@ public class TokenService : ITokenService
 
     public async Task<TokenResponseDTO> GenerateTokens(User user)
     {
+        if (user == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound);
+            _logger.LogError(user, errorMsg);
+            throw new ArgumentNullException(errorMsg);
+        }
+
         var tokenResponse = new TokenResponseDTO();
         var userClaims = await GetUserClaimsAsync(user);
         tokenResponse.AccessToken = GenerateAccessToken(user, userClaims);
