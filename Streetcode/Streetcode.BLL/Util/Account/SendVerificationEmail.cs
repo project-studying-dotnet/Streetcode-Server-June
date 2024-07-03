@@ -12,17 +12,16 @@ namespace Streetcode.BLL.Util.Account
         private const string ACTION = "ConfirmEmail";
         private const string CONTROLLER = "Account";
         private const string SUBJECT = "Confirm your email";
+        private const string FROM = "Streetcode";
 
-        private readonly string _from;
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailSender;
         private IUrlHelper _urlHelper;
 
-        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, IConfiguration configuration, IUrlHelper urlHelper)
+        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, IUrlHelper urlHelper)
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            _from = configuration.GetSection("EmailConfiguration").GetSection("From").ToString() !;
             _urlHelper = urlHelper;
         }
 
@@ -55,7 +54,7 @@ namespace Streetcode.BLL.Util.Account
         {
             await _emailSender
                     .SendEmailAsync(
-                    new Message(new List<string> { email }, _from, SUBJECT, url!));
+                    new Message(new List<string> { email }, FROM, SUBJECT, url!));
         }
     }
 }

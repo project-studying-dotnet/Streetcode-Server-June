@@ -19,11 +19,10 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.SendEmail
         public SendVerificationEmailHandler(
             UserManager<User> userManager,
             IEmailService emailSender,
-            IConfiguration configuration,
             ILoggerService logger,
             IUrlHelper urlHelper)
         {
-            _sender = new SendVerificationEmail(userManager, emailSender, configuration, urlHelper);
+            _sender = new SendVerificationEmail(userManager, emailSender, urlHelper);
             _logger = logger;
         }
 
