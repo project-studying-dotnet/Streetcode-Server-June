@@ -97,7 +97,18 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
 
             _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext.Object);
 
-            var user = new User { UserName = "TestUser", RefreshToken = "validRefreshToken" };
+            var user = new User
+            {
+                UserName = "TestUser",
+                RefreshTokens = new List<DAL.Entities.Users.RefreshToken>
+                {
+                    new DAL.Entities.Users.RefreshToken
+                    {
+                        Token = refreshTokenValue,
+                        Expires = DateTime.UtcNow.AddDays(1)
+                    }
+                }
+            };
             _userManagerMock.Setup(x => x.Users).Returns(new List<User> { user }.AsQueryable());
 
             _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))

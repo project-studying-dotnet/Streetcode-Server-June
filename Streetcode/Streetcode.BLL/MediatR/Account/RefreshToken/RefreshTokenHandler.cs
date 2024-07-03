@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
@@ -35,16 +36,22 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var user = _userManager.Users.FirstOrDefault(c => c.RefreshToken == refreshToken);
+            var user = _userManager.Users
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefault(u => u.RefreshTokens
+                .Any(t => t.Token == refreshToken && t.Expires > DateTime.UtcNow));
+
             if (user is null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.RefreshTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
-            
+
+            user.RefreshTokens.RemoveAll(t => t.Token == refreshToken);
+
             await _tokenService.GenerateAndSetTokensAsync(user, httpContext.Response);
-            
+
             return Result.Ok("Tokens refreshed successfully!");
         }
     }
