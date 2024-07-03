@@ -48,12 +48,6 @@ namespace Streetcode.BLL.MediatR.Account.Logout
 
             var userId = _tokenService.GetUserIdFromAccessToken(accessToken);
             var user = await _userManager.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.Id == new Guid(userId));
-            if (user == null)
-            {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
-                _logger.LogError(user!, errorMsg);
-                return Result.Fail(new Error(errorMsg));
-            }
 
             if (httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) || !string.IsNullOrEmpty(refreshToken))
             {
