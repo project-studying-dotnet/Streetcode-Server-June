@@ -11,6 +11,7 @@ using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Streetcode.BLL.Services.Tokens;
 
@@ -125,31 +126,12 @@ public class TokenService : ITokenService
         return principal;
     }
 
-    public RefreshTokenDTO GenerateRefreshToken()
-    {
-        var refreshToken = new RefreshTokenDTO
-        {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
-        };
-
-        return refreshToken;
-    }
-
     public string? GetUserIdFromAccessToken(string accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var jwtToken = tokenHandler.ReadToken(accessToken) as JwtSecurityToken;
         var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
         return userIdClaim;
-    }
-    
-    public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
-    {
-        user.RefreshToken = newRefreshToken.Token;
-        user.Created = newRefreshToken.Created;
-        user.Expires = newRefreshToken.Expires;
-        await _userManager.UpdateAsync(user);
     }
 
     public async Task<TokenResponseDTO> GenerateTokens(User user)
@@ -165,14 +147,14 @@ public class TokenService : ITokenService
 
     public async Task RemoveExpiredRefreshToken()
     {
-        var users = _userManager.Users.Where(u => u.Expires < DateTime.UtcNow);
+        var users = _userManager.Users.Include(u => u.RefreshTokens).Where(u => u.RefreshTokens.Any(t => t.Expires < DateTime.UtcNow));
         foreach (var user in users)
         {
-            user.RefreshToken = null;
+            user.RefreshTokens.RemoveAll(t => t.Expires < DateTime.UtcNow);
             await _userManager.UpdateAsync(user);
         }
     }
-    
+
     public async Task GenerateAndSetTokensAsync(User user, HttpResponse response)
     {
         var tokens = await GenerateTokens(user);
@@ -192,5 +174,30 @@ public class TokenService : ITokenService
             Secure = true,
             SameSite = SameSiteMode.None
         });
+    }
+
+    private RefreshTokenDTO GenerateRefreshToken()
+    {
+        var refreshToken = new RefreshTokenDTO
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            Expires = DateTime.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
+        };
+
+        return refreshToken;
+    }
+
+    private async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
+    {
+        var refreshToken = new RefreshToken
+        {
+            Token = newRefreshToken.Token,
+            Created = newRefreshToken.Created,
+            Expires = newRefreshToken.Expires,
+            UserId = user.Id,
+        };
+
+        user.RefreshTokens.Add(refreshToken);
+        await _userManager.UpdateAsync(user);
     }
 }

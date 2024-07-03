@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
@@ -46,7 +47,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
             }
 
             var userId = _tokenService.GetUserIdFromAccessToken(accessToken);
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.Id == new Guid(userId));
             if (user == null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
@@ -54,7 +55,14 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 return Result.Fail(new Error(errorMsg));
             }
 
-            user.RefreshToken = null!;
+            if (httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) || !string.IsNullOrEmpty(refreshToken))
+            {
+                var refreshTokenEntity = user.RefreshTokens.FirstOrDefault(rt => rt.Token == refreshToken);
+                if (refreshTokenEntity != null)
+                {
+                    user.RefreshTokens.Remove(refreshTokenEntity);
+                }
+            }
 
             ClearCookies();
        

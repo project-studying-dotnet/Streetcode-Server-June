@@ -61,6 +61,7 @@ public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
     public DbSet<StreetcodeCategoryContent>? StreetcodeCategoryContent { get; set; }
     public DbSet<StreetcodeArt>? StreetcodeArts { get; set; }
     public override DbSet<User>? Users { get; set; }
+    public DbSet<RefreshToken>? RefreshTokens { get; set; }
     public DbSet<StreetcodeTagIndex>? StreetcodeTagIndices { get; set; }
     public DbSet<TeamMember>? TeamMembers { get; set; }
     public DbSet<TeamMemberLink>? TeamMemberLinks { get; set; }
