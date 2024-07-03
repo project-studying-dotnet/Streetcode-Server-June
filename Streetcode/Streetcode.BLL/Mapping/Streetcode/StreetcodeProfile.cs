@@ -43,6 +43,12 @@ public class StreetcodeProfile : Profile
 
         CreateMap<EventStreetcode, CreateStreetcodeDTO>();
         CreateMap<PersonStreetcode, CreateStreetcodeDTO>();
+
+        CreateMap<StreetcodeContent, StreetcodeFilterResultDTO>()
+            .ForMember(dest => dest.StreetcodeId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.StreetcodeTransliterationUrl, opt => opt.MapFrom(src => src.TransliterationUrl))
+            .ForMember(dest => dest.StreetcodeIndex, opt => opt.MapFrom(src => src.Index))
+            .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Title));
     }
 
     private StreetcodeType GetStreetcodeType(StreetcodeContent streetcode)

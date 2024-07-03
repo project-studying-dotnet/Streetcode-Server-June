@@ -228,4 +228,7 @@
   <data name="RolesNotFound" xml:space="preserve">
     <value>Roles not found</value>
   </data>
+  <data name="EmptyQuery" xml:space="preserve">
+    <value>Search query cannot be null or empty</value>
+  </data>
 </root>
