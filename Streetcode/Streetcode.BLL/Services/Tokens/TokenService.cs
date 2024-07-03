@@ -14,6 +14,7 @@ using Streetcode.DAL.Entities.Users;
 using FluentResults;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Newtonsoft.Json.Linq;
+using Streetcode.BLL.Services.Payment.Exceptions;
 
 namespace Streetcode.BLL.Services.Tokens;
 
@@ -29,7 +30,7 @@ public class TokenService : ITokenService
         _tokensConfiguration = tokensConfiguration;
         _logger = logger;
     }
-    
+
     public string GenerateAccessToken(User user, List<Claim> claims)
     {
         if (user is null)
@@ -102,7 +103,7 @@ public class TokenService : ITokenService
             _logger.LogError(token!, errorMsg);
             throw new ArgumentNullException(errorMsg);
         }
-        
+
         JwtSecurityTokenHandler tokenHandler = new();
 
         if (!tokenHandler.CanReadToken(token))
@@ -111,7 +112,7 @@ public class TokenService : ITokenService
             _logger.LogError(token, errorMsg);
             throw new ArgumentNullException(errorMsg);
         }
-        
+
         var tokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = true,
@@ -130,13 +131,11 @@ public class TokenService : ITokenService
 
     public RefreshTokenDTO GenerateRefreshToken()
     {
-        var refreshToken = new RefreshTokenDTO
+        return new RefreshTokenDTO
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             Expires = DateTime.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
         };
-
-        return refreshToken;
     }
 
     public string? GetUserIdFromAccessToken(string accessToken)
@@ -146,17 +145,17 @@ public class TokenService : ITokenService
         var userIdClaim = jwtToken?.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub)?.Value;
         return userIdClaim;
     }
-    
+
     public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
     {
-        if(user == null)
+        if (user == null)
         {
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound);
             _logger.LogError(user, errorMsg);
             throw new ArgumentNullException(errorMsg);
         }
 
-        if(newRefreshToken == null)
+        if (newRefreshToken == null)
         {
             var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken);
             _logger.LogError(newRefreshToken, errorMsg);
@@ -164,7 +163,6 @@ public class TokenService : ITokenService
         }
 
         user.RefreshToken = newRefreshToken.Token;
-        user.Created = newRefreshToken.Created;
         user.Expires = newRefreshToken.Expires;
         await _userManager.UpdateAsync(user);
     }
@@ -196,7 +194,7 @@ public class TokenService : ITokenService
             await _userManager.UpdateAsync(user);
         }
     }
-    
+
     public async Task GenerateAndSetTokensAsync(User user, HttpResponse response)
     {
         var tokens = await GenerateTokens(user);
