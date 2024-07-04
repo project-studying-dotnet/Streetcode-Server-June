@@ -29,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (!httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) || string.IsNullOrEmpty(refreshToken))
+            if (!httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) && string.IsNullOrEmpty(refreshToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.RefreshTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
@@ -37,9 +37,9 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
             }
 
             var user = _userManager.Users
+                .Where(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.Expires > DateTime.UtcNow))
                 .Include(u => u.RefreshTokens)
-                .FirstOrDefault(u => u.RefreshTokens
-                .Any(t => t.Token == refreshToken && t.Expires > DateTime.UtcNow));
+                .FirstOrDefault();
 
             if (user is null)
             {
