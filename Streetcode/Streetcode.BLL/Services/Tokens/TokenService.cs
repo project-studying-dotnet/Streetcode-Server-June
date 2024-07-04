@@ -176,19 +176,33 @@ public class TokenService : ITokenService
         });
     }
 
-    private RefreshTokenDTO GenerateRefreshToken()
+    public RefreshTokenDTO GenerateRefreshToken()
     {
-        var refreshToken = new RefreshTokenDTO
+        var created = DateTime.UtcNow;
+        return new RefreshTokenDTO
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
+            Created = created,
+            Expires = created.AddDays(_tokensConfiguration.RefreshTokenExpirationDays)
         };
-
-        return refreshToken;
     }
 
-    private async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
+    public async Task SetRefreshToken(RefreshTokenDTO newRefreshToken, User user)
     {
+        if (user == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound);
+            _logger.LogError(user, errorMsg);
+            throw new ArgumentNullException(errorMsg);
+        }
+
+        if (newRefreshToken == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken);
+            _logger.LogError(newRefreshToken, errorMsg);
+            throw new ArgumentNullException(errorMsg);
+        }
+
         var refreshToken = new RefreshToken
         {
             Token = newRefreshToken.Token,
