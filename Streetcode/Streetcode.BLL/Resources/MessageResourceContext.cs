@@ -50,23 +50,6 @@ namespace Streetcode.BLL.Resources
             return message;
         }
         
-        public static string GetMessage(string error, object? formatValue)
-        {
-            string? message = _resourceManager.GetString(error);
-
-            if (message == null)
-            {
-                return $"Error message '{error}' not found.";
-            }
-
-            if (formatValue != null)
-            {
-                message = string.Format(message, formatValue);
-            }
-
-            return message;
-        }
-        
         private static string EntityFilter(string input)
         {
             var parts = input.Split('.');
