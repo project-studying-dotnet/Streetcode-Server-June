@@ -32,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) || string.IsNullOrEmpty(accessToken))
+            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) && string.IsNullOrEmpty(accessToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
@@ -49,7 +49,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
             var userId = _tokenService.GetUserIdFromAccessToken(accessToken);
             var user = await _userManager.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.Id == new Guid(userId));
 
-            if (httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) || !string.IsNullOrEmpty(refreshToken))
+            if (httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) && !string.IsNullOrEmpty(refreshToken))
             {
                 var refreshTokenEntity = user.RefreshTokens.FirstOrDefault(rt => rt.Token == refreshToken);
                 if (refreshTokenEntity != null)
