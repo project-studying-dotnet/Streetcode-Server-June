@@ -1,33 +1,11 @@
 dev
-## JIRA
+## Describe your changes . Please include a summary of the changes and  also include relevant motivation and context
 
-* [Main JIRA ticket](https://jira.softserve.academy/secure/RapidBoard.jspa?rapidView=id)
+## Issue ticket number and link
 
-
-## Code reviewers
-
-- [ ] @github_username
-
-### Second Level Review
-
-- [ ] @github_username
-
-## Summary of issue
-
-ToDo
-
-## Summary of change
-
-ToDo
-
-## Testing approach
-
-ToDo
-
-## CHECK LIST
-- [ ]  СI passed
-- [ ]  Сode coverage >=95%
-- [ ]  PR is reviewed manually again (to make sure you have 100% ready code)
-- [ ]  All reviewers agreed to merge the PR
-- [ ]  I've checked new feature as logged in and logged out user if needed
-- [ ]  PR meets all conventions
+## Checklist before requesting a review
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Have you lint your code locally before submission?
+- [ ] If that PR have tests
+- [ ] I have performed a self-review of my code
