@@ -9,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddSwaggerServices();
 builder.Services.AddHttpClients(builder.Configuration);
 builder.Services.AddCustomServices();
 builder.Services.AddIdentityService();
@@ -20,18 +19,10 @@ builder.Services.ConfigureInstagram(builder);
 builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
 builder.Services.AddTokensConfiguration(builder.Configuration);
+builder.Services.AddSwaggerServices();
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-if (app.Environment.EnvironmentName == "Local")
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
-}
-else
-{
-    app.UseHsts();
-}
 
 app.UseMiddleware<GenericExceptionHandlerMiddleware>();
 
@@ -44,6 +35,16 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+if (app.Environment.EnvironmentName == "Local")
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIv5 v1"));
+}
+else
+{
+    app.UseHsts();
+}
 
 app.UseHangfireDashboard("/dash");
 
