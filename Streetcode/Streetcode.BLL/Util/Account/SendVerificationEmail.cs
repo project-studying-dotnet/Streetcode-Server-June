@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Routing;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Interfaces.Email;
 using Streetcode.DAL.Entities.AdditionalContent.Email;
 using Streetcode.DAL.Entities.Users;
+using System.Net.Http;
 
 namespace Streetcode.BLL.Util.Account
 {
@@ -16,17 +18,21 @@ namespace Streetcode.BLL.Util.Account
 
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailSender;
-        private IUrlHelper _urlHelper;
+        private readonly LinkGenerator _linkGenerator;
+        private HttpContext _httpContext = null!;
 
-        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, IUrlHelper urlHelper)
+        public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, LinkGenerator linkGenerator)
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            _urlHelper = urlHelper;
+            _linkGenerator = linkGenerator;
+            
         }
 
-        public async Task SendVerification(string email)
+        public async Task SendVerification(string email, HttpContext httpContext)
         {
+            _httpContext = httpContext;
+
             string url = await CreateUrl(email);
 
             await SendEmail(email, url);
@@ -39,10 +45,12 @@ namespace Streetcode.BLL.Util.Account
             if (user != null)
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var url = _urlHelper.Action(
-                    ACTION, CONTROLLER, new { userId = user.Id, token = token });
+                var url = _linkGenerator.GetPathByAction(
+                    _httpContext, ACTION, CONTROLLER, new { userId = user.Id, token = token });
+                var baseUrl = $"{_httpContext.Request.Scheme}://{_httpContext.Request.Host}";
+                var fullUrl = baseUrl + url;
 
-                return url!;
+                return fullUrl!;
             }
             else
             {

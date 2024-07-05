@@ -16,9 +16,9 @@ namespace Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail
     public class ConfirmUserEmailHandler : IRequestHandler<ConfirmUserEmailCommand, Result<string>>
     {
         private readonly ILoggerService _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public ConfirmUserEmailHandler(UserManager<IdentityUser> userManager, ILoggerService logger)
+        public ConfirmUserEmailHandler(UserManager<User> userManager, ILoggerService logger)
         {
             _logger = logger;
             _userManager = userManager;
