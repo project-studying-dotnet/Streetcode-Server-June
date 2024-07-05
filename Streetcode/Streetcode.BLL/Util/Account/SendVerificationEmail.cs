@@ -19,26 +19,21 @@ namespace Streetcode.BLL.Util.Account
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailSender;
         private readonly LinkGenerator _linkGenerator;
-        private HttpContext _httpContext = null!;
 
         public SendVerificationEmail(UserManager<User> userManager, IEmailService emailSender, LinkGenerator linkGenerator)
         {
             _userManager = userManager;
             _emailSender = emailSender;
-            _linkGenerator = linkGenerator;
-            
+            _linkGenerator = linkGenerator;   
         }
 
         public async Task SendVerification(string email, HttpContext httpContext)
         {
-            _httpContext = httpContext;
-
-            string url = await CreateUrl(email);
-
+            string url = await CreateUrl(email, httpContext);
             await SendEmail(email, url);
         }
 
-        public async Task<string> CreateUrl(string email)
+        public async Task<string> CreateUrl(string email, HttpContext httpContext)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -46,9 +41,8 @@ namespace Streetcode.BLL.Util.Account
             {
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var url = _linkGenerator.GetPathByAction(
-                    _httpContext, ACTION, CONTROLLER, new { userId = user.Id, token = token });
-                var baseUrl = $"{_httpContext.Request.Scheme}://{_httpContext.Request.Host}";
-                var fullUrl = baseUrl + url;
+                     ACTION, CONTROLLER, new { userId = user.Id, token = token });
+                var fullUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{url}";
 
                 return fullUrl!;
             }
