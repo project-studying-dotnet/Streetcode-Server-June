@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail;
 using Streetcode.BLL.Resources;
+using Streetcode.DAL.Entities.Users;
 using Xunit;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -14,19 +15,19 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.EmailVerification
 {
     public class ConfirmUserEmailHandlerTest
     {
-        private readonly UserManager<IdentityUser> _mockUserManager;
+        private readonly UserManager<User> _mockUserManager;
         private readonly Mock<ILoggerService> _mockLogger;
         private readonly ConfirmUserEmailHandler _handler;
-        private readonly Mock<IUserStore<IdentityUser>> _userStore;
+        private readonly Mock<IUserStore<User>> _userStore;
         private ConfirmUserEmailCommand _command = new ConfirmUserEmailCommand(null!, null!);
 
         public ConfirmUserEmailHandlerTest()
         {
             _mockLogger = new Mock<ILoggerService>();
 
-            _userStore = new Mock<IUserStore<IdentityUser>>();
+            _userStore = new Mock<IUserStore<User>>();
 
-            _mockUserManager = new UserManager<IdentityUser>(_userStore.Object, null, null, null, null, null, null, null, null);
+            _mockUserManager = new UserManager<User>(_userStore.Object, null, null, null, null, null, null, null, null);
 
             _handler = new ConfirmUserEmailHandler(_mockUserManager, _mockLogger.Object);
         }
@@ -62,7 +63,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.EmailVerification
         public async Task Handle_ShouldReturnError_WhenUserIsNull()
         {
             _userStore.Setup(x => x.FindByIdAsync("Id", CancellationToken.None))
-               .ReturnsAsync((IdentityUser)null!);
+               .ReturnsAsync((User)null!);
 
             var result = await Act("Id", "token");
             string expected = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, _command);
