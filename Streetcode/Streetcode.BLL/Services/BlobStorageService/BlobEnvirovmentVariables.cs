@@ -8,4 +8,5 @@ public class BlobEnvironmentVariables
     public string StorageAccountName { get; set; } = string.Empty;
     public string StorageAccountKey { get; set; } = string.Empty;
     public string ContainerName { get; set; } = string.Empty;
+    public string BlobStorageLocalConnectionString { get; set; } = string.Empty;
 }

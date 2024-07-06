@@ -14,8 +14,13 @@ namespace Streetcode.BLL.Services.BlobStorageService
 
         public AzureBlobService(IOptions<BlobEnvironmentVariables> options, IRepositoryWrapper? repositoryWrapper = null)
         {
-            _blobServiceClient = new BlobServiceClient(new Uri(options.Value.BlobServiceEndpoint), new Azure.Storage.StorageSharedKeyCredential(options.Value.StorageAccountName, options.Value.StorageAccountKey));
-            _containerClient = _blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
+            var environment = options.Value;
+
+            _blobServiceClient = !string.IsNullOrEmpty(environment.BlobStorageLocalConnectionString)
+                ? new BlobServiceClient(environment.BlobStorageLocalConnectionString)
+                : new BlobServiceClient(new Uri(environment.BlobServiceEndpoint), new Azure.Storage.StorageSharedKeyCredential(environment.StorageAccountName, environment.StorageAccountKey));
+
+            _containerClient = _blobServiceClient.GetBlobContainerClient(environment.ContainerName);
             _containerClient.CreateIfNotExists();
             _repositoryWrapper = repositoryWrapper;
         }
