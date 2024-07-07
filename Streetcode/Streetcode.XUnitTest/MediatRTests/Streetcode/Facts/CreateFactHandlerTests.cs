@@ -76,7 +76,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.Facts;
     public async Task Handle_ShouldReturnFailResult_WhenFactIsNull()
     {
         // Arrange
-        var erorrMsg = new Error("New fact cannot be null");
+        var erorrMsg = new Error("Cannot convert null to Fact");
         _mockMapper.Setup(m => m.Map<Fact>(_factDTO)).Returns((Fact)null!);
 
         // Act
@@ -90,7 +90,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.Facts;
     public async Task Handle_ShouldReturnFailResult_WhenStreetcodeIdZero()
     {
         // Arrange
-        var erorrMsg = new Error("StreetcodeId cannot be 0. Please provide a valid StreetcodeId.");
+        var erorrMsg = new Error("The streetcode content is null");
         _mockMapper.Setup(m => m.Map<Fact>(_factDTO)).Returns(_withoutStreetcodeIdEntity);
 
         // Act
@@ -103,7 +103,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.Facts;
     [Fact]
     public async Task Handle_ShouldReturnFailResult_WhenSaveChangesFails()
     {
-        var erorrMsg = new Error("Failed to create a fact");
+        var erorrMsg = new Error("Failed to create a Fact");
 
         // Arrange
         SetupMocksForSuccess();

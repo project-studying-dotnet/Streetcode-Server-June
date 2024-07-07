@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Timeline.Create;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -28,7 +29,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Create
 
             if (string.IsNullOrEmpty(newTimelineItem?.Title))
             {
-                const string errorMsg = "Timeline item title is null or empty";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.TitleNullEmpty, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail<CreateTimelineItemDTO>(errorMsg);
             }

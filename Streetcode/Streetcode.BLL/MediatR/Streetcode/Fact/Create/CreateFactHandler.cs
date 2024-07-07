@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Create;
@@ -28,7 +29,7 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
 
         if (newFact is null)
         {
-            const string errorMsg = "New fact cannot be null";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToConvertNull, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -37,7 +38,7 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
 
         if (newFact.StreetcodeId == 0)
         {
-            const string errorMsg = "StreetcodeId cannot be 0. Please provide a valid StreetcodeId.";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.StreetCodeIsNull, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -51,7 +52,7 @@ public class CreateFactHandler : IRequestHandler<CreateFactCommand, Result<FactD
         }
         else
         {
-            const string errorMsg = "Failed to create a fact";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

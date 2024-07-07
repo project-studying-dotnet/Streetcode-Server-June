@@ -71,7 +71,7 @@ public class GetTextByStreetcodeIdHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal($"Cannot find a transaction link by a streetcode id: 1, because such streetcode doesn`t exist", result.Errors.First().Message);
+        Assert.Equal($"No streetcodes exist now", result.Errors.First().Message);
         mockLogger.Verify(logger => logger.LogError(It.IsAny<GetTextByStreetcodeIdQuery>(), It.IsAny<string>()), Times.Once);
     }
 

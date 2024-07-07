@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
@@ -26,7 +27,7 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
 
             if (teamMemberLink is null)
             {
-                const string errorMsg = "Cannot convert null to team link";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -35,7 +36,7 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
 
             if (createdTeamLink is null)
             {
-                const string errorMsg = "Cannot create team link";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -44,14 +45,14 @@ namespace Streetcode.BLL.MediatR.Team.TeamMembersLinks.Create
 
             if (!resultIsSuccess)
             {
-                const string errorMsg = "Failed to create a team";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
             var createdTeamLinkDTO = _mapper.Map<TeamMemberLinkDTO>(createdTeamLink);
 
-            if(createdTeamLinkDTO != null)
+            if (createdTeamLinkDTO != null)
             {
                 return Result.Ok(createdTeamLinkDTO);
             }

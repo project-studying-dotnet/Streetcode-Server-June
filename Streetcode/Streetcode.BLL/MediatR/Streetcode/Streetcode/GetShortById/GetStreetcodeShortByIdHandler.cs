@@ -34,9 +34,9 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetShortById
 
             var streetcodeShortDTO = _mapper.Map<StreetcodeShortDTO>(streetcode);
 
-            if(streetcodeShortDTO == null)
+            if (streetcodeShortDTO == null)
             {
-                const string errorMsg = "Cannot map streetcode to shortDTO";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

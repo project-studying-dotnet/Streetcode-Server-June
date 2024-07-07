@@ -204,7 +204,7 @@
   <data name="StreetcodeUrlNotFound" xml:space="preserve">
     <value>Cannot find streetcode by transliteration url: {1}</value>
   </data>
-=  <data name="EmailIsUse" xml:space="preserve">
+  <data name="EmailIsUse" xml:space="preserve">
     <value>A user with this email is already registered</value>
   </data>
   <data name="LoginIsUse" xml:space="preserve">
@@ -215,7 +215,7 @@
   </data>
   <data name="FailCreateUser" xml:space="preserve">
     <value>Failed to create user</value>
-    </data>
+  </data>
   <data name="InvalidUsernameOrPassword" xml:space="preserve">
     <value>Invalid username or password</value>
   </data>
@@ -227,6 +227,21 @@
   </data>
   <data name="RolesNotFound" xml:space="preserve">
     <value>Roles not found</value>
+  </data>
+  <data name="CanNotMap" xml:space="preserve">
+    <value>Cannot map entity</value>
+  </data>
+  <data name="CanNotParseText" xml:space="preserve">
+    <value>text was not parsed successfully</value>
+  </data>
+  <data name="FactNotFoundInListPosition" xml:space="preserve">
+    <value>Fact with id not found in list of new position</value>
+  </data>
+  <data name="FailSaveChangesDB" xml:space="preserve">
+    <value>Failed to save changes to the database.</value>
+  </data>
+  <data name="TitleNullEmpty" xml:space="preserve">
+    <value>Timeline item title is null or empty</value>
   </data>
   <data name="EmptyQuery" xml:space="preserve">
     <value>Search query cannot be null or empty</value>

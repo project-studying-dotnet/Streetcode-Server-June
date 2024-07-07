@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FluentResults;
+using MailKit;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Entity = Streetcode.DAL.Entities.Streetcode.TextContent.Text;
 
@@ -27,7 +29,7 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
 
         if (newText is null)
         {
-            const string errorMsg = "Cannot create new Text entity!";
+            string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -38,20 +40,20 @@ public class CreateTextCommandHandler : IRequestHandler<CreateTextCommand, Resul
 
         if (!isSuccessResult)
         {
-            const string errorMsg = "Cannot save changes in the database after Text creation!";
+            string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotCreate, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
 
         var createdTextDto = _mapper.Map<TextDTO>(createdText);
 
-        if(createdTextDto != null)
+        if (createdTextDto != null)
         {
             return Result.Ok(createdTextDto);
         }
         else
         {
-            const string errorMsg = "Cannot map entity!";
+            string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

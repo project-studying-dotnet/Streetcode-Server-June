@@ -4,6 +4,7 @@ using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Text;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Text.GetByStreetcodeId;
@@ -32,7 +33,7 @@ public class GetTextByStreetcodeIdHandler : IRequestHandler<GetTextByStreetcodeI
             await _repositoryWrapper.StreetcodeRepository
                  .GetFirstOrDefaultAsync(s => s.Id == request.StreetcodeId) == null)
         {
-            var errorMsg = $"Cannot find a transaction link by a streetcode id: {request.StreetcodeId}, because such streetcode doesn`t exist";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.StreetcodeNotExist, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

@@ -31,6 +31,12 @@ namespace Streetcode.BLL.MediatR.Partners.GetAllPartnerShort
 
             var partners = await _repositoryWrapper.PartnersRepository.GetAllAsync();
 
+            if (partners is null)
+            {
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(errorMsg);
+            }
 
             return Result.Ok(_mapper.Map<IEnumerable<PartnerShortDTO>>(partners));
         }

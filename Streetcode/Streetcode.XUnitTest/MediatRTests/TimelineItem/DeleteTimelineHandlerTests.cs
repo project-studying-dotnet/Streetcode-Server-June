@@ -59,7 +59,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
 
             var handler = new DeleteTimelineItemHandler(_mockRepositoryWrapper.Object, _mockLogger.Object);
 
-            var expectedErrorMessage = "Cannot find timeline item";
+            var expectedErrorMessage = "Cannot find any TimelineItem";
 
             // Act
             var result = await handler.Handle(new DeleteTimelineItemCommand(1), CancellationToken.None);
@@ -94,7 +94,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
 
             var handler = new DeleteTimelineItemHandler(_mockRepositoryWrapper.Object, _mockLogger.Object);
 
-            var expectedErrorMessage = "Cannot delete timeline item";
+            var expectedErrorMessage = "Failed to delete a TimelineItem";
 
             // Act
             var result = await handler.Handle(new DeleteTimelineItemCommand(1), CancellationToken.None);

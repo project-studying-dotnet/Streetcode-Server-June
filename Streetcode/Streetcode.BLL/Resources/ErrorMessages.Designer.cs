@@ -88,6 +88,24 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot map entity.
+        /// </summary>
+        public static string CanNotMap {
+            get {
+                return ResourceManager.GetString("CanNotMap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to text was not parsed successfully.
+        /// </summary>
+        public static string CanNotParseText {
+            get {
+                return ResourceManager.GetString("CanNotParseText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A user with this email is already registered.
         /// </summary>
         public static string EmailIsUse {
@@ -187,6 +205,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fact with id not found in list of new position.
+        /// </summary>
+        public static string FactNotFoundInListPosition {
+            get {
+                return ResourceManager.GetString("FactNotFoundInListPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to add role.
         /// </summary>
         public static string FailAddRole {
@@ -201,6 +228,15 @@ namespace Streetcode.BLL.Resources {
         public static string FailCreateUser {
             get {
                 return ResourceManager.GetString("FailCreateUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save changes to the database..
+        /// </summary>
+        public static string FailSaveChangesDB {
+            get {
+                return ResourceManager.GetString("FailSaveChangesDB", resourceCulture);
             }
         }
         
@@ -394,6 +430,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timeline item title is null or empty.
+        /// </summary>
+        public static string TitleNullEmpty {
+            get {
+                return ResourceManager.GetString("TitleNullEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User not found.
         /// </summary>
         public static string UserNotFound {
@@ -401,7 +446,6 @@ namespace Streetcode.BLL.Resources {
                 return ResourceManager.GetString("UserNotFound", resourceCulture);
             }
         }
-
         /// <summary>
         ///   Looks up a localized string similar to Cannot find streetcode by transliteration url: {1}.
         /// </summary>

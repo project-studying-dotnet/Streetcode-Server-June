@@ -29,7 +29,7 @@ app.UseMiddleware<GenericExceptionHandlerMiddleware>();
 
 await app.ApplyMigrations();
 
-//await app.SeedDataAsync(); // uncomment for seeding data in local
+// await app.SeedDataAsync(); // uncomment for seeding data in local
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -55,7 +55,7 @@ if (app.Environment.EnvironmentName != "Local")
     RecurringJob.AddOrUpdate<WebParsingUtils>(wp => wp.ParseZipFileFromWebAsync(), Cron.Monthly);
     RecurringJob.AddOrUpdate<BlobService>(b => b.CleanBlobStorage(), Cron.Monthly);
     RecurringJob.AddOrUpdate<AzureBlobService>(b => b.CleanBlobStorage(), Cron.Monthly);
-    RecurringJob.AddOrUpdate<TokenService>(ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly);
+    RecurringJob.AddOrUpdate<TokenService>(ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly(DayOfWeek.Wednesday, 3, 0));
 }
 
 app.MapControllers();
