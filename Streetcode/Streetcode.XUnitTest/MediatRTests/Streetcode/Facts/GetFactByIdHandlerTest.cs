@@ -5,6 +5,7 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System;
@@ -16,8 +17,6 @@ using Xunit;
 
 public class GetFactByIdHandlerTest
 {
-    private const string ERRORMESSAGE = "Cannot find any Fact with corresponding id: ";
-
     private readonly Mock<IRepositoryWrapper> mockRepositoryWrapper;
     private readonly Mock<IMapper> mockMapper;
     private readonly Mock<ILoggerService> mockLogger;
@@ -109,20 +108,16 @@ public class GetFactByIdHandlerTest
             .Setup(repo => repo.FactRepository
             .GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Fact, bool>>>(), default))
             .ReturnsAsync((Fact)null!);
-
-        var handler = new GetFactByIdHandler(
-            mockRepositoryWrapper.Object,
-            mockMapper.Object,
-            mockLogger.Object);
+        var request = new GetFactByIdQuery(facts[0].Id);
+        var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
+        var handler = new GetFactByIdHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
 
         // Act
-        var result = await handler.Handle(
-            new GetFactByIdQuery(facts[0].Id),
-            CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.Multiple(
         () => Assert.True(result.IsFailed),
-        () => Assert.Equal($"{ERRORMESSAGE}{facts[0].Id}", result.Errors.FirstOrDefault()?.Message));
+        () => Assert.Equal(expectedErrorMessage, result.Errors.FirstOrDefault()?.Message));
     }
 }

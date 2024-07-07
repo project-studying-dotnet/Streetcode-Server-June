@@ -5,6 +5,7 @@ using Moq;
 using Streetcode.BLL.DTO.Timeline;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Timeline.TimelineItem.Update;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Timeline;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Repositories.Interfaces.Base;
@@ -32,16 +33,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Timeline.TimelineItem
         public async Task Handle_TimelineItemNotFound_ThrowsRequestException()
         {
             // Arrange
-            var command = new UpdateTimelineItemCommand(new TimelineItemDTO { Id = 1 });
+            var request = new UpdateTimelineItemCommand(new TimelineItemDTO { Id = 1 });
             _mapperMock.Setup(m => m.Map<TimelineItemEntity>(It.IsAny<TimelineItemDTO>())).Returns(new TimelineItemEntity { Id = 1 });
             MockRepositoryWrapper(returnNull: true);
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
+            // Act
             _handler = new UpdateTimelineItemHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            var result = await _handler.Handle(request, CancellationToken.None);
 
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Act & Assert
-            Assert.True(result.Errors[0].Message == "Cannot find any TimelineItem with corresponding id: 1");
+            // Assert
+            Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
         }
 
         [Fact]

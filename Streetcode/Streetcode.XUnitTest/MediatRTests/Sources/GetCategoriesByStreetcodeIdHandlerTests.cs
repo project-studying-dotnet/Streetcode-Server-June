@@ -67,8 +67,6 @@ public class GetCategoriesByStreetcodeIdHandlerTests
         var request = new GetCategoriesByStreetcodeIdQuery(1);
         var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request, request.StreetcodeId);
 
-        IError error = new Error(errorMsg);
-
         _repositoryWrapperMock.Setup(repo => repo.SourceCategoryRepository.GetAllAsync(
             It.IsAny<Expression<Func<SourceLinkCategory, bool>>>(),
             It.IsAny<Func<IQueryable<SourceLinkCategory>, IIncludableQueryable<SourceLinkCategory, object>>>()))
@@ -78,7 +76,7 @@ public class GetCategoriesByStreetcodeIdHandlerTests
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.Errors?.Exists(e => e.Message == error.Message));
+        Assert.Equal(errorMsg, result.Errors.First().Message);
     }
 
     [Fact]

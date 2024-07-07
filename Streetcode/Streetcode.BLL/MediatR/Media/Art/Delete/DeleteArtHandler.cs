@@ -32,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Media.Art.Delete
 
             if (art == null)
             {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, request.id);
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }

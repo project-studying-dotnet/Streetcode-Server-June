@@ -96,20 +96,17 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.StreetcodeBlock
                 .Setup(maper => maper.Map<StreetcodeContent>(_streetcodeDTO))
                 .Returns(_streetcodeEntity);
             _mockRepositoryWrapper.Setup(repo => repo.StreetcodeRepository.CreateAsync(_streetcodeEntity))
-               .Callback<StreetcodeContent>(content =>
-               {
-                   content.Id = 1;
-               }).ReturnsAsync(_streetcodeEntity);
+               .Callback<StreetcodeContent>(content => content.Id = 1).ReturnsAsync(_streetcodeEntity);
             _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
+            var expectedMessage = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, _command);
 
             // Act
             var result = await _handler.Handle(_command, CancellationToken.None);
-            string expected = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, _command);
-
+           
             // Assert
             Assert.Multiple(
                () => Assert.True(result.IsFailed),
-               () => Assert.Equal(expected, result.Errors.FirstOrDefault()?.Message));
+               () => Assert.Equal(expectedMessage, result.Errors.FirstOrDefault()?.Message));
         }
     }
 }

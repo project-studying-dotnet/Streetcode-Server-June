@@ -7,6 +7,7 @@
     using Streetcode.BLL.DTO.Team;
     using Streetcode.BLL.Interfaces.Logging;
     using Streetcode.BLL.MediatR.Team.GetById;
+    using Streetcode.BLL.Resources;
     using Streetcode.DAL.Entities.Team;
     using Streetcode.DAL.Repositories.Interfaces.Base;
     using Xunit;
@@ -165,15 +166,16 @@
             // Arrange
             int id = -1;
             ArrangeMockWrapper();
-            var query = new GetByIdTeamQuery(id);
-            var memberResult = _membersDto.SingleOrDefault(m => m.Id == id);
+            var request = new GetByIdTeamQuery(id);
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
             // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+            var result = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(l => l.LogError(query, $"{Errormsg}{id}"), Times.Once);
-            Assert.Contains(result.Reasons, m => m.Message == $"{Errormsg}{id}");
+            Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
+            _mockLogger.Verify(l => l.LogError(request, expectedErrorMessage), Times.Once);
+            Assert.Contains(result.Reasons, m => m.Message == expectedErrorMessage);
         }
 
         private void ArrangeMockWrapper(int? id = null)

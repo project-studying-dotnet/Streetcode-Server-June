@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
@@ -32,7 +31,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategor
 
             if (str_cont == null)
             {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, request.sourcelinkcatId);
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
                 m_logger.LogError(request, errorMsg);
 

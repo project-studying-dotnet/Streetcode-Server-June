@@ -10,6 +10,7 @@ using Moq;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Mapping.Sources;
 using Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategory;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Streetcode.DAL.Repositories.Interfaces.Source;
@@ -84,19 +85,18 @@ namespace Streetcode.XUnitTest.MediatRTests.SourcesTest
         [Fact]
         public async Task Handler_Delete_Fail_WhenRepositioryIsEmpty()
         {
+            // Arrange
             m_repo = new List<StreetcodeCategoryContent>();
+            var request = new DeleteContentCategoryCommand(1, 1);
+            await SetupRepoWrapper(request);
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
-            DeleteContentCategoryCommand quer = new DeleteContentCategoryCommand(1, 1);
-
-            await SetupRepoWrapper(quer);
-
+            // Act
             var handler = new DeleteContentCategoryHandler(m_mapper, m_logger.Object, m_repmock.Object);
+            var result = await handler.Handle(request, CancellationToken.None);
 
-            var result = await handler.Handle(quer, CancellationToken.None);
-
-            Assert.Multiple(
-          () => Assert.True(result.Errors.Count > 0),
-                () => Assert.Equal("Cannot find any Categories with corresponding id: 1", result.Errors[0].Message));
+            // Assert
+            Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
         }
 
         public void Remove(StreetcodeCategoryContent c)

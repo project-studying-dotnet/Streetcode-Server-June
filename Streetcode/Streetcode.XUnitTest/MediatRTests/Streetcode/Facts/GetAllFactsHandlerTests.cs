@@ -6,14 +6,13 @@
     using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
     using Streetcode.BLL.Interfaces.Logging;
     using Streetcode.BLL.MediatR.Streetcode.Fact.GetAll;
+    using Streetcode.BLL.Resources;
     using Streetcode.DAL.Entities.Streetcode.TextContent;
     using Streetcode.DAL.Repositories.Interfaces.Base;
     using Xunit;
 
     public class GetAllFactsHandlerTests
     {
-        private const string ERRORMESSAGE = "Cannot find any Fact";
-
         private readonly Mock<IRepositoryWrapper> mockRepositoryWrapper;
         private readonly Mock<IMapper> mockMapper;
         private readonly Mock<ILoggerService> mockLogger;
@@ -36,15 +35,17 @@
             mockRepositoryWrapper
                 .Setup(repo => repo.FactRepository.GetAllAsync(default, default))
                 .ReturnsAsync((IEnumerable<Fact>)null!);
-            var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
+            var request = new GetAllFactsQuery();
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
 
             // Act
-            var result = await handler.Handle(new GetAllFactsQuery(), CancellationToken.None);
+            var handler = new GetAllFactsHandler(mockRepositoryWrapper.Object, mockMapper.Object, mockLogger.Object);
+            var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
             Assert.Multiple(
                 () => Assert.True(result.IsFailed),
-                () => Assert.Equal(ERRORMESSAGE, result.Errors.FirstOrDefault()?.Message));
+                () => Assert.Equal(expectedErrorMessage, result.Errors.FirstOrDefault()?.Message));
         }
 
         [Fact]

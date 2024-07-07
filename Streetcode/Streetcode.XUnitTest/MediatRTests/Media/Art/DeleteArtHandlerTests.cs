@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection.Metadata.Ecma335;
 using AutoMapper;
+using Azure.Core;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using Org.BouncyCastle.Asn1.Ocsp;
@@ -47,13 +48,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Media.Art
         {
             // Arrange
             MockRepositoryWrapperSetupWithNotExistingArtId();
-
-            _handler = new DeleteArtHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
-
-            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, new DeleteArtCommand(1), 1);
+            var request = new DeleteArtCommand(1);
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
             // Act
-            var result = await _handler.Handle(new DeleteArtCommand(1), CancellationToken.None);
+            _handler = new DeleteArtHandler(_repositoryWrapperMock.Object, _mapperMock.Object, _loggerMock.Object);
+            var result = await _handler.Handle(request, CancellationToken.None);
             var actualErrorMessage = result.Errors[0].Message;
 
             // Assert

@@ -10,6 +10,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
     using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
     using Streetcode.BLL.Interfaces.Logging;
     using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
+    using Streetcode.BLL.Resources;
     using Streetcode.DAL.Entities.Streetcode.TextContent;
     using Streetcode.DAL.Repositories.Interfaces.Base;
     using Xunit;
@@ -98,27 +99,18 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
         public async Task Handle_Should_ReturnErrorMessage_WhenRepositoryReturnsNull()
         {
             // Arrange
-            Fact fact = _facts[0];
-
-            _mockRepositoryWrapper
-                .Setup(repo => repo.FactRepository.GetAllAsync(
-                    It.IsAny<Expression<Func<Fact, bool>>>(), default))
-                .ReturnsAsync((IEnumerable<Fact>)null!);
-
-            var handler = new GetFactByStreetcodeIdHandler(
-                _mockRepositoryWrapper.Object,
-                _mockMapper.Object,
-                _mockLogger.Object);
+            var fact = _facts[0];
+            var request = new GetFactByStreetcodeIdQuery(fact.StreetcodeId);
+            _mockRepositoryWrapper.Setup(repo => repo.FactRepository.GetAllAsync(It.IsAny<Expression<Func<Fact, bool>>>(), default)).ReturnsAsync((IEnumerable<Fact>)null!);
+            var handler = new GetFactByStreetcodeIdHandler(_mockRepositoryWrapper.Object, _mockMapper.Object, _mockLogger.Object);
+            var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
 
             // Act
-            var result = await handler.Handle(
-                new GetFactByStreetcodeIdQuery(fact.StreetcodeId),
-                CancellationToken.None);
+            var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
-            Assert.Multiple(
-                () => Assert.True(result.IsFailed),
-                () => Assert.Equal($"{ERRORMESSAGE}{fact.StreetcodeId}", result.Errors.FirstOrDefault()?.Message));
+            Assert.True(result.IsFailed);
+            Assert.Equal(expectedErrorMessage, result.Errors.FirstOrDefault()?.Message);
         }
 
         private void MockingWrapperAndMapperWithValue()

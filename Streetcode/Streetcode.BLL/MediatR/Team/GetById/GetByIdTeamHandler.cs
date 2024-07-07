@@ -28,12 +28,11 @@ namespace Streetcode.BLL.MediatR.Team.GetById
                 .TeamRepository
                 .GetSingleOrDefaultAsync(
                     predicate: p => p.Id == request.Id,
-                    include: x => x.Include(x => x.TeamMemberLinks)
-                    .Include(x => x.Positions));
+                    include: x => x.Include(x => x.TeamMemberLinks).Include(x => x.Positions));
 
             if (team is null)
             {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, request.Id);
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

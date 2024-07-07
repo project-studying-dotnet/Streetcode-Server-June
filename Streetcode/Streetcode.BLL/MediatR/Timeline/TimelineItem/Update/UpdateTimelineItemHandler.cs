@@ -35,7 +35,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Update
 
             if (updatingTimelineItem == null)
             {
-                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, request.sourceTimeLine.Id);
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail<TimelineItemDTO>(errorMsg);
             }

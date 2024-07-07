@@ -4,6 +4,7 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Create;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -103,9 +104,8 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.Facts;
     [Fact]
     public async Task Handle_ShouldReturnFailResult_WhenSaveChangesFails()
     {
-        var erorrMsg = new Error("Failed to create a Fact");
-
         // Arrange
+        var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, _createFactCommand);
         SetupMocksForSuccess();
         _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
@@ -113,7 +113,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTest.Facts;
         var result = await _handler.Handle(_createFactCommand, CancellationToken.None);
 
         // Assert
-        Assert.True(result.Errors?.Exists(e => e.Message == erorrMsg.Message));
+        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
     }
 
     private void SetupMocksForSuccess()

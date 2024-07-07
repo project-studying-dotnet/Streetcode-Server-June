@@ -70,15 +70,15 @@ public class UpdateTextHandlerTests
     {
         // Arrange
         var request = ArrangeMocksForSavingFails();
-        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToUpdate, request);
-
+        var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailToUpdate, request);
+        
         // Act
         var result = await handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal(errorMsg, result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, errorMsg), Times.Once);
+        Assert.Equal(expectedErrorMessage, result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, expectedErrorMessage), Times.Once);
     }
 
     [Fact]
@@ -149,6 +149,7 @@ public class UpdateTextHandlerTests
         var textUpdateDto = GetTextUpdateDto();
         var textEntity = GetTextEntity();
         var updatedTextEntity = GetUpdatedTextEntity();
+        var text = GetUpdatedDto();
 
         mockRepo.Setup(repo => repo.TextRepository.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<Entity, bool>>>(),
@@ -158,6 +159,7 @@ public class UpdateTextHandlerTests
         mockMapper.Setup(mapper => mapper.Map<Entity>(textUpdateDto)).Returns(updatedTextEntity.Entity);
         mockRepo.Setup(repo => repo.TextRepository.Update(It.IsAny<Entity>()));
         mockRepo.Setup(repo => repo.SaveChangesAsync()).ReturnsAsync(0);
+        mockMapper.Setup(mapper => mapper.Map<TextDTO>(updatedTextEntity.Entity)).Returns(text);
 
         return new UpdateTextCommand(1, textUpdateDto);
     }

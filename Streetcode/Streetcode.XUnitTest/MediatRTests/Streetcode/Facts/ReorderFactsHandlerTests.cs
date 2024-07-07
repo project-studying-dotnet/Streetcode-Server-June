@@ -7,6 +7,7 @@ using Moq;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Streetcode.TextContent;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using Xunit;
@@ -49,15 +50,14 @@ public class ReorderFactsCommandHandlerTests
     {
         // Arrange
         var request = GetTestReorderFactsCommand();
-        IError msgError = new Error("Cannot find any Fact by a streetcode id: 1");
-        
         SetupMocks(1, Enumerable.Empty<Fact>());
+        var expectedErrorMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
 
         // Act
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.Equal("Cannot find any Fact by a streetcode id: 1", result.Errors[0].Message);
+        Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
     }
 
     [Fact]

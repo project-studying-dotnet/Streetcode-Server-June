@@ -1,33 +1,27 @@
-﻿using System.Globalization;
-using System.Resources;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Streetcode.DAL.Entities.Sources;
+﻿using System.Resources;
 
 namespace Streetcode.BLL.Resources
 {
     public class MessageResourceContext
     {
         private static readonly ResourceManager _resourceManager = new ResourceManager("Streetcode.BLL.Resources.ErrorMessages", typeof(ErrorMessages).Assembly);
-        private static string? _entityId;
-        private static string? _entityName;
+
         public static string GetMessage(string error, params object[] formatValue)
         {
+            string entityId = string.Empty;
             string requestType = formatValue[0].GetType().ToString();
-            _entityName = EntityFilter(requestType);
+            var entityName = EntityFilter(requestType);
 
-            if(formatValue.Length > 1)
+            if(formatValue.Length > 0)
             {
-                _entityId = formatValue[1].ToString();
+                entityId = formatValue[0].ToString();
             }
 
-            if (_entityName != null)
+            if (entityName != null)
             {
                 try
                 {
-                   return string.Format(error, _entityName, _entityId);
+                   return string.Format(error, entityName, entityId);
                 }
                 catch
                 {
