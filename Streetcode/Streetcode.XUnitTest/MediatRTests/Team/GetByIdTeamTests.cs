@@ -175,7 +175,7 @@
             // Assert
             Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
             _mockLogger.Verify(l => l.LogError(request, expectedErrorMessage), Times.Once);
-            Assert.Contains(result.Reasons, m => m.Message == expectedErrorMessage);
+            Assert.Equal(expectedErrorMessage, result.Reasons[0].Message);
         }
 
         private void ArrangeMockWrapper(int? id = null)

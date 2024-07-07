@@ -163,7 +163,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Team
 
             // Assert
             mockLogger.Verify(l => l.LogError(query, ErrorMsg), Times.Once);
-            Assert.Contains(result.Reasons, m => m.Message == ErrorMsg);
+            Assert.Equal(ErrorMsg, result.Reasons[0].Message);
         }
 
         private void ArrangeMockWrapper(List<TeamMember> memb = null!)
