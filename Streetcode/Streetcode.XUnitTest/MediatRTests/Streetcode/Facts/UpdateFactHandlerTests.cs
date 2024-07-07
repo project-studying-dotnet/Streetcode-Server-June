@@ -68,7 +68,7 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
             var result = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            Assert.Equal("Cannot convert FactDto to Fact Entity", result.Errors[0].Message);
+            Assert.Equal("Cannot convert null to Facts", result.Errors[0].Message);
         }
     }
 }

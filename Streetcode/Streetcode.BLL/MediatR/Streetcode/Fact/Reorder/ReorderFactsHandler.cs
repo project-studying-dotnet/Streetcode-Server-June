@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
@@ -34,7 +35,7 @@ public class ReorderFactsHandler : IRequestHandler<ReorderFactsCommand, Result<I
 
         if (facts is null || !facts.Any())
         {
-            string errorMsg = $"Cannot find any fact by streetcodeId {request.streetcodeId}";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -45,7 +46,7 @@ public class ReorderFactsHandler : IRequestHandler<ReorderFactsCommand, Result<I
 
             if(newPosition is null)
             {
-                string errorMsg = $"Fact with id {fact.Id} not found in list of new position";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FactNotFoundInListPosition, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -57,7 +58,7 @@ public class ReorderFactsHandler : IRequestHandler<ReorderFactsCommand, Result<I
         var result = await _repositoryWrapper.SaveChangesAsync() > 0;
         if (!result)
         {
-            const string errorMsg = "Failed to save changes to the database.";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailSaveChangesDB, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

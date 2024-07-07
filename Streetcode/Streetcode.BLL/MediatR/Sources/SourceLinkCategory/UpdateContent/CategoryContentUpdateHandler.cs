@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Sources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
@@ -28,30 +29,19 @@ public class CategoryContentUpdateHandler : IRequestHandler<CategoryContentUpdat
         {
             if (updatedContent is null)
             {
-                const string errorMsg = "content is null";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToConvertNull, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
 
             var content = _repositoryWrapper.StreetcodeCategoryContentRepository.Update(updatedContent);
-
-             // _repositoryWrapper.StreetcodeCategoryContentRepository
-                            //                .GetFirstOrDefaultAsync(u => u.StreetcodeId == updatedContent.StreetcodeId &&
-                                                                         // u.SourceLinkCategoryId == updatedContent.SourceLinkCategoryId);
-            // if(content.Result.Texts != updatedContent.Texts)
-            // {
-            //    string errorMsg = "Failed to update content";
-            //    _logger.LogError(request, errorMsg);
-            //    return Result.Fail(errorMsg);
-            // }
-
             _repositoryWrapper.SaveChanges();
 
             return Result.Ok(_mapper.Map<StreetcodeCategoryContentDTO>(updatedContent));
         }
         catch (Exception ex)
         {
-            string errorMsg = "Failed to update content";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToUpdate, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }

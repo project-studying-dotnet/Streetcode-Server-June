@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategory
@@ -31,9 +32,11 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategor
 
             if (str_cont == null)
             {
-                m_logger.LogError(request, "StreetcodeCategory content for removing can't be found!");
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
 
-                return Result.Fail("StreetcodeCategory content for removing can't be found!");
+                m_logger.LogError(request, errorMsg);
+
+                return Result.Fail(errorMsg);
             }
 
             // Perform Delete operation
@@ -46,8 +49,9 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategor
             }
             catch (Exception e)
             {
-                m_logger.LogError(request, $"Error occured while delete attempt. Error: {e.Message}");
-                return Result.Fail($"Error occured while delete attempt. Error: {e.Message}");
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToDeleteA, request);
+                m_logger.LogError(request, $"{errorMsg}. Error: {e.Message}");
+                return Result.Fail($"{errorMsg}. Error: {e.Message}");
             }
         }
     }

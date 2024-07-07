@@ -2,6 +2,7 @@
 using MediatR;
 using Streetcode.BLL.Interfaces.Instagram;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Instagram;
 
 namespace Streetcode.BLL.MediatR.Instagram.GetAll
@@ -23,7 +24,7 @@ namespace Streetcode.BLL.MediatR.Instagram.GetAll
 
             if (!result.Any())
             {
-                const string errorMsg = $"Cannot find any posts";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

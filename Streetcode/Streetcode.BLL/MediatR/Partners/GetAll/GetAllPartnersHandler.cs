@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Partners;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Partners.GetAll;
@@ -34,6 +35,13 @@ public class GetAllPartnersHandler : IRequestHandler<GetAllPartnersQuery, Result
                 include: p => p
                     .Include(pl => pl.PartnerSourceLinks)
                     .Include(p => p.Streetcodes));
+
+        if(partners is null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(errorMsg);
+        }
 
         return Result.Ok(_mapper.Map<IEnumerable<PartnerDTO>>(partners));
     }

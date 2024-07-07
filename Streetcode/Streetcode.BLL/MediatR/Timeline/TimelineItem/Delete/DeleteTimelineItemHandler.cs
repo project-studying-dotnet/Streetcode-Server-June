@@ -1,6 +1,7 @@
 using FluentResults;
 using MediatR;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 
@@ -25,7 +26,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
             string errorMsg;
             if (timeline is null)
             {
-                errorMsg = "Cannot find timeline item";
+                errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
                 _logger.LogError(request, errorMsg);
 
                 return Result.Fail(errorMsg);
@@ -40,7 +41,7 @@ namespace Streetcode.BLL.MediatR.Timeline.TimelineItem.Delete
                 return Result.Ok(Unit.Value);
             }
 
-            errorMsg = "Cannot delete timeline item";
+            errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToDeleteA, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
