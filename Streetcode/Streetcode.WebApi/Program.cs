@@ -5,7 +5,7 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
-using System;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
@@ -51,14 +51,11 @@ app.UseHangfireDashboard("/dash");
 
 if (app.Environment.EnvironmentName != "Local")
 {
-    BackgroundJob.Schedule<WebParsingUtils>(
-    wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
-    RecurringJob.AddOrUpdate<WebParsingUtils>(
-        wp => wp.ParseZipFileFromWebAsync(), Cron.Monthly);
-    RecurringJob.AddOrUpdate<BlobService>(
-        b => b.CleanBlobStorage(), Cron.Monthly);
-    RecurringJob.AddOrUpdate<TokenService>(
-        ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly(DayOfWeek.Wednesday, 3, 0));
+    BackgroundJob.Schedule<WebParsingUtils>(wp => wp.ParseZipFileFromWebAsync(), TimeSpan.FromMinutes(1));
+    RecurringJob.AddOrUpdate<WebParsingUtils>(wp => wp.ParseZipFileFromWebAsync(), Cron.Monthly);
+    RecurringJob.AddOrUpdate<BlobService>(b => b.CleanBlobStorage(), Cron.Monthly);
+    RecurringJob.AddOrUpdate<AzureBlobService>(b => b.CleanBlobStorage(), Cron.Monthly);
+    RecurringJob.AddOrUpdate<TokenService>(ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly(DayOfWeek.Wednesday, 3, 0));
 }
 
 app.MapControllers();
