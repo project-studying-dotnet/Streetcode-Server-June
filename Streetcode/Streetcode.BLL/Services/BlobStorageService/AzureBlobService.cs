@@ -6,7 +6,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.Services.BlobStorageService
 {
-    public class AzureBlobService : IBlobService
+    public class AzureBlobService : BlobServiceBase, IBlobService
     {
         private readonly BlobServiceClient _blobServiceClient;
         private readonly BlobContainerClient _containerClient;
@@ -14,13 +14,8 @@ namespace Streetcode.BLL.Services.BlobStorageService
 
         public AzureBlobService(IOptions<BlobEnvironmentVariables> options, IRepositoryWrapper? repositoryWrapper)
         {
-            var environment = options.Value;
-
-            _blobServiceClient = !string.IsNullOrEmpty(environment.BlobStorageLocalConnectionString)
-                ? new BlobServiceClient(environment.BlobStorageLocalConnectionString)
-                : new BlobServiceClient(new Uri(environment.BlobServiceEndpoint), new Azure.Storage.StorageSharedKeyCredential(environment.StorageAccountName, environment.StorageAccountKey));
-
-            _containerClient = _blobServiceClient.GetBlobContainerClient(environment.ContainerName);
+            _blobServiceClient = new BlobServiceClient(options.Value.BlobStorageConnectionString);
+            _containerClient = _blobServiceClient.GetBlobContainerClient(options.Value.ContainerName);
             _containerClient.CreateIfNotExists();
             _repositoryWrapper = repositoryWrapper;
         }
@@ -42,27 +37,32 @@ namespace Streetcode.BLL.Services.BlobStorageService
             return base64String;
         }
 
-        public string SaveFileInStorage(string base64, string name, string mimeType)
+        public string SaveFileInStorage(string base64, string name, string extension)
         {
-            var blobClient = _containerClient.GetBlobClient(name);
+            var hashBlobStorageName = HashFunction($"{DateTime.Now}{name}".Replace(" ", "_").Replace(".", "_").Replace(":", "_"));
+            var blobClient = _containerClient.GetBlobClient($"{hashBlobStorageName}.{extension}");
 
             var bytes = Convert.FromBase64String(base64);
+            var mimeType = GetMimeType(extension);
+
             using (var stream = new MemoryStream(bytes))
             {
                 blobClient.Upload(stream, new BlobHttpHeaders { ContentType = mimeType });
             }
 
-            return blobClient.Uri.ToString();
+            return hashBlobStorageName;
         }
 
         public void SaveFileInStorageBase64(string base64, string name, string extension)
         {
             var blobClient = _containerClient.GetBlobClient($"{name}.{extension}");
+
             var bytes = Convert.FromBase64String(base64);
+            var mimeType = GetMimeType(extension);
 
             using (var stream = new MemoryStream(bytes))
             {
-                blobClient.Upload(stream, new BlobHttpHeaders { ContentType = $"application/{extension}" });
+                blobClient.Upload(stream, new BlobHttpHeaders { ContentType = mimeType });
             }
         }
 
