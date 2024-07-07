@@ -12,7 +12,7 @@ namespace Streetcode.BLL.Services.BlobStorageService
         private readonly BlobContainerClient _containerClient;
         private readonly IRepositoryWrapper _repositoryWrapper;
 
-        public AzureBlobService(IOptions<BlobEnvironmentVariables> options, IRepositoryWrapper? repositoryWrapper = null)
+        public AzureBlobService(IOptions<BlobEnvironmentVariables> options, IRepositoryWrapper? repositoryWrapper)
         {
             var environment = options.Value;
 
