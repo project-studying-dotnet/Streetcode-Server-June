@@ -32,7 +32,7 @@ namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.DeleteContentCategor
 
             if (str_cont == null)
             {
-                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, request.sourcelinkcatId);
 
                 m_logger.LogError(request, errorMsg);
 
