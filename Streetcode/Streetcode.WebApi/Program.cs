@@ -5,6 +5,7 @@ using Streetcode.WebApi.Extensions;
 using Streetcode.WebApi.Utils;
 using Streetcode.WebApi.Middlewares;
 using Streetcode.WebApi.HttpClients.Configuration;
+using System;
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureApplication();
 
@@ -28,7 +29,7 @@ app.UseMiddleware<GenericExceptionHandlerMiddleware>();
 
 await app.ApplyMigrations();
 
-//await app.SeedDataAsync(); // uncomment for seeding data in local
+// await app.SeedDataAsync(); // uncomment for seeding data in local
 app.UseCors();
 app.UseHttpsRedirection();
 app.UseRouting();
@@ -57,7 +58,7 @@ if (app.Environment.EnvironmentName != "Local")
     RecurringJob.AddOrUpdate<BlobService>(
         b => b.CleanBlobStorage(), Cron.Monthly);
     RecurringJob.AddOrUpdate<TokenService>(
-        ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly);
+        ts => ts.RemoveExpiredRefreshToken(), Cron.Weekly(DayOfWeek.Wednesday, 3, 0));
 }
 
 app.MapControllers();
