@@ -10,9 +10,7 @@ using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 
-namespace Streetcode.BLL.MediatR.Account.Register;
-
-public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<UserDTO>>
+namespace Streetcode.BLL.MediatR.Account.Register
 {
     private readonly UserManager<User> _userManager;
     private readonly IMapper _mapper;

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Timeline;
 using Streetcode.BLL.DTO.Timeline.Create;
@@ -31,18 +32,21 @@ public class TimelineItemController : BaseApiController
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Create([FromBody] CreateTimelineItemDTO timelineItem)
     {
         return HandleResult(await Mediator.Send(new CreateTimelineItemCommand(timelineItem)));
     }
 
     [HttpPut]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Update([FromBody] TimelineItemDTO timelineItem)
     {
         return HandleResult(await Mediator.Send(new UpdateTimelineItemCommand(timelineItem)));
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteTimelineItemCommand(id)));

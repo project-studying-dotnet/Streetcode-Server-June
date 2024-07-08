@@ -9,6 +9,7 @@ using Streetcode.BLL.MediatR.Streetcode.Fact.GetById;
 using Streetcode.BLL.MediatR.Streetcode.Fact.GetByStreetcodeId;
 using Streetcode.BLL.MediatR.Streetcode.Fact.Reorder;
 using Streetcode.BLL.MediatR.Streetcode.Facts.Update;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Streetcode.WebApi.Controllers.Streetcode.TextContent;
 
@@ -33,24 +34,28 @@ public class FactController : BaseApiController
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return HandleResult(await Mediator.Send(new DeleteFactCommand(id)));
     }
 
     [HttpPatch("{streetcodeId:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> UpdateFactPositions([FromBody] IEnumerable<FactUpdatePositionDto> facts, [FromRoute] int streetcodeId)
     {
         return HandleResult(await Mediator.Send(new ReorderFactsCommand(facts, streetcodeId)));
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Create([FromBody] FactDto fact)
     {
         return HandleResult(await Mediator.Send(new CreateFactCommand(fact)));
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Policy = "AdminPolicy")]
     public async Task<IActionResult> Update([FromBody] FactUpdateCreateDto relatedTerm)
     {
         return HandleResult(await Mediator.Send(new UpdateFactCommand(relatedTerm)));

@@ -1,34 +1,34 @@
-﻿using System.Resources;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Streetcode.BLL.MediatR.ResultVariations;
 
-namespace Streetcode.WebApi.Controllers;
-
-[ApiController]
-[Route("api/[controller]/[action]")]
-public class BaseApiController : ControllerBase
+namespace Streetcode.WebApi.Controllers
 {
-    private IMediator? _mediator;
-
-    protected IMediator Mediator => _mediator ??=
-        HttpContext.RequestServices.GetService<IMediator>()!;
-
-    protected ActionResult HandleResult<T>(Result<T> result)
+    [ApiController]
+    [Route("api/[controller]/[action]")]
+    public class BaseApiController : ControllerBase
     {
-        if (result.IsSuccess)
+        private IMediator? _mediator;
+
+        protected IMediator Mediator => _mediator ??=
+            HttpContext.RequestServices.GetService<IMediator>()!;
+
+        protected ActionResult HandleResult<T>(Result<T> result)
         {
-            if(result is NullResult<T>)
+            if (result.IsSuccess)
             {
-                return Ok(result.Value);
+                if (result is NullResult<T>)
+                {
+                    return Ok(result.Value);
+                }
+
+                return (result.Value is null) ?
+                    NotFound("Found result matching null") : Ok(result.Value);
             }
 
-            return (result.Value is null) ?
-                NotFound("Found result matching null") : Ok(result.Value);
+            return BadRequest(result.Reasons);
         }
-
-        return BadRequest(result.Reasons);
     }
 }
