@@ -109,8 +109,11 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.Facts
             var result = await handler.Handle(request, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(expectedErrorMessage, result.Errors.FirstOrDefault()?.Message);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
+            });
         }
 
         private void MockingWrapperAndMapperWithValue()

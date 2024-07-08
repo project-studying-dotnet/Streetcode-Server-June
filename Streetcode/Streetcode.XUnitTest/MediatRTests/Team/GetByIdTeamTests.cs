@@ -173,9 +173,12 @@
             var result = await _handler.Handle(request, CancellationToken.None);
 
             // Assert
-            Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
-            _mockLogger.Verify(l => l.LogError(request, expectedErrorMessage), Times.Once);
-            Assert.Equal(expectedErrorMessage, result.Reasons[0].Message);
+            Assert.Multiple(() =>
+            {
+                Assert.Equal(expectedErrorMessage, result.Errors[0].Message);
+                _mockLogger.Verify(l => l.LogError(request, expectedErrorMessage), Times.Once);
+                Assert.Equal(expectedErrorMessage, result.Reasons[0].Message);
+            });
         }
 
         private void ArrangeMockWrapper(int? id = null)

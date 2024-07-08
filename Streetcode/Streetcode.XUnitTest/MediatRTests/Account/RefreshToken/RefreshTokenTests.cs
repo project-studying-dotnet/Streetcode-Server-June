@@ -42,9 +42,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors[0].Message);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(errorMsg, result.Errors[0].Message);
+                _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            });
         }
 
         [Fact]
@@ -69,9 +72,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors[0].Message);
-            _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(errorMsg, result.Errors[0].Message);
+                _loggerMock.Verify(logger => logger.LogError(It.IsAny<object>(), errorMsg), Times.Once);
+            });
         }
 
         [Fact]

@@ -45,8 +45,11 @@ public class GetRelatedTermByIdHandlerTests
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.IsFailed);
-        Assert.Equal(errorMsg, result.Errors.First().Message);
+        Assert.Multiple(() =>
+        {
+            Assert.True(result.IsFailed);
+            Assert.Equal(errorMsg, result.Errors[0].Message);
+        });
     }
 
     [Fact]
@@ -86,8 +89,11 @@ public class GetRelatedTermByIdHandlerTests
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.IsFailed);
-        Assert.Equal(errorMsg, result.Errors.First().Message);
+        Assert.Multiple(() =>
+        {
+            Assert.True(result.IsFailed);
+            Assert.Equal(errorMsg, result.Errors[0].Message);
+        });
     }
 
     [Fact]

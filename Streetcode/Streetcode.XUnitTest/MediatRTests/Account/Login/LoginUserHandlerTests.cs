@@ -74,8 +74,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors[0].Message);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(errorMsg, result.Errors[0].Message);
+            });
         }
 
         [Fact]
@@ -93,8 +96,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors[0].Message);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(errorMsg, result.Errors[0].Message);
+            });
         }
 
         [Fact]
@@ -113,8 +119,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsFailed);
-            Assert.Equal(errorMsg, result.Errors[0].Message);
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsFailed);
+                Assert.Equal(errorMsg, result.Errors[0].Message);
+            });
         }
 
         [Fact]
