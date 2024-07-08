@@ -33,7 +33,7 @@ public class GetAllRelatedTermsByTermIdHandlerTests
         // Arrange
         MockRepositorySetup(true);
         var request = new GetAllRelatedTermsByTermIdQuery(1);
-        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, 1);
         var handler = new GetAllRelatedTermsByTermIdHandler(
             _mockMapper.Object,
             _mockRepository.Object,
@@ -53,7 +53,7 @@ public class GetAllRelatedTermsByTermIdHandlerTests
         MockRepositorySetup(false);
         MockMapperSetup(true);
         var request = new GetAllRelatedTermsByTermIdQuery(3);
-        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
+        var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, 3);
         var handler = new GetAllRelatedTermsByTermIdHandler(
             _mockMapper.Object,
             _mockRepository.Object,

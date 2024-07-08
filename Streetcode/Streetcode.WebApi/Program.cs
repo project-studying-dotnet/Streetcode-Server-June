@@ -21,7 +21,6 @@ builder.Services.ConfigureSerilog(builder);
 builder.Services.AddCachingService(builder.Configuration);
 builder.Services.AddTokensConfiguration(builder.Configuration);
 builder.Services.AddSwaggerServices();
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 

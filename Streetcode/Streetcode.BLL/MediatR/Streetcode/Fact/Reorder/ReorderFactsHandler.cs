@@ -35,7 +35,7 @@ public class ReorderFactsHandler : IRequestHandler<ReorderFactsCommand, Result<I
 
         if (facts is null || !facts.Any())
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request, request.streetcodeId);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

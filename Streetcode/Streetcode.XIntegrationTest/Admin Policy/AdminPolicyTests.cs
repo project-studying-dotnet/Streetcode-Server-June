@@ -172,7 +172,7 @@ public class AdminPolicyTests : IClassFixture<CustomWebApplicationFactory<Progra
         }
 
         var claims = await tokenService.GetUserClaimsAsync(adminUser);
-        var token = await tokenService.GenerateAccessToken(adminUser, claims);
+        var token = tokenService.GenerateAccessToken(adminUser, claims);
         return token;
     }
 
