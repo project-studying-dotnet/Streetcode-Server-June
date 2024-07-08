@@ -30,6 +30,9 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.BLL.Services.CacheService;
 using Streetcode.BLL.Services.Tokens;
 using Streetcode.WebApi.Events;
+using Streetcode.BLL.Services.CookieService.Interfaces;
+using Streetcode.BLL.Services.CookieService.Realizations;
+using Streetcode.DAL.Enums;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -64,6 +67,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddSingleton<ICookieService, CookieService>();
     }
 
     public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
@@ -111,6 +115,12 @@ public static class ServiceCollectionExtensions
                 options.RequireHttpsMetadata = false;
                 options.EventsType = typeof(JwtTokenValidationEvents);
             });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminPolicy", policy => policy.RequireRole(UserRole.Admin.ToString()));
+            options.AddPolicy("UserPolicy", policy => policy.RequireRole(UserRole.User.ToString()));
+        });
         services.AddScoped<JwtTokenValidationEvents>();
     }
     

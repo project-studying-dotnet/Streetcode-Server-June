@@ -43,6 +43,11 @@ namespace Streetcode.BLL.Mapping.Users
                 .ForPath(
                 dest => dest.TwoFactorEnabled, conf => conf.MapFrom(src => src.TwoFactorEnabled))
                 .ReverseMap();
+
+            CreateMap<User, DeleteUserResponseDto>()
+                .ForPath(dest => dest.Firstname, conf => conf.MapFrom(src => src.FirstName))
+                .ForPath(dest => dest.Lastname, conf => conf.MapFrom(src => src.LastName))
+                .ReverseMap();
         }
     }
 }

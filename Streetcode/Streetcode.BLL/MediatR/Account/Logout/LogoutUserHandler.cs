@@ -7,6 +7,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.CacheService;
+using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.DAL.Entities.Users;
 
 namespace Streetcode.BLL.MediatR.Account.Logout
@@ -18,31 +19,33 @@ namespace Streetcode.BLL.MediatR.Account.Logout
         private readonly ILoggerService _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ITokenService _tokenService;
+        private readonly ICookieService _cookieService;
 
-        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, ITokenService tokenService)
+        public LogoutUserHandler(UserManager<User> userManager, ICacheService cacheService, ILoggerService logger, IHttpContextAccessor httpContextAccessor, ITokenService tokenService, ICookieService Cookieservice)
         {
             _userManager = userManager;
             _cacheService = cacheService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
             _tokenService = tokenService;
+            _cookieService = Cookieservice;
         }
 
         public async Task<Result<string>> Handle(LogoutUserCommand request, CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-
-            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken) && string.IsNullOrEmpty(accessToken))
+            
+            if (!httpContext!.Request.Cookies.TryGetValue("accessToken", out var accessToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
-            
+
             if (string.IsNullOrEmpty(accessToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
-                _logger.LogError(accessToken!, errorMsg);
+                _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
 
@@ -58,7 +61,7 @@ namespace Streetcode.BLL.MediatR.Account.Logout
                 }
             }
 
-            ClearCookies();
+            await _cookieService.ClearRequestCookiesAsync(_httpContextAccessor.HttpContext);
        
             var result = await _userManager.UpdateAsync(user);
             if (!result.Succeeded)
@@ -77,20 +80,6 @@ namespace Streetcode.BLL.MediatR.Account.Logout
             }
             
             return Result.Ok("User logged out successfully");
-        }
-        
-        private void ClearCookies()
-        {
-            foreach (var cookie in _httpContextAccessor.HttpContext!.Request.Cookies.Keys)
-            {
-                _httpContextAccessor.HttpContext!.Response.Cookies.Delete(cookie, new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddDays(-1),
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None
-                });
-            }
-        }
+        }               
     }
 }

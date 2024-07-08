@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -228,6 +228,9 @@
   <data name="RolesNotFound" xml:space="preserve">
     <value>Roles not found</value>
   </data>
+  <data name="UserWithIdNotFound" xml:space="preserve">
+    <value>User with id {0} not found</value>
+  </data>
   <data name="CanNotMap" xml:space="preserve">
     <value>Cannot map entity</value>
   </data>
@@ -245,5 +248,20 @@
   </data>
   <data name="EmptyQuery" xml:space="preserve">
     <value>Search query cannot be null or empty</value>
+  </data>
+  <data name="AccessTokenNotFound" xml:space="preserve">
+    <value>Access Token not found</value>
+  </data>
+  <data name="ClaimsNotExist" xml:space="preserve">
+    <value>Claims doesn't exist</value>
+  </data>
+  <data name="FailedToSetTokenInBlackList" xml:space="preserve">
+    <value>Failed to set Token to the Black List!</value>
+  </data>
+  <data name="RefreshTokenNotFound" xml:space="preserve">
+    <value>Refresh Token not found</value>
+  </data>
+  <data name="UserUpdateFailed" xml:space="preserve">
+    <value>Fail to Update user</value>
   </data>
 </root>

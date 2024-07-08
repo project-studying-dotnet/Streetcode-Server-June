@@ -9,6 +9,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Register;
 using Streetcode.BLL.MediatR.Media.Art.Update;
+using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
@@ -23,6 +24,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
         private readonly Mock<ITokenService> _tokenServiceMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly RegisterUserHandler _handler;
+        private readonly Mock<ICookieService> _ccokieServiceMock;
+        private readonly Mock<TokensConfiguration> _tokensConfigurationMock;
 
         public RegisterUserHandlerTests()
         {
@@ -33,13 +36,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             _loggerMock = new Mock<ILoggerService>();
             _tokenServiceMock = new Mock<ITokenService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _ccokieServiceMock = new Mock<ICookieService>();
+            _tokensConfigurationMock = new Mock<TokensConfiguration>();
 
             _handler = new RegisterUserHandler(
                 _mapperMock.Object,
                 _loggerMock.Object,
                 _userManagerMock.Object,
                 _tokenServiceMock.Object,
-                _httpContextAccessorMock.Object);
+                _httpContextAccessorMock.Object,
+                _ccokieServiceMock.Object,
+                _tokensConfigurationMock.Object);
         }
 
         [Fact]

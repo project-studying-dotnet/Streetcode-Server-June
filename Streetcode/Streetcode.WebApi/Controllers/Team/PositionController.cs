@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Team;
 using Streetcode.BLL.MediatR.Team.Create;
@@ -15,6 +16,7 @@ namespace Streetcode.WebApi.Controllers.Team
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminPolicy")]
         public async Task<IActionResult> Create([FromBody] PositionDTO position)
         {
             return HandleResult(await Mediator.Send(new CreatePositionCommand(position)));

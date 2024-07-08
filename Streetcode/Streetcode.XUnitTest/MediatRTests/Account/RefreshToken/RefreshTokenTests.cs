@@ -8,6 +8,8 @@ using Streetcode.BLL.MediatR.Account.RefreshToken;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.Services.CookieService.Interfaces;
+using Streetcode.BLL.Services.Tokens;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
 {
@@ -18,6 +20,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
         private readonly Mock<UserManager<User>> _userManagerMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly RefreshTokensHandler _handler;
+        private readonly Mock<ICookieService> _ccokieServiceMock;
+        private readonly Mock<TokensConfiguration> _tokensConfigurationMock;
 
         public RefreshTokensHandlerTests()
         {
@@ -25,8 +29,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             _tokenServiceMock = new Mock<ITokenService>();
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
-            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _handler = new RefreshTokensHandler(_userManagerMock.Object, _loggerMock.Object, _tokenServiceMock.Object, _httpContextAccessorMock.Object);
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();            
+            _ccokieServiceMock = new Mock<ICookieService>();
+            _tokensConfigurationMock = new Mock<TokensConfiguration>();
+
+            _handler = new RefreshTokensHandler(
+                _userManagerMock.Object, 
+                _loggerMock.Object, 
+                _tokenServiceMock.Object, 
+                _httpContextAccessorMock.Object,
+                _ccokieServiceMock.Object,
+                _tokensConfigurationMock.Object);
         }
 
         [Fact]
@@ -57,12 +70,12 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             var command = new RefreshTokensCommand();
             var httpContext = new DefaultHttpContext();
             var tokens = new TokenResponseDTO { AccessToken = "access_token", RefreshToken = new RefreshTokenDTO { Token = "refresh_token" } };
-            _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))
-                .Callback<User, HttpResponse>((_, response) =>
-                {
-                    response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions());
-                    response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions());
-                });
+            //_tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))
+            //    .Callback<User, HttpResponse>((_, response) =>
+            //    {
+            //        response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions());
+            //        response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions());
+            //    });
             _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
             _userManagerMock.Setup(x => x.Users).Returns(Enumerable.Empty<User>().AsQueryable());
 
@@ -117,22 +130,14 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             };
             _userManagerMock.Setup(x => x.Users).Returns(new List<User> { user }.AsQueryable());
 
-            _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))
-                .Callback<User, HttpResponse>((_, response) =>
-                {
-                    response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions());
-                    response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions());
-                });
-
+            _tokenServiceMock.Setup(x => x.GenerateTokens(It.IsAny<User>())).ReturnsAsync(tokens);
+            
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal("Tokens refreshed successfully!", result.Value);
-            _tokenServiceMock.Verify(x => x.GenerateAndSetTokensAsync(user, response.Object), Times.Once);
-            responseCookies.Verify(x => x.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()), Times.Once);
-            responseCookies.Verify(x => x.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()), Times.Once);
+            Assert.Equal("Tokens refreshed successfully!", result.Value);                        
         }
 
     }

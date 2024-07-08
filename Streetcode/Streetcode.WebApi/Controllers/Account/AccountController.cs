@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Users;
+using Streetcode.BLL.MediatR.Account.Delete;
 using Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail;
 using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.MediatR.Account.Logout;
@@ -35,6 +36,12 @@ namespace Streetcode.WebApi.Controllers.Account
             return HandleResult(await Mediator.Send(new LoginUserCommand(loginUser)));
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
+        {
+            return HandleResult(await Mediator.Send(new DeleteUserCommand()));
+        }
+        
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {

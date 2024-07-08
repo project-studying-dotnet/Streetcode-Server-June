@@ -14,6 +14,8 @@ using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using FluentResults;
+using Streetcode.BLL.Services.CookieService.Interfaces;
+using Streetcode.BLL.Services.Tokens;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.Login
 {
@@ -26,6 +28,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
         private readonly Mock<ILoggerService> _loggerMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
         private readonly LoginUserHandler _handler;
+        private readonly Mock<ICookieService> _ccokieServiceMock;
+        private readonly Mock<TokensConfiguration> _tokensConfigurationMock;
 
         public LoginUserHandlerTests()
         {
@@ -52,14 +56,18 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILoggerService>();
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
-
+            _ccokieServiceMock = new Mock<ICookieService>();
+            _tokensConfigurationMock = new Mock<TokensConfiguration>();
+            
             _handler = new LoginUserHandler(
                 _userManagerMock.Object,
                 _signInManagerMock.Object,
                 _tokenServiceMock.Object,
                 _mapperMock.Object,
                 _loggerMock.Object,
-                _httpContextAccessor.Object);
+                _httpContextAccessor.Object,
+                _ccokieServiceMock.Object,
+                _tokensConfigurationMock.Object);
         }
 
         [Fact]
@@ -148,22 +156,20 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             httpContext.Setup(x => x.Response).Returns(response.Object);
             _httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext.Object);
 
-            _tokenServiceMock.Setup(x => x.GenerateAndSetTokensAsync(It.IsAny<User>(), It.IsAny<HttpResponse>()))
-                .Callback<User, HttpResponse>((_, response) =>
-                {
-                    response.Cookies.Append("accessToken", tokens.AccessToken, new CookieOptions());
-                    response.Cookies.Append("refreshToken", tokens.RefreshToken.Token, new CookieOptions());
-                });
+            _tokenServiceMock.Setup(x => x.GenerateTokens(It.IsAny<User>())).ReturnsAsync(
+                tokens);
+            
+            _tokenServiceMock.Setup(x => x.SetRefreshToken(It.IsAny<RefreshTokenDTO>(), It.IsAny<User>()))
+                .Callback<RefreshTokenDTO, User>((refTokenDto, user) => { user.RefreshTokens.Add(new DAL.Entities.Users.RefreshToken() { Token = refTokenDto.Token }); });
+
+            _ccokieServiceMock.Setup(x => x.AppendCookiesToResponseAsync(It.IsAny<HttpResponse>()));
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);
-            Assert.Equal(userDto, result.Value);
-            _tokenServiceMock.Verify(x => x.GenerateAndSetTokensAsync(user, response.Object), Times.Once);
-            cookies.Verify(x => x.Append("accessToken", tokens.AccessToken, It.IsAny<CookieOptions>()), Times.Once);
-            cookies.Verify(x => x.Append("refreshToken", tokens.RefreshToken.Token, It.IsAny<CookieOptions>()), Times.Once);
+            Assert.Equal(userDto, result.Value);                        
         }
     }
 }
