@@ -243,4 +243,7 @@
   <data name="TitleNullEmpty" xml:space="preserve">
     <value>Timeline item title is null or empty</value>
   </data>
+  <data name="EmptyQuery" xml:space="preserve">
+    <value>Search query cannot be null or empty</value>
+  </data>
 </root>

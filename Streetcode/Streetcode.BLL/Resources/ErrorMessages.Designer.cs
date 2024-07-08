@@ -133,6 +133,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search query cannot be null or empty.
+        /// </summary>
+        public static string EmptyQuery {
+            get {
+                return ResourceManager.GetString("EmptyQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot find any {0}.
         /// </summary>
         public static string EntityNotFound {
