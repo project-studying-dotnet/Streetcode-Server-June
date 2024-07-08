@@ -56,7 +56,7 @@ public class CreateRelatedFigureHandler : IRequestHandler<CreateRelatedFigureCom
         }
         else
         {
-            string errorMsg = "Failed to create a relation.";
+            string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

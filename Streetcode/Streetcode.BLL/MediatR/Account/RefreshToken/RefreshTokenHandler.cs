@@ -1,73 +1,58 @@
-﻿using System.Security.Claims;
-using Castle.Core.Internal;
-using FluentResults;
+﻿using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
-using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 
-namespace Streetcode.BLL.MediatR.Account.RefreshTokens
+namespace Streetcode.BLL.MediatR.Account.RefreshToken
 {
-    public class RefreshTokensHandler : IRequestHandler<RefreshTokensCommand, Result<User>>
+    public class RefreshTokensHandler : IRequestHandler<RefreshTokensCommand, Result<string>>
     {
         private readonly ILoggerService _logger;
-        private TokenService _tokenService;
-        private UserManager<User> _userManager;
-        private TokensConfiguration _tokensConfiguration;
+        private readonly ITokenService _tokenService;
+        private readonly UserManager<User> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, TokensConfiguration accessTokenConfiguration)
+        public RefreshTokensHandler(UserManager<User> userManager, ILoggerService logger, ITokenService tokenService, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _userManager = userManager;
-            _tokensConfiguration = accessTokenConfiguration;
-            _tokenService = new(_userManager, _tokensConfiguration, _logger);
+            _tokenService = tokenService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Result<User>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
         {
-            // Get token response
-            if(request.tokenResponse == null)
+            var httpContext = _httpContextAccessor.HttpContext;
+
+            if (!httpContext!.Request.Cookies.TryGetValue("refreshToken", out var refreshToken) && string.IsNullOrEmpty(refreshToken))
             {
-                var errorMsgNull = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
-                _logger.LogError(request, errorMsgNull);
-                return Result.Fail(new Error(errorMsgNull));
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.RefreshTokenNotFound, request);
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
-            var tokens = request.tokenResponse;
+            var user = _userManager.Users
+                .Where(u => u.RefreshTokens.Any(t => t.Token == refreshToken && t.Expires > DateTime.UtcNow))
+                .Include(u => u.RefreshTokens)
+                .FirstOrDefault();
 
-            string accessToken = tokens.AccessToken;
-
-            // Find user
-            var claims = _tokenService.GetPrincipalFromAccessToken(accessToken);
-
-            string email = claims.FindFirstValue(ClaimTypes.Email);
-            if (email == null)
+            if (user is null)
             {
-                var errorMsgNull = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
-                _logger.LogError(request, errorMsgNull);
-                return Result.Fail(new Error(errorMsgNull));
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.RefreshTokenNotFound, request);
+                _logger.LogError(request, errorMsg);
+                return Result.Fail(new Error(errorMsg));
             }
 
-            var user = await _userManager.FindByEmailAsync(email);
-            if(user == null)
-            {
-                var errorMsgNull = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
-                _logger.LogError(request, errorMsgNull);
-                return Result.Fail(new Error(errorMsgNull));
-            }
+            user.RefreshTokens.RemoveAll(t => t.Token == refreshToken);
 
-            // Generate and implement new tokens
-            tokens = await _tokenService.GenerateTokens(user);
-            if(tokens.AccessToken == null || tokens.RefreshToken.Token == null)
-            {
-                var errorMsgNull = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken, request);
-                _logger.LogError(request, errorMsgNull);
-                return Result.Fail(new Error(errorMsgNull));
-            }
+            await _tokenService.GenerateAndSetTokensAsync(user, httpContext.Response);
 
-            return Result.Ok(user);
+            return Result.Ok("Tokens refreshed successfully!");
         }
     }
 }

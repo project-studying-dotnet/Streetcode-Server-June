@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Text;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Text.GetById;
@@ -26,7 +27,7 @@ public class GetTextByIdHandler : IRequestHandler<GetTextByIdQuery, Result<TextD
 
         if (text is null)
         {
-            string errorMsg = $"Cannot find any text with corresponding id: {request.Id}";
+            string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }

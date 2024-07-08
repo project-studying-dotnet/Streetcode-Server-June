@@ -95,9 +95,8 @@ namespace Streetcode.XUnitTest.MediatRTests.SourcesTest
             var result = await handler.Handle(quer, CancellationToken.None);
 
             Assert.Multiple(
-                () => Assert.True(result.Errors.Count > 0),
-                () => Assert.True(result.Errors.First()
-                .Message.Equals("StreetcodeCategory content for removing can't be found!")));
+          () => Assert.True(result.Errors.Count > 0),
+                () => Assert.Equal("Cannot find any Categories with corresponding id: 1", result.Errors[0].Message));
         }
 
         public void Remove(StreetcodeCategoryContent c)

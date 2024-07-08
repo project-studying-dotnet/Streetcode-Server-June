@@ -1,137 +1,90 @@
-using AutoMapper;
 using FluentResults;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using MimeKit.Text;
+using Repositories.Interfaces;
 using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.DAL.Entities.Streetcode;
-using Streetcode.DAL.Entities.Streetcode.TextContent;
-using Streetcode.DAL.Entities.Timeline;
+using Streetcode.BLL.Specification.Media.ArtSpec.GetByStreetcode;
+using Streetcode.BLL.Specification.Streetcode.Streetcode.GetByFilter;
 using Streetcode.DAL.Repositories.Interfaces.Base;
+using Streetcode.BLL.Specification.Streetcode.TextContent.FactSpec.GetAll;
+using Streetcode.BLL.Specification.TimeLine;
+using AutoMapper;
+using Streetcode.BLL.Resources;
+using Streetcode.BLL.Specification.Streetcode.TextSec.GetAll;
+using Ardalis.Specification;
+using Streetcode.DAL.Entities.Media.Images;
 
-namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter
+namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetByFilter;
+
+public class GetStreetcodeByFilterHandler : IRequestHandler<GetStreetcodeByFilterQuery, Result<List<StreetcodeFilterResultDTO>>>
 {
-    public class GetStreetcodeByFilterHandler : IRequestHandler<GetStreetcodeByFilterQuery, Result<List<StreetcodeFilterResultDTO>>>
+    private readonly IRepositoryWrapper _repositoryWrapper;
+    private readonly ILoggerService _logger;
+    private readonly IMapper _mapper;
+
+    public GetStreetcodeByFilterHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger, IMapper mapper)
     {
-        private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ILoggerService _logger;
+        _repositoryWrapper = repositoryWrapper;
+        _logger = logger;
+        _mapper = mapper;
+    }
 
-        public GetStreetcodeByFilterHandler(IRepositoryWrapper repositoryWrapper, ILoggerService logger)
+    public async Task<Result<List<StreetcodeFilterResultDTO>>> Handle(GetStreetcodeByFilterQuery request, CancellationToken cancellationToken)
+    {
+        string searchQuery = request.Filter.SearchQuery;
+        if (string.IsNullOrEmpty(searchQuery))
         {
-            _repositoryWrapper = repositoryWrapper;
-            _logger = logger;
+            string errorMsg = ErrorMessages.EmptyQuery;
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(errorMsg);
         }
 
-        public async Task<Result<List<StreetcodeFilterResultDTO>>> Handle(GetStreetcodeByFilterQuery request, CancellationToken cancellationToken)
+        var results = new List<StreetcodeFilterResultDTO>();
+
+        var streetcodeRepository = _repositoryWrapper.StreetcodeRepository;
+        var textRepository = _repositoryWrapper.TextRepository;
+        var factRepository = _repositoryWrapper.FactRepository;
+        var timelineRepository = _repositoryWrapper.TimelineRepository;
+        var artRepository = _repositoryWrapper.ArtRepository;
+
+        await AddResultsAsync(streetcodeRepository, new StreetcodesFilteredByQuerySpec(searchQuery), results);
+        await AddResultsAsync(textRepository, new TextFilteredByQuerySpec(searchQuery), results);
+        await AddResultsAsync(factRepository, new FactsFilteredByQuerySpec(searchQuery), results);
+        await AddResultsAsync(timelineRepository, new TimeLinesIncludePublishStreetcodeSpec(searchQuery), results);
+        await AddArtResultsAsync(artRepository, new ArtsFilteredByQuerySpec(searchQuery), results);
+
+        return results;
+    }
+
+    private async Task AddResultsAsync<T>(DAL.Repositories.Interfaces.Base.IRepositoryBase<T> repository, Specification<T> spec, List<StreetcodeFilterResultDTO> results)
+        where T : class
+    {
+        var items = await repository.GetAllWithSpecAsync(spec);
+        foreach (var item in items!)
         {
-            string searchQuery = request.Filter.SearchQuery;
-
-            var results = new List<StreetcodeFilterResultDTO>();
-
-            var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
-                 predicate: x =>
-        (x.Status == DAL.Enums.StreetcodeStatus.Published) &&
-        (x.Title.Contains(searchQuery) ||
-        (x.Alias != null && x.Alias.Contains(searchQuery)) ||
-        x.Teaser.Contains(searchQuery)));
-
-            foreach (var streetcode in streetcodes)
+            if(item != null)
             {
-                if (streetcode.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Title));
-                    continue;
-                }
-
-                if (!string.IsNullOrEmpty(streetcode.Alias) && streetcode.Alias.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Alias));
-                    continue;
-                }
-
-                if (streetcode.Teaser.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.Teaser));
-                    continue;
-                }
-
-                if (streetcode.TransliterationUrl.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(streetcode, streetcode.TransliterationUrl));
-                }
+                results.Add(_mapper.Map<StreetcodeFilterResultDTO>(item));
             }
+        }
+    }
 
-            foreach (var text in await _repositoryWrapper.TextRepository.GetAllAsync(
-    include: i => i.Include(x => x.Streetcode),
-    predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
+    private async Task AddArtResultsAsync(IArtRepository repository, Specification<Art> spec, List<StreetcodeFilterResultDTO> results)
+    {
+        var streetcodeArts = await repository.GetAllWithSpecAsync(spec);
+
+        foreach (var streetcodeArt in streetcodeArts!)
+        {
+            if (streetcodeArt != null)
             {
-                if (text.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
+                streetcodeArt.StreetcodeArts.ForEach(art =>
                 {
-                    results.Add(CreateFilterResult(text.Streetcode, text.Title, "Текст", "text"));
-                    continue;
-                }
-
-                if (!string.IsNullOrEmpty(text.TextContent) && text.TextContent.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(text.Streetcode, text.TextContent, "Текст", "text"));
-                }
-            }
-
-            foreach (var fact in await _repositoryWrapper.FactRepository.GetAllAsync(
-    include: i => i.Include(x => x.Streetcode),
-    predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
-            {
-                if (fact.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) || fact.FactContent.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    results.Add(CreateFilterResult(fact.Streetcode, fact.Title, "Wow-факти", "wow-facts"));
-                }
-            }
-
-            foreach (var timelineItem in await _repositoryWrapper.TimelineRepository.GetAllAsync(
-                include: i => i.Include(x => x.Streetcode),
-                predicate: x => x.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published))
-            {
-                if (timelineItem.Title.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)
-                    || (!string.IsNullOrEmpty(timelineItem.Description) && timelineItem.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
-                {
-                    results.Add(CreateFilterResult(timelineItem.Streetcode, timelineItem.Title, "Хронологія", "timeline"));
-                }
-            }
-
-            foreach (var streetcodeArt in await _repositoryWrapper.ArtRepository.GetAllAsync(
-            include: i => i.Include(x => x.StreetcodeArts),
-            predicate: x => x.StreetcodeArts.Any(art => art.Streetcode != null && art.Streetcode.Status == DAL.Enums.StreetcodeStatus.Published)))
-            {
-                if (!string.IsNullOrEmpty(streetcodeArt.Description) && streetcodeArt.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase))
-                {
-                    streetcodeArt.StreetcodeArts.ForEach(art =>
+                    if (art.Streetcode != null)
                     {
-                        if (art.Streetcode == null)
-                        {
-                            return;
-                        }
-
-                        results.Add(CreateFilterResult(art.Streetcode, streetcodeArt.Description, "Арт-галерея", "art-gallery"));
-                    });
-                    continue;
-                }
+                        results.Add(_mapper.Map<StreetcodeFilterResultDTO>(streetcodeArt));
+                    }
+                });
             }
-
-            return results;
-        }
-
-        private StreetcodeFilterResultDTO CreateFilterResult(StreetcodeContent streetcode, string content, string? sourceName = null, string? blockName = null)
-        {
-            return new StreetcodeFilterResultDTO
-            {
-                StreetcodeId = streetcode.Id,
-                StreetcodeTransliterationUrl = streetcode.TransliterationUrl,
-                StreetcodeIndex = streetcode.Index,
-                BlockName = blockName,
-                Content = content,
-                SourceName = sourceName,
-            };
         }
     }
 }

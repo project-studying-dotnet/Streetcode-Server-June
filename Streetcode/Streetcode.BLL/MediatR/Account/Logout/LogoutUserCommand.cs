@@ -1,8 +1,6 @@
 ﻿using FluentResults;
-using Streetcode.BLL.Behavior;
-using Streetcode.BLL.DTO.Users;
+using MediatR;
 
-namespace Streetcode.BLL.MediatR.Account.Logout
-{
-    public record LogoutUserCommand : IValidatableRequest<Result<UserDTO>>;
-}
+namespace Streetcode.BLL.MediatR.Account.Logout;
+
+public record LogoutUserCommand : IRequest<Result<string>>;

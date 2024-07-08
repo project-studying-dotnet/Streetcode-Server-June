@@ -49,7 +49,7 @@ public class ReorderFactsCommandHandlerTests
     {
         // Arrange
         var request = GetTestReorderFactsCommand();
-        IError msgError = new Error("Cannot find any fact by streetcodeId 1");
+        IError msgError = new Error("Cannot find any Fact by a streetcode id: 1");
         
         SetupMocks(1, Enumerable.Empty<Fact>());
 
@@ -57,7 +57,7 @@ public class ReorderFactsCommandHandlerTests
         var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
-        Assert.True(result.Errors?.Exists(e => e.Message == msgError.Message));
+        Assert.Equal("Cannot find any Fact by a streetcode id: 1", result.Errors[0].Message);
     }
 
     [Fact]

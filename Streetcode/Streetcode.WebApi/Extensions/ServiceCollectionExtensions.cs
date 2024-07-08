@@ -56,7 +56,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
         services.AddMediatR(currentAssemblies);
-        services.AddScoped<IBlobService, BlobService>();
+        services.AddScoped<IBlobService, AzureBlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IPaymentService, PaymentService>();
@@ -190,7 +190,8 @@ public static class ServiceCollectionExtensions
             {
                 Name = "Authorization",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey,
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
                 Scheme = JwtBearerDefaults.AuthenticationScheme
             });
 

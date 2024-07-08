@@ -1,9 +1,7 @@
 ﻿using FluentResults;
-using Streetcode.BLL.Behavior;
-using Streetcode.BLL.DTO.Users;
-using Streetcode.DAL.Entities.Users;
+using MediatR;
 
-namespace Streetcode.BLL.MediatR.Account.RefreshTokens
+namespace Streetcode.BLL.MediatR.Account.RefreshToken
 {
-    public record RefreshTokensCommand(TokenResponseDTO tokenResponse) : IValidatableRequest<Result<User>>;
+    public record RefreshTokensCommand : IRequest<Result<string>>;
 }

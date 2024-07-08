@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Sources;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Sources.SourceLinkCategory.Create;
@@ -27,7 +28,7 @@ public class CreateSourceLinkCategoryHandler : IRequestHandler<CreateSourceLinkC
         {
             if (newCategory.Title is null)
             {
-                const string errorMsg = "Category is null";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToConvertNull, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
@@ -39,7 +40,7 @@ public class CreateSourceLinkCategoryHandler : IRequestHandler<CreateSourceLinkC
         }
         catch (Exception ex)
         {
-            string errorMsg = "Failed to create new category";
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateAn, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(errorMsg);
         }

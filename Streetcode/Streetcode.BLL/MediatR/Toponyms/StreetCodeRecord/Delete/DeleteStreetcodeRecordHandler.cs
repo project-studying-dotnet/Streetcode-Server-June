@@ -39,7 +39,7 @@ namespace Streetcode.BLL.MediatR.Toponyms.StreetCodeRecord.Delete
 
             if (!resultIsSuccess)
             {
-                const string errorMsg = "Failed to create a team";
+                string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

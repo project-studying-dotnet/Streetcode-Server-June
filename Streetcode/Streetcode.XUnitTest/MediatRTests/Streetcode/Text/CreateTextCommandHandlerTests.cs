@@ -61,8 +61,7 @@ public class CreateTextCommandHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Cannot create new Text entity!", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, "Cannot create new Text entity!"), Times.Once);
+        Assert.Equal("Cannot map entity", result.Errors.First().Message);
     }
 
     [Fact]
@@ -83,8 +82,8 @@ public class CreateTextCommandHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Cannot save changes in the database after Text creation!", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, "Cannot save changes in the database after Text creation!"), Times.Once);
+        Assert.Equal("Cannot create team link", result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, "Cannot create team link"), Times.Once);
     }
 
     [Fact]
@@ -106,8 +105,8 @@ public class CreateTextCommandHandlerTests
 
         // Assert
         Assert.False(result.IsSuccess);
-        Assert.Equal("Cannot map entity!", result.Errors.First().Message);
-        mockLogger.Verify(logger => logger.LogError(request, "Cannot map entity!"), Times.Once);
+        Assert.Equal("Cannot map entity", result.Errors.First().Message);
+        mockLogger.Verify(logger => logger.LogError(request, "Cannot map entity"), Times.Once);
     }
 
     [Fact]

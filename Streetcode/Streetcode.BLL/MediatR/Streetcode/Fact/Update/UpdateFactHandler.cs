@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Streetcode.BLL.DTO.Streetcode.TextContent.Fact;
 using Streetcode.BLL.Interfaces.Logging;
+using Streetcode.BLL.Resources;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Facts.Update
@@ -24,7 +25,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Facts.Update
             var fact = _mapper.Map<DAL.Entities.Streetcode.TextContent.Fact>(request.Fact);
             if (fact is null)
             {
-                const string errorMsg = $"Cannot convert FactDto to Fact Entity";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToConvertNull, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }
@@ -37,7 +38,7 @@ namespace Streetcode.BLL.MediatR.Streetcode.Facts.Update
             }
             else
             {
-                const string errorMsg = $"Failed to update fact";
+                var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToUpdate, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(new Error(errorMsg));
             }

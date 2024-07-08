@@ -37,12 +37,24 @@ namespace Streetcode.BLL.Resources
 
             return "An unknown error occurred.";
         }
+        
+        public static string GetMessage(string error)
+        {
+            string? message = _resourceManager.GetString(error);
 
+            if (message == null)
+            {
+                return $"Error message '{error}' not found.";
+            }
+
+            return message;
+        }
+        
         private static string EntityFilter(string input)
         {
             var parts = input.Split('.');
 
-            if (parts[^3] == "StreetcodeArt" ) 
+            if (parts[^3] == "StreetcodeArt") 
             {
                 return "Art";
             }
