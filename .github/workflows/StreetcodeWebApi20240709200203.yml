@@ -2,7 +2,7 @@ name: Build and deploy .NET Core application to Web App StreetcodeWebApi20240709
 on:
   push:
     branches:
-    - dev
+    - main
 env:
   AZURE_WEBAPP_NAME: StreetcodeWebApi20240709200203
   AZURE_WEBAPP_PACKAGE_PATH: Streetcode.WebApi\publish
@@ -44,5 +44,5 @@ jobs:
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.StreetcodeWebApi20240709200203_7E13 }}
+        publish-profile: ${{ secrets.StreetcodeWebApi20240709200203_52FD }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
