@@ -1358,6 +1358,16 @@ namespace Streetcode.WebApi.Extensions
                                     {
                                         ObserverId = 1,
                                         TargetId = 2
+                                    },
+                                    new RelatedFigure
+                                    {
+                                        ObserverId = 3,
+                                        TargetId = 3
+                                    },
+                                    new RelatedFigure
+                                    {
+                                        ObserverId = 4,
+                                        TargetId = 4
                                     });
 
                                 await dbContext.SaveChangesAsync();
