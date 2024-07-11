@@ -436,7 +436,7 @@ namespace Streetcode.WebApi.Extensions
                                     CreatedAt = DateTime.Now,
                                     DateString = "22 листопада 2004 — 26 грудня 2004",
                                     EventStartOrPersonBirthDate = new DateTime(2004, 11, 22),
-                                    EventEndOrPersonDeathDate = new DateTime(2004, 12, 26),
+                                    EventEndOrPersonDeathDate = new DateTime(2005, 1, 23),
                                     Title = "Помаранчева революція",
                                     Alias = "Помаранчева революція",
                                     AudioId = null,
