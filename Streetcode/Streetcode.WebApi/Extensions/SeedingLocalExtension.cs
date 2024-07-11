@@ -21,7 +21,6 @@ using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -411,6 +410,36 @@ namespace Streetcode.WebApi.Extensions
                                     Title = "Роман Ратушний (Сенека)",
                                     Alias = "Сенека",
                                     AudioId = 2,
+                                    Status = StreetcodeStatus.Published
+                                },
+                                new EventStreetcode
+                                {
+                                    Index = 3,
+                                    TransliterationUrl = "eurovision-2005",
+                                    Teaser = "Пісенний конкурс «Євробачення-2005» — 50-й конкурс в історії «Євробачення». Відбувся в Києві після перемоги Руслани на конкурсі 2004 року в Стамбулі, де вона представляла Україну з піснею «Wild dances». Перемога Руслани стала першою перемогою України на «Євробачення» відтоді, як країна стала учасницею конкурсу 2003 року. Конкурс, організований Європейською мовною спілкою і Національною телекомпанією України, проходив у «Палаці спорту» і складався з півфіналу (19 травня) та фіналу (21 травня).",
+                                    ViewCount = 1,
+                                    CreatedAt = DateTime.Now,
+                                    DateString = "19 травня 2005 - 21 травня 2005",
+                                    EventStartOrPersonBirthDate = new DateTime(2005, 5, 19),
+                                    EventEndOrPersonDeathDate = new DateTime(2005, 5, 21),
+                                    Title = "Євробачення (2005)",
+                                    Alias = "Євробачення",
+                                    AudioId = null,
+                                    Status = StreetcodeStatus.Published
+                                },
+                                new EventStreetcode
+                                {
+                                    Index = 4,
+                                    TransliterationUrl = "orange-revolution",
+                                    Teaser = "Помаранчева революція — кампанія протестів, мітингів, пікетів, страйків та інших актів громадянської непокори в Україні, організована і проведена прихильниками Віктора Ющенка, основного кандидата від опозиції на президентських виборах у листопаді — грудні 2004 року, після оголошення Центральною виборчою комісією попередніх результатів, згідно з якими нібито переміг його суперник — Віктор Янукович. Акція почалася 22 листопада 2004 як реакція на масові фальсифікації, що вплинули на результат виборів.",
+                                    ViewCount = 1,
+                                    CreatedAt = DateTime.Now,
+                                    DateString = "22 листопада 2004 — 26 грудня 2004",
+                                    EventStartOrPersonBirthDate = new DateTime(2004, 11, 22),
+                                    EventEndOrPersonDeathDate = new DateTime(2004, 12, 26),
+                                    Title = "Помаранчева революція",
+                                    Alias = "Помаранчева революція",
+                                    AudioId = null,
                                     Status = StreetcodeStatus.Published
                                 });
 
