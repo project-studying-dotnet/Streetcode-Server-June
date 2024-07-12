@@ -18,19 +18,19 @@ namespace Streetcode.XUnitTest.MediatRTests.StreetcodeTests.RelatedFigureTests.G
 
 public class GetRelatedFiguresByStreetcodeIdHandlerTests
 {
-    private readonly Mock<IMapper> mapperMock;
-    private readonly Mock<IRepositoryWrapper> repositoryWrapperMock;
-    private readonly Mock<ILoggerService> loggerMock;
-    private readonly Mock<IBlobService> blobServiceMock;
-    private readonly GetRelatedFiguresByStreetcodeIdHandler handler;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly Mock<IRepositoryWrapper> _repositoryWrapperMock;
+    private readonly Mock<ILoggerService> _loggerMock;
+    private readonly Mock<IBlobService> _blobServiceMock;
+    private readonly GetRelatedFiguresByStreetcodeIdHandler _handler;
 
     public GetRelatedFiguresByStreetcodeIdHandlerTests()
     {
-        mapperMock = new Mock<IMapper>();
-        repositoryWrapperMock = new Mock<IRepositoryWrapper>();
-        loggerMock = new Mock<ILoggerService>();
-        blobServiceMock = new Mock<IBlobService>();
-        handler = new GetRelatedFiguresByStreetcodeIdHandler(mapperMock.Object, repositoryWrapperMock.Object, loggerMock.Object, blobServiceMock.Object);
+        _mapperMock = new Mock<IMapper>();
+        _repositoryWrapperMock = new Mock<IRepositoryWrapper>();
+        _loggerMock = new Mock<ILoggerService>();
+        _blobServiceMock = new Mock<IBlobService>();
+        _handler = new GetRelatedFiguresByStreetcodeIdHandler(_mapperMock.Object, _repositoryWrapperMock.Object, _loggerMock.Object, _blobServiceMock.Object);
     }
 
     [Fact]
@@ -70,27 +70,26 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
             }
         };
 
-        repositoryWrapperMock.Setup(x => x.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+        _repositoryWrapperMock.Setup(x => x.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
                .Returns((Expression<Func<RelatedFigure, bool>> predicate) =>
                    relatedFigureIds.Select(id => new RelatedFigure { ObserverId = id, TargetId = id }).AsQueryable());
 
-        repositoryWrapperMock.Setup(x => x.StreetcodeRepository.GetAllAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
+        _repositoryWrapperMock.Setup(x => x.StreetcodeRepository.GetAllAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
             .ReturnsAsync(relatedFigures);
 
-        mapperMock.Setup(x => x.Map<IEnumerable<RelatedFigureDTO>>(relatedFigures)).Returns(relatedFiguresDto);
+        _mapperMock.Setup(x => x.Map<IEnumerable<RelatedFigureDTO>>(relatedFigures)).Returns(relatedFiguresDto);
 
-        blobServiceMock.Setup(x => x.FindFileInStorageAsBase64(It.IsAny<string>())).Returns("base64string");
-
+        _blobServiceMock.Setup(x => x.FindFileInStorageAsBase64(It.IsAny<string>())).Returns("base64string");
 
         // Act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.True(result.IsSuccess);
         Assert.Equal(2, result.Value.Count());
         Assert.Equal(streetcodeId, result.Value.First().CurrentStreetcodeId);
         Assert.Equal(streetcodeId, result.Value.Last().CurrentStreetcodeId);
-        blobServiceMock.Verify(x => x.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Exactly(2));
+        _blobServiceMock.Verify(x => x.FindFileInStorageAsBase64(It.IsAny<string>()), Times.Exactly(2));
     }
 
     [Fact]
@@ -100,16 +99,16 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         var streetcodeId = 1;
         var request = new GetRelatedFigureByStreetcodeIdQuery(streetcodeId);
 
-        repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+        _repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
             .Returns(Enumerable.Empty<RelatedFigure>().AsQueryable());
 
-        repositoryWrapperMock.Setup(r => r.StreetcodeRepository
+        _repositoryWrapperMock.Setup(r => r.StreetcodeRepository
         .GetAllAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
                               .ReturnsAsync(It.IsAny<List<StreetcodeContent>>);
         var expectedMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
 
         // Act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -123,17 +122,17 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
         var streetcodeId = 1;
         var request = new GetRelatedFigureByStreetcodeIdQuery(streetcodeId);
 
-        repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+        _repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
             .Returns(new List<RelatedFigure> { new() { ObserverId = streetcodeId, TargetId = 2 } }.AsQueryable());
 
-        repositoryWrapperMock.Setup(r => r.StreetcodeRepository
+        _repositoryWrapperMock.Setup(r => r.StreetcodeRepository
             .GetAllAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
             .ReturnsAsync(new List<StreetcodeContent>());
 
         var expectedMessage = MessageResourceContext.GetMessage(ErrorMessages.EntityWithStreetcodeNotFound, request);
 
         // Act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -157,24 +156,24 @@ public class GetRelatedFiguresByStreetcodeIdHandlerTests
             }
         };
 
-        repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
+        _repositoryWrapperMock.Setup(r => r.RelatedFigureRepository.FindAll(It.IsAny<Expression<Func<RelatedFigure, bool>>>()))
             .Returns(new List<RelatedFigure> { new() { ObserverId = streetcodeId, TargetId = 2 } }.AsQueryable());
 
-        repositoryWrapperMock.Setup(r => r.StreetcodeRepository
+        _repositoryWrapperMock.Setup(r => r.StreetcodeRepository
             .GetAllAsync(It.IsAny<Expression<Func<StreetcodeContent, bool>>>(), It.IsAny<Func<IQueryable<StreetcodeContent>, IIncludableQueryable<StreetcodeContent, object>>>()))
             .ReturnsAsync(relatedFigures);
 
-        mapperMock.Setup(x => x.Map<IEnumerable<RelatedFigureDTO>>(relatedFigures))
+        _mapperMock.Setup(x => x.Map<IEnumerable<RelatedFigureDTO>>(relatedFigures))
             .Returns((IEnumerable<RelatedFigureDTO>)null!);
 
         var expectedMessage = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
 
         // Act
-        var result = await handler.Handle(request, CancellationToken.None);
+        var result = await _handler.Handle(request, CancellationToken.None);
 
         // Assert
         Assert.False(result.IsSuccess);
         Assert.Equal(expectedMessage, result.Errors.First().Message);
-        loggerMock.Verify(x => x.LogError(request, expectedMessage), Times.Once);
+        _loggerMock.Verify(x => x.LogError(request, expectedMessage), Times.Once);
     }
 }
