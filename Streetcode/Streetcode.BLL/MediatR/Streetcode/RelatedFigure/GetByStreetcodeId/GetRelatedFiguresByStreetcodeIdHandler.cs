@@ -37,7 +37,7 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
             return Result.Fail(new Error(errorMsg));
         }
 
-        IEnumerable<StreetcodeContent>? relatedFigures = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
+        var relatedFigures = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
           predicate: sc => relatedFigureIds.Any(id => id == sc.Id) && sc.Status == DAL.Enums.StreetcodeStatus.Published,
           include: scl => scl.Include(sc => sc.Images).ThenInclude(img => img.ImageDetails) 
                              .Include(sc => sc.Tags).Include(sc => sc.Subtitles));
