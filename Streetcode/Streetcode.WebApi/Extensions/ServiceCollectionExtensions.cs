@@ -41,6 +41,20 @@ namespace Streetcode.WebApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static void AddBlobService(this IServiceCollection services)
+    {
+        var host = Environment.GetEnvironmentVariable("Host") ?? "Default";
+
+        if (host.Equals("Default"))
+        {
+            services.AddScoped<IBlobService, BlobService>();
+        }
+        else if (host.Equals("Azure"))
+        {
+            services.AddScoped<IBlobService, AzureBlobService>();
+        }
+    }
+
     public static void AddIdentityService(this IServiceCollection services)
     {
         services.AddIdentity<User, IdentityRole<Guid>>()
@@ -61,7 +75,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
         services.AddMediatR(currentAssemblies);
-        services.AddScoped<IBlobService, AzureBlobService>();
+        services.AddBlobService();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISendVerificationEmail, SendVerificationEmail>();

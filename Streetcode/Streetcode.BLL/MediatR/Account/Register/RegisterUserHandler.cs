@@ -80,6 +80,9 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
 
         var tokens = await _tokenService.GenerateTokens(user);
 
+        DateTime utcTime1 = DateTime.SpecifyKind(tokens.RefreshToken.Expires, DateTimeKind.Utc);
+        DateTimeOffset utcTime2 = utcTime1;
+
         await _cookieService.AppendCookiesToResponseAsync(httpContext.Response,
             ("accessToken", tokens.AccessToken, new CookieOptions
             {
@@ -90,7 +93,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
             }),
             ("refreshToken", tokens.RefreshToken.Token, new CookieOptions
             {
-                Expires = tokens.RefreshToken.Expires,
+                Expires = utcTime2,
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None

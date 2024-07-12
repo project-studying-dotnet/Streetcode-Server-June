@@ -63,18 +63,21 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
             user.RefreshTokens.RemoveAll(t => t.Token == refreshToken);
 
             var tokens = await _tokenService.GenerateTokens(user);
+            
+            DateTime utcTime1 = DateTime.SpecifyKind(tokens.RefreshToken.Expires, DateTimeKind.Utc);
+            DateTimeOffset utcTime2 = utcTime1;
 
             await _cookieService.AppendCookiesToResponseAsync(httpContext.Response,
                 ("accessToken", tokens.AccessToken, new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
+                {                    
+                    Expires = DateTime.UtcNow.AddMinutes(_tokensConfiguration.AccessTokenExpirationMinutes),
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None
                 }),
                 ("refreshToken", tokens.RefreshToken.Token, new CookieOptions
                 {
-                    Expires = tokens.RefreshToken.Expires,
+                    Expires = utcTime2,
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None
