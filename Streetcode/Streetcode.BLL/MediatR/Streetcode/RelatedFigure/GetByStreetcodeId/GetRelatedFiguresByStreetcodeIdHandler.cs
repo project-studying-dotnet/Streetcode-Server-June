@@ -44,7 +44,7 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
 
         if (!relatedFigures.Any())
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFoundWithStreetcode, request);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithStreetcodeNotFound, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -59,12 +59,22 @@ public class GetRelatedFiguresByStreetcodeIdHandler : IRequestHandler<GetRelated
 
         var relatedFiguresDto = _mapper.Map<IEnumerable<RelatedFigureDTO>>(relatedFigures);
 
-        foreach(var figure in relatedFiguresDto)
+        if (relatedFiguresDto == null)
+        {
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            _logger.LogError(request, errorMsg);
+            return Result.Fail(new Error(errorMsg));
+        }
+
+        foreach (var figure in relatedFiguresDto)
         {
             figure.CurrentStreetcodeId = request.StreetcodeId;
-            foreach (var image in figure.Images!)
+            if (figure.Images != null && figure.Images.Any())
             {
-                image.Base64 = _blobService.FindFileInStorageAsBase64(image.BlobName);
+                foreach (var image in figure.Images)
+                {
+                    image.Base64 = _blobService.FindFileInStorageAsBase64(image.BlobName);
+                }
             }
         }
 
