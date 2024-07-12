@@ -37,7 +37,7 @@ namespace Streetcode.WebApi.Extensions
             const string adminUserEmail = "SuperAdmin@test.com";
             const string adminId = "4eb10d27-a950-45ef-9ebe-f730a07ce5e9";
             const string adminPass = "*Superuser18";
-            
+
             StreetcodeDbContext? context = serviceProvider.GetService<StreetcodeDbContext>();
 
             ILoggerService? logger = serviceProvider.GetService<ILoggerService>();
@@ -45,7 +45,7 @@ namespace Streetcode.WebApi.Extensions
             RoleManager<IdentityRole<Guid>> rm = serviceProvider.GetService<RoleManager<IdentityRole<Guid>>>();
 
             UserManager<User> um = serviceProvider.GetService<UserManager<User>>();
-            
+
             try
             {
                 // Seed Roles
@@ -61,7 +61,7 @@ namespace Streetcode.WebApi.Extensions
                         new IdentityRole<Guid>(UserRole.User.ToString())
                         {
                             Id = Guid.Parse(userRoleId)
-                        });                    
+                        });
                 }
 
                 // Seed Admin
@@ -87,7 +87,7 @@ namespace Streetcode.WebApi.Extensions
                 logger.LogError(new { um, rm }, $"Error occured when trying to seed Identity Data. \n\tMessage:\n {ex.Message}");
 
                 throw;
-            }                        
+            }
         }
 
         public static async Task SeedDataAsync(this WebApplication app)
@@ -332,7 +332,7 @@ namespace Streetcode.WebApi.Extensions
                             }
                         }
                     }
-                    
+
                     if (!dbContext.News.Any())
                     {
                         dbContext.News.AddRange(
@@ -1351,13 +1351,8 @@ namespace Streetcode.WebApi.Extensions
                                 dbContext.RelatedFigures.AddRange(
                                     new RelatedFigure
                                     {
-                                        ObserverId = 2,
-                                        TargetId = 1
-                                    },
-                                    new RelatedFigure
-                                    {
-                                        ObserverId = 1,
-                                        TargetId = 2
+                                        ObserverId = 4,
+                                        TargetId = 4
                                     },
                                     new RelatedFigure
                                     {
@@ -1366,8 +1361,13 @@ namespace Streetcode.WebApi.Extensions
                                     },
                                     new RelatedFigure
                                     {
-                                        ObserverId = 4,
-                                        TargetId = 4
+                                        ObserverId = 2,
+                                        TargetId = 1
+                                    },
+                                    new RelatedFigure
+                                    {
+                                        ObserverId = 1,
+                                        TargetId = 2
                                     });
 
                                 await dbContext.SaveChangesAsync();
@@ -1395,6 +1395,16 @@ namespace Streetcode.WebApi.Extensions
                                     {
                                         ImageId = 23,
                                         StreetcodeId = 2,
+                                    },
+                                    new StreetcodeImage
+                                    {
+                                        ImageId = 1,
+                                        StreetcodeId = 3,
+                                    },
+                                    new StreetcodeImage
+                                    {
+                                        ImageId = 1,
+                                        StreetcodeId = 4,
                                     });
 
                                 await dbContext.SaveChangesAsync();
@@ -1495,6 +1505,18 @@ namespace Streetcode.WebApi.Extensions
                                         {
                                             TagId = 10,
                                             StreetcodeId = 2,
+                                            IsVisible = true,
+                                        },
+                                        new StreetcodeTagIndex
+                                        {
+                                            TagId = 10,
+                                            StreetcodeId = 3,
+                                            IsVisible = true,
+                                        },
+                                        new StreetcodeTagIndex
+                                        {
+                                            TagId = 10,
+                                            StreetcodeId = 4,
                                             IsVisible = true,
                                         });
 
