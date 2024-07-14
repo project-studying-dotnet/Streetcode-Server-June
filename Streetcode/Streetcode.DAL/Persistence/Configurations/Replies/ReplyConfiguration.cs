@@ -11,6 +11,7 @@ namespace Streetcode.DAL.Persistence.Configurations.Replies;
             builder.HasOne(c => c.ParentComment)
                 .WithMany(c => c.Replies)
                 .HasForeignKey(c => c.ParentId)
-                .OnDelete(DeleteBehavior.Restrict);
-        }
+                .OnDelete(DeleteBehavior.Cascade);
+
     }
+}

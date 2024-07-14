@@ -19,15 +19,18 @@ namespace Streetcode.DAL.Configurations.Comments
                 .IsRequired();
 
             builder.HasOne(c => c.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-            
+        .WithMany(u => u.Comments)
+        .HasForeignKey(c => c.UserId)
+        .OnDelete(DeleteBehavior.Cascade);  // Каскадне видалення
+
             builder.HasOne(c => c.Streetcode)
                 .WithMany(s => s.Comments)
                 .HasForeignKey(c => c.StreetcodeId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+                .OnDelete(DeleteBehavior.Cascade);  // Каскадне видалення
+            builder.HasMany(c => c.Replies)
+           .WithOne(r => r.ParentComment)
+           .HasForeignKey(r => r.ParentId)
+           .OnDelete(DeleteBehavior.Cascade);
 
 
             builder.ToTable("Comments");
