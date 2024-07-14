@@ -9,7 +9,7 @@ using Streetcode.BLL.MediatR.Account.Email.ConfirmEmail;
 using Streetcode.BLL.MediatR.Account.Email.SendEmail;
 using Streetcode.BLL.MediatR.Account.RestorePassword;
 using Streetcode.BLL.MediatR.Account.ChangePassword;
-using Streetcode.BLL.MediatR.Account.RestorePassword;
+using Streetcode.BLL.MediatR.Account.LoginWithGoogle;
 
 namespace Streetcode.WebApi.Controllers.Account
 {
@@ -37,6 +37,24 @@ namespace Streetcode.WebApi.Controllers.Account
         public async Task<IActionResult> Login([FromBody] UserLoginDTO loginUser)
         {
             return HandleResult(await Mediator.Send(new LoginUserCommand(loginUser)));
+        }
+
+        /// <summary>
+        /// Generates user token for login with google tokenId
+        /// </summary>
+        /// <remarks>
+        /// Sample request for login:
+        ///
+        ///     POST /api/account/LoginWithGoogle
+        ///     {
+        ///        "idToken": "token"
+        ///     }
+        ///
+        /// </remarks>
+        [HttpPost]
+        public async Task<IActionResult> LoginWithGoogle([FromBody] LoginWithGoogleDTO loginWithGoogle)
+        {
+            return HandleResult(await Mediator.Send(new LoginWithGoogleCommand(loginWithGoogle)));
         }
 
         [HttpDelete]

@@ -10,6 +10,6 @@ namespace Streetcode.BLL.DTO.Users
 
         public bool TwoFactorEnabled { get; set; }
        
-        public List<LikeDTO> likes { get; set; }
+        public List<LikeDTO> Likes { get; set; }
     }
 }
