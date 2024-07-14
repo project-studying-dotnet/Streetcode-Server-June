@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.RegularExpressions;
+using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -6,13 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
-using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.Resources;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
-using System.Text.RegularExpressions;
 using static Google.Apis.Auth.GoogleJsonWebSignature;
 
 namespace Streetcode.BLL.MediatR.Account.LoginWithGoogle;
@@ -21,7 +20,6 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
 {
     private readonly IMapper _mapper;
     private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
     private readonly ITokenService _tokenService;
     private readonly ILoggerService _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -39,7 +37,6 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
         TokensConfiguration tokensConfiguration)
     {
         _userManager = userManager;
-        _signInManager = signInManager;
         _tokenService = tokenService;
         _mapper = mapper;
         _logger = logger;
