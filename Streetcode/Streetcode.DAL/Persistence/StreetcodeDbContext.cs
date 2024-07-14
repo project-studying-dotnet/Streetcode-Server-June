@@ -76,8 +76,6 @@ public class StreetcodeDbContext : IdentityDbContext<User, IdentityRole<Guid>, G
     public DbSet<TeamMemberPositions>? TeamMemberPosition { get; set; }
     public DbSet<Like>? Likes { get; set; }
     public DbSet<Comment>? Comments { get; set; }
-    public DbSet<Reply>? Replies { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

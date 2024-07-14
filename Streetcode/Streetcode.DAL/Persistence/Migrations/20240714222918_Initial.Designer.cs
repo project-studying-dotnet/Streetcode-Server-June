@@ -9,11 +9,11 @@ using Streetcode.DAL.Persistence;
 
 #nullable disable
 
-namespace Streetcode.DAL.Persistence.Migrations
+namespace Streetcode.DAL.Migrations
 {
     [DbContext(typeof(StreetcodeDbContext))]
-    [Migration("20240701135146_UpdateUser")]
-    partial class UpdateUser
+    [Migration("20240714222918_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -277,6 +277,42 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("qr_coordinates", "coordinates");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CommentContent")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StreetcodeId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("StreetcodeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments", "comments");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.Feedback.Response", b =>
                 {
                     b.Property<int>("Id")
@@ -301,6 +337,32 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("responses", "feedback");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Likes.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("streetcodeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("streetcodeId");
+
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Media.Audio", b =>
@@ -688,6 +750,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LikesCount")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -1110,6 +1175,35 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.ToTable("transaction_links", "transactions");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens", "Users");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1126,18 +1220,12 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("FirstName")
                         .HasMaxLength(50)
@@ -1169,9 +1257,6 @@ namespace Streetcode.DAL.Persistence.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -1348,6 +1433,49 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Streetcode");
 
                     b.Navigation("StreetcodeCoordinate");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.Comment", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Comments.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
+                        .WithMany("Comments")
+                        .HasForeignKey("StreetcodeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ParentComment");
+
+                    b.Navigation("Streetcode");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Likes.Like", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany("Likes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
+                        .WithMany("Likes")
+                        .HasForeignKey("streetcodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Streetcode");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Media.Images.Art", b =>
@@ -1671,6 +1799,17 @@ namespace Streetcode.DAL.Persistence.Migrations
                     b.Navigation("Streetcode");
                 });
 
+            modelBuilder.Entity("Streetcode.DAL.Entities.Users.RefreshToken", b =>
+                {
+                    b.HasOne("Streetcode.DAL.Entities.Users.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types.StreetcodeCoordinate", b =>
                 {
                     b.HasOne("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", "Streetcode")
@@ -1696,6 +1835,11 @@ namespace Streetcode.DAL.Persistence.Migrations
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Tag", b =>
                 {
                     b.Navigation("StreetcodeTagIndices");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Comments.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Media.Audio", b =>
@@ -1737,9 +1881,13 @@ namespace Streetcode.DAL.Persistence.Migrations
 
             modelBuilder.Entity("Streetcode.DAL.Entities.Streetcode.StreetcodeContent", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Coordinates");
 
                     b.Navigation("Facts");
+
+                    b.Navigation("Likes");
 
                     b.Navigation("Observers");
 
@@ -1787,6 +1935,15 @@ namespace Streetcode.DAL.Persistence.Migrations
             modelBuilder.Entity("Streetcode.DAL.Entities.Toponyms.Toponym", b =>
                 {
                     b.Navigation("Coordinate");
+                });
+
+            modelBuilder.Entity("Streetcode.DAL.Entities.Users.User", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Likes");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types.StreetcodeCoordinate", b =>

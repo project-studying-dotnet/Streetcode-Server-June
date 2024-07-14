@@ -15,121 +15,110 @@ namespace Streetcode.XUnitTest.MediatRTests.Replies;
 
 public class CreateReplyHandlerTest
 {
-            private readonly Mock<IMapper> _mockMapper;
-            private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
-            private readonly Mock<ILoggerService> _mockLogger;
-            private readonly Mock<ITokenService> _mockTokenService;
-            private readonly Mock<IHttpContextAccessor> _mockHttpContextAccessor;
-            private readonly CreateReplyHandler _handler;
-            private readonly CreateReplyCommand _command;
-            public CreateReplyHandlerTest()
-            {
-                _mockMapper = new Mock<IMapper>();
-                _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-                _mockLogger = new Mock<ILoggerService>();
-                _mockTokenService = new Mock<ITokenService>();
-                _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-                _handler = new CreateReplyHandler( _mockRepositoryWrapper.Object, _mockMapper.Object,_mockLogger.Object, _mockHttpContextAccessor.Object,_mockTokenService.Object );
-                _command = new CreateReplyCommand(new ReplyCreateDTO());
-            }
+    private readonly Mock<IMapper> _mockMapper;
+    private readonly Mock<IRepositoryWrapper> _mockRepositoryWrapper;
+    private readonly Mock<ILoggerService> _mockLogger;
+    private readonly Mock<ITokenService> _mockTokenService;
+    private readonly Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+    private readonly CreateReplyHandler _handler;
+    private readonly CreateReplyCommand _command;
 
-            public async Task Handle_Should_ReturnFailResult_WhenReplyIsNull()
-            {
-                // Arrange
-                _mockMapper.Setup(m => m.Map<Reply>(It.IsAny<ReplyCreateDTO>())).Returns((Reply)null!);
+    public CreateReplyHandlerTest()
+    {
+        _mockMapper = new Mock<IMapper>();
+        _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
+        _mockLogger = new Mock<ILoggerService>();
+        _mockTokenService = new Mock<ITokenService>();
+        _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        _handler = new CreateReplyHandler(_mockRepositoryWrapper.Object, _mockMapper.Object, _mockLogger.Object, _mockHttpContextAccessor.Object, _mockTokenService.Object);
+        _command = new CreateReplyCommand(new ReplyCreateDTO());
+    }
 
-                // Act
-                var result = await _handler.Handle(_command, CancellationToken.None);
+    [Fact]
+    public async Task Handle_NewReplyIsNull_ReturnsFailResult()
+    {
+        // Arrange
+        _mockMapper.Setup(m => m.Map<Comment>(It.IsAny<ReplyCreateDTO>())).Returns((Comment)null!);
 
-                // Assert
-                Assert.True(result.IsFailed);
-                Assert.Equal(MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, _command), result.Errors[0].Message);
-            }
-            
-            [Fact]
-            public async Task Handle_Should_ReturnFailResult_WhenAccessTokenIsMissing()
-            {
-                // Arrange
-                _mockMapper.Setup(m => m.Map<Reply>(It.IsAny<ReplyCreateDTO>())).Returns(new Reply());
-                var httpContext = new DefaultHttpContext();
-                _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
+        // Act
+        var result = await _handler.Handle(_command, CancellationToken.None);
 
-                // Act
-                var result = await _handler.Handle(_command, CancellationToken.None);
+        // Assert
+        Assert.Equal(MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, _command), result.Errors[0].Message);
+    }
 
-                // Assert
-                Assert.Multiple(() =>
-                {
-                    Assert.True(result.IsFailed);
-                    Assert.Equal(
-                        MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, _command),
-                        result.Errors[0].Message);
-                });
-            }
-            
-            [Fact]
-            public async Task Handle_Should_ReturnFailResult_WhenSaveChangesFails()
-            {
-                // Arrange
-                var reply = new Reply();
-                var accessToken = "validToken";
-                var requestCookies = new Mock<IRequestCookieCollection>();
-                requestCookies.Setup(c => c.TryGetValue("accessToken", out accessToken)).Returns(true);
+    [Fact]
+    public async Task Handle_AccessTokenIsMissing_ReturnsFailResult()
+    {
+        // Arrange
+        _mockMapper.Setup(m => m.Map<Comment>(It.IsAny<ReplyCreateDTO>())).Returns(new Comment());
+        var httpContext = new DefaultHttpContext();
+        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
 
-                _mockMapper.Setup(m => m.Map<Reply>(It.IsAny<ReplyCreateDTO>())).Returns(reply);
+        // Act
+        var result = await _handler.Handle(_command, CancellationToken.None);
 
-                var httpContext = new DefaultHttpContext();
-                httpContext.Request.Cookies = requestCookies.Object;
+        // Assert
+        Assert.Equal(MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, _command), result.Errors[0].Message);
+    }
 
-                _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
-                _mockTokenService.Setup(t => t.GetUserIdFromAccessToken(It.IsAny<string>())).Returns(Guid.NewGuid().ToString());
+    [Fact]
+    public async Task Handle_SaveChangesFails_ReturnsFailResult()
+    {
+        // Arrange
+        var comment = new Comment();
+        var accessToken = "validToken";
+        var requestCookies = new Mock<IRequestCookieCollection>();
+        requestCookies.Setup(c => c.TryGetValue("accessToken", out accessToken)).Returns(true);
 
-                _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(It.IsAny<Reply>())).ReturnsAsync(reply);
-                _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
+        _mockMapper.Setup(m => m.Map<Comment>(It.IsAny<ReplyCreateDTO>())).Returns(comment);
 
-                // Act
-                var result = await _handler.Handle(_command, CancellationToken.None);
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Cookies = requestCookies.Object;
 
-                Assert.Multiple(() =>
-                {
-                    Assert.True(result.IsFailed);
-                    Assert.Equal(MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, _command), result.Errors[0].Message);
-                });
-            }
-            
-            [Fact]
-            public async Task Handle_Should_ReturnSuccessResult_WhenValidRequest()
-            {
-                // Arrange
-                var reply = new Reply();
-                var replyDto = new CommentDTO();
-                var accessToken = "validToken";
-                var userId = Guid.NewGuid().ToString();
+        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
+        _mockTokenService.Setup(t => t.GetUserIdFromAccessToken(It.IsAny<string>())).Returns(Guid.NewGuid().ToString());
 
-                var requestCookies = new Mock<IRequestCookieCollection>();
-                requestCookies.Setup(c => c.TryGetValue("accessToken", out accessToken)).Returns(true);
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(It.IsAny<Comment>())).ReturnsAsync(comment);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(0);
 
-                _mockMapper.Setup(m => m.Map<Reply>(It.IsAny<ReplyCreateDTO>())).Returns(reply);
-                _mockMapper.Setup(m => m.Map<CommentDTO>(It.IsAny<Reply>())).Returns(replyDto);
+        // Act
+        var result = await _handler.Handle(_command, CancellationToken.None);
 
-                var httpContext = new DefaultHttpContext();
-                httpContext.Request.Cookies = requestCookies.Object;
+        // Assert
+        Assert.True(result.IsFailed);
+        Assert.Equal(MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, _command), result.Errors[0].Message);
+    }
 
-                _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
-                _mockTokenService.Setup(t => t.GetUserIdFromAccessToken(accessToken)).Returns(userId);
+    [Fact]
+    public async Task Handle_ValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        var comment = new Comment();
+        var replyDto = new ReplyDTO();
+        var accessToken = "validToken";
+        var userId = Guid.NewGuid().ToString();
 
-                _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(It.IsAny<Reply>())).ReturnsAsync(reply);
-                _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+        var requestCookies = new Mock<IRequestCookieCollection>();
+        requestCookies.Setup(c => c.TryGetValue("accessToken", out accessToken)).Returns(true);
 
-                // Act
-                var result = await _handler.Handle(_command, CancellationToken.None);
+        _mockMapper.Setup(m => m.Map<Comment>(It.IsAny<ReplyCreateDTO>())).Returns(comment);
+        _mockMapper.Setup(m => m.Map<ReplyDTO>(It.IsAny<Comment>())).Returns(replyDto);
 
-                // Assert
-                Assert.Multiple(() =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(replyDto, result.Value);
-                });
-            }
+        var httpContext = new DefaultHttpContext();
+        httpContext.Request.Cookies = requestCookies.Object;
+
+        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns(httpContext);
+        _mockTokenService.Setup(t => t.GetUserIdFromAccessToken(accessToken)).Returns(userId);
+
+        _mockRepositoryWrapper.Setup(r => r.CommentRepository.CreateAsync(It.IsAny<Comment>())).ReturnsAsync(comment);
+        _mockRepositoryWrapper.Setup(r => r.SaveChangesAsync()).ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(_command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(replyDto, result.Value);
+    }
 }
-

@@ -120,7 +120,5 @@ namespace Streetcode.XUnitTest.MediatRTests.Comments
             Assert.True(result.IsSuccess);
             Assert.Equal(commentDto, result.Value);
         }
-
-
     }
 }

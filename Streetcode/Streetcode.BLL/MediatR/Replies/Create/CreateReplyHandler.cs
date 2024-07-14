@@ -11,7 +11,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Replies;
 
-public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<CommentDTO>>
+public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<ReplyDTO>>
 {
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
@@ -27,14 +27,14 @@ public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<Com
             _tokenService = tokenService;
         }
 
-        public async Task<Result<CommentDTO>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
+        public async Task<Result<ReplyDTO>> Handle(CreateReplyCommand request, CancellationToken cancellationToken)
         {
-            var newReply = _mapper.Map<Reply>(request.reply);
+            var newReply = _mapper.Map<Comment>(request.reply);
             if(newReply is null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, request);
                 _logger.LogError(request, errorMsg);
-                return Result.Fail<CommentDTO>(new Error(errorMsg));
+                return Result.Fail<ReplyDTO>(new Error(errorMsg));
             }
             
             var httpContext = _httpContextAccessor.HttpContext;
@@ -42,14 +42,14 @@ public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<Com
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
-                return Result.Fail<CommentDTO>(new Error(errorMsg));
+                return Result.Fail<ReplyDTO>(new Error(errorMsg));
             }
             
             if(string.IsNullOrEmpty(accessToken))
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.AccessTokenNotFound, request);
                 _logger.LogError(request, errorMsg);
-                return Result.Fail<CommentDTO>(new Error(errorMsg));
+                return Result.Fail<ReplyDTO>(new Error(errorMsg));
             }
             
             var userId = _tokenService.GetUserIdFromAccessToken(accessToken!);
@@ -57,7 +57,7 @@ public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<Com
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
                 _logger.LogError(request, errorMsg);
-                return Result.Fail<CommentDTO>(new Error(errorMsg));
+                return Result.Fail<ReplyDTO>(new Error(errorMsg));
             }
             
             newReply.UserId = new Guid(userId);
@@ -69,9 +69,9 @@ public class CreateReplyHandler : IRequestHandler<CreateReplyCommand, Result<Com
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToCreateA, request);
                 _logger.LogError(request, errorMsg);
-                return Result.Fail<CommentDTO>(new Error(errorMsg));
+                return Result.Fail<ReplyDTO>(new Error(errorMsg));
             }
             
-            return Result.Ok(_mapper.Map<CommentDTO>(reply));
+            return Result.Ok(_mapper.Map<ReplyDTO>(reply));
         }
 }

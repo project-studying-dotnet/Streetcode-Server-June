@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Streetcode.DAL.Persistence.Migrations
+namespace Streetcode.DAL.Migrations
 {
     public partial class Initial : Migration
     {
@@ -11,6 +11,9 @@ namespace Streetcode.DAL.Persistence.Migrations
         {
             migrationBuilder.EnsureSchema(
                 name: "media");
+
+            migrationBuilder.EnsureSchema(
+                name: "comments");
 
             migrationBuilder.EnsureSchema(
                 name: "add_content");
@@ -34,6 +37,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                 name: "coordinates");
 
             migrationBuilder.EnsureSchema(
+                name: "Users");
+
+            migrationBuilder.EnsureSchema(
                 name: "feedback");
 
             migrationBuilder.EnsureSchema(
@@ -45,8 +51,19 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.EnsureSchema(
                 name: "transactions");
 
-            migrationBuilder.EnsureSchema(
-                name: "Users");
+            migrationBuilder.CreateTable(
+                name: "AspNetRoles",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "audios",
@@ -177,18 +194,49 @@ namespace Streetcode.DAL.Persistence.Migrations
                 schema: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Surname = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Login = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Role = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BirthDate = table.Column<DateTime>(type: "date", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetRoleClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +259,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                     EventStartOrPersonBirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EventEndOrPersonDeathDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AudioId = table.Column<int>(type: "int", nullable: true),
+                    LikesCount = table.Column<int>(type: "int", nullable: false),
                     StreetcodeType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Rank = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -309,7 +358,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                     LogoId = table.Column<int>(type: "int", nullable: false),
                     IsKeyPartner = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsVisibleEverywhere = table.Column<bool>(type: "bit", nullable: false),
-                    TargetUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    TargetUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     UrlTitle = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(600)", maxLength: 600, nullable: true)
                 },
@@ -395,6 +444,157 @@ namespace Streetcode.DAL.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserClaims_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserLogins_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                schema: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Expires = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                schema: "comments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StreetcodeId = table.Column<int>(type: "int", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CommentContent = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ParentId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_Comments_ParentId",
+                        column: x => x.ParentId,
+                        principalSchema: "comments",
+                        principalTable: "Comments",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Comments_streetcodes_StreetcodeId",
+                        column: x => x.StreetcodeId,
+                        principalSchema: "streetcode",
+                        principalTable: "streetcodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "coordinates",
                 schema: "add_content",
                 columns: table => new
@@ -435,6 +635,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FactContent = table.Column<string>(type: "nvarchar(600)", maxLength: 600, nullable: false),
+                    Position = table.Column<int>(type: "int", nullable: true),
                     ImageId = table.Column<int>(type: "int", nullable: true),
                     StreetcodeId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -453,6 +654,35 @@ namespace Streetcode.DAL.Persistence.Migrations
                         column: x => x.StreetcodeId,
                         principalSchema: "streetcode",
                         principalTable: "streetcodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Likes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    streetcodeId = table.Column<int>(type: "int", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Likes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Likes_streetcodes_streetcodeId",
+                        column: x => x.streetcodeId,
+                        principalSchema: "streetcode",
+                        principalTable: "streetcodes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Likes_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Users",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -596,9 +826,11 @@ namespace Streetcode.DAL.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     TextContent = table.Column<string>(type: "nvarchar(max)", maxLength: 15000, nullable: false),
                     AdditionalText = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    VideoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Author = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     StreetcodeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -720,7 +952,6 @@ namespace Streetcode.DAL.Persistence.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     LogoType = table.Column<byte>(type: "tinyint", nullable: false),
                     TargetUrl = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     PartnerId = table.Column<int>(type: "int", nullable: false)
@@ -907,6 +1138,51 @@ namespace Streetcode.DAL.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "AspNetRoles",
+                column: "NormalizedName",
+                unique: true,
+                filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_ParentId",
+                schema: "comments",
+                table: "Comments",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_StreetcodeId",
+                schema: "comments",
+                table: "Comments",
+                column: "StreetcodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                schema: "comments",
+                table: "Comments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_coordinates_StreetcodeId",
                 schema: "add_content",
                 table: "coordinates",
@@ -933,6 +1209,13 @@ namespace Streetcode.DAL.Persistence.Migrations
                 column: "StreetcodeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_historical_contexts_Title",
+                schema: "timeline",
+                table: "historical_contexts",
+                column: "Title",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_HistoricalContextsTimelines_HistoricalContextId",
                 table: "HistoricalContextsTimelines",
                 column: "HistoricalContextId");
@@ -943,6 +1226,16 @@ namespace Streetcode.DAL.Persistence.Migrations
                 table: "image_details",
                 column: "ImageId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_streetcodeId",
+                table: "Likes",
+                column: "streetcodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Likes_UserId",
+                table: "Likes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_news_ImageId",
@@ -984,6 +1277,12 @@ namespace Streetcode.DAL.Persistence.Migrations
                 schema: "coordinates",
                 table: "qr_coordinates",
                 column: "StreetcodeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                schema: "Users",
+                table: "RefreshTokens",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_related_figures_TargetId",
@@ -1096,8 +1395,7 @@ namespace Streetcode.DAL.Persistence.Migrations
                 name: "IX_texts_StreetcodeId",
                 schema: "streetcode",
                 table: "texts",
-                column: "StreetcodeId",
-                unique: true);
+                column: "StreetcodeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_timeline_items_StreetcodeId",
@@ -1113,6 +1411,20 @@ namespace Streetcode.DAL.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                schema: "Users",
+                table: "Users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                schema: "Users",
+                table: "Users",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_videos_StreetcodeId",
                 schema: "media",
                 table: "videos",
@@ -1121,6 +1433,25 @@ namespace Streetcode.DAL.Persistence.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AspNetRoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserClaims");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserLogins");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserRoles");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Comments",
+                schema: "comments");
+
             migrationBuilder.DropTable(
                 name: "facts",
                 schema: "streetcode");
@@ -1133,6 +1464,9 @@ namespace Streetcode.DAL.Persistence.Migrations
                 schema: "media");
 
             migrationBuilder.DropTable(
+                name: "Likes");
+
+            migrationBuilder.DropTable(
                 name: "news",
                 schema: "news");
 
@@ -1143,6 +1477,10 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.DropTable(
                 name: "qr_coordinates",
                 schema: "coordinates");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens",
+                schema: "Users");
 
             migrationBuilder.DropTable(
                 name: "related_figures",
@@ -1201,12 +1539,11 @@ namespace Streetcode.DAL.Persistence.Migrations
                 schema: "transactions");
 
             migrationBuilder.DropTable(
-                name: "Users",
-                schema: "Users");
-
-            migrationBuilder.DropTable(
                 name: "videos",
                 schema: "media");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "historical_contexts",
@@ -1219,6 +1556,10 @@ namespace Streetcode.DAL.Persistence.Migrations
             migrationBuilder.DropTable(
                 name: "coordinates",
                 schema: "add_content");
+
+            migrationBuilder.DropTable(
+                name: "Users",
+                schema: "Users");
 
             migrationBuilder.DropTable(
                 name: "terms",
