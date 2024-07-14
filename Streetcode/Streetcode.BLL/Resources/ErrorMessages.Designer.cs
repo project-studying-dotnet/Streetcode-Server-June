@@ -124,6 +124,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comment with id {0} not found..
+        /// </summary>
+        public static string CommentNotFound {
+            get {
+                return ResourceManager.GetString("CommentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A user with this email is already registered.
         /// </summary>
         public static string EmailIsUse {
@@ -394,6 +403,15 @@ namespace Streetcode.BLL.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fail to update comment with id {0}.
+        /// </summary>
+        public static string FailToUpdateComment {
+            get {
+                return ResourceManager.GetString("FailToUpdateComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Amount and page must be greater than zero.
         /// </summary>
         public static string InvalidPaginationParameters {
@@ -543,6 +561,24 @@ namespace Streetcode.BLL.Resources {
         public static string TitleNullEmpty {
             get {
                 return ResourceManager.GetString("TitleNullEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User {0} does not have permission to edit this comment..
+        /// </summary>
+        public static string UnauthorizedAccessForEditComment {
+            get {
+                return ResourceManager.GetString("UnauthorizedAccessForEditComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is not authenticated..
+        /// </summary>
+        public static string UserNotAuthenticated {
+            get {
+                return ResourceManager.GetString("UserNotAuthenticated", resourceCulture);
             }
         }
         
