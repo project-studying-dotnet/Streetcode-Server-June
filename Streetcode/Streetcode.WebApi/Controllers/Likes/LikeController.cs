@@ -14,10 +14,11 @@ namespace Streetcode.WebApi.Controllers.Likes
             return HandleResult(await Mediator.Send(new PushLikeCommand(pushLike)));
         }
 
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetLikesByUserId([FromBody] Guid userId)
+        public async Task<IActionResult> GetLikesByUser()
         {
-            return HandleResult(await Mediator.Send(new GetLikesByUserIdQuery(userId)));
+            return HandleResult(await Mediator.Send(new GetLikesByUserQuery()));
         }
     }
 }
