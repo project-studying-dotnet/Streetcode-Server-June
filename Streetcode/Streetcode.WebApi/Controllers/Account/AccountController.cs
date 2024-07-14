@@ -39,18 +39,6 @@ namespace Streetcode.WebApi.Controllers.Account
             return HandleResult(await Mediator.Send(new LoginUserCommand(loginUser)));
         }
 
-        /// <summary>
-        /// Generates user token for login with google tokenId
-        /// </summary>
-        /// <remarks>
-        /// Sample request for login:
-        ///
-        ///     POST /api/account/LoginWithGoogle
-        ///     {
-        ///        "idToken": "token"
-        ///     }
-        ///
-        /// </remarks>
         [HttpPost]
         public async Task<IActionResult> LoginWithGoogle([FromBody] LoginWithGoogleDTO loginWithGoogle)
         {
