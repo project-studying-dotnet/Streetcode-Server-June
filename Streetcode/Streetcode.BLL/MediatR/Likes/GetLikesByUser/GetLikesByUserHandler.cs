@@ -3,7 +3,9 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Likes;
+using Streetcode.BLL.DTO.Streetcode;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
@@ -13,7 +15,7 @@ using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Likes.PushLike
 {
-    public class GetLikesByUserHandler : IRequestHandler<GetLikesByUserQuery, Result<IEnumerable<LikeDTO>>>
+    public class GetLikesByUserHandler : IRequestHandler<GetLikesByUserQuery, Result<IEnumerable<StreetcodeDTO>>>
     {
         private IRepositoryWrapper _wrapper;
         private ILoggerService _logger;
@@ -38,7 +40,7 @@ namespace Streetcode.BLL.MediatR.Likes.PushLike
             _userManager = userManager;
         }
 
-        public async Task<Result<IEnumerable<LikeDTO>>> Handle(GetLikesByUserQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<StreetcodeDTO>>> Handle(GetLikesByUserQuery request, CancellationToken cancellationToken)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -59,9 +61,13 @@ namespace Streetcode.BLL.MediatR.Likes.PushLike
                 return Result.Fail(new Error(errorMsg));
             }
 
-            var likes = await _wrapper.LikeRepository.GetAllAsync(s => s.UserId == user.Id);
+            var likes = await _wrapper.LikeRepository.GetAllAsync(
+                 predicate: u => u.UserId == user.Id,
+                 include: q => q.Include(s => s.Streetcode));
 
-            return Result.Ok(_mapper.Map<IEnumerable<LikeDTO>>(likes));
+            var streetcodes = likes.Select(likeDTO => likeDTO.Streetcode).Distinct();
+
+            return Result.Ok(_mapper.Map<IEnumerable<StreetcodeDTO>>(streetcodes));
         }
     }
 }
