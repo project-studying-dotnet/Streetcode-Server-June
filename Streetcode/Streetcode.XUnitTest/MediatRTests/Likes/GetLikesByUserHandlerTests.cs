@@ -16,17 +16,68 @@ using System.Linq.Expressions;
 using Xunit;
 using Streetcode.BLL.Services.Tokens;
 using Azure.Core;
+using Castle.Core.Configuration;
+using Streetcode.BLL.DTO.Streetcode;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Streetcode.XUnitTest.MediatRTests.Likes
 {
     public class GetLikesByUserHandlerTests
     {
+        private static Guid _id = Guid.NewGuid();
+
+        private readonly List<Like> _likes = new List<Like>()
+        {
+            new Like()
+            {
+                Id = 1,
+                UserId = _id,
+                Streetcode = new StreetcodeContent()
+                {
+                    Id = 1
+                },
+                streetcodeId = 1
+            },
+            new Like()
+            {
+                Id = 2,
+                UserId = Guid.Empty,
+                Streetcode = new StreetcodeContent()
+                {
+                    Id = 2
+                },
+                streetcodeId = 2
+            },
+            new Like()
+            {
+                Id = 3,
+                UserId = _id,
+                Streetcode = new StreetcodeContent()
+                {
+                    Id = 3
+                },
+                streetcodeId = 3
+            }
+        };
+
+        private readonly List<StreetcodeDTO> _streetcodes = new List<StreetcodeDTO>()
+        {
+            new StreetcodeDTO()
+            {
+                Id = 1
+            },
+            new StreetcodeDTO()
+            {
+                Id = 3
+            },
+        };
         private Mock<IRepositoryWrapper> _wrapperMock;
         private Mock<ILoggerService> _loggerMock;
         private Mock<IMapper> _mapperMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ITokenService> _tokenServiceMock;
         private Mock<UserManager<User>> _userManagerMock;
+
 
         public GetLikesByUserHandlerTests()
         {
@@ -126,6 +177,41 @@ namespace Streetcode.XUnitTest.MediatRTests.Likes
 
             // Assert
             Assert.True(result.IsSuccess);
+        }
+
+        [Fact]
+        public async Task Handler_ShouldReturnCorrectLikes_WhenCorrectUser()
+        {
+            // Arrange
+            var handler = new GetLikesByUserHandler(
+               _wrapperMock.Object, _mapperMock.Object, _loggerMock.Object, _httpContextAccessorMock.Object,
+               _tokenServiceMock.Object, _userManagerMock.Object);
+            var request = new GetLikesByUserQuery();
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
+            var cookies = new Mock<IRequestCookieCollection>();
+            var httpContextMock = new Mock<HttpContext>();
+            var requestMock = new Mock<HttpRequest>();
+
+            cookies.Setup(c => c.TryGetValue("accessToken", out It.Ref<string?>.IsAny)).Returns(true);
+            requestMock.Setup(r => r.Cookies).Returns(cookies.Object);
+            httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContextMock.Object);
+            _tokenServiceMock.Setup(ts => ts.GetUserIdFromAccessToken(It.IsAny<string>())).Returns(string.Empty);
+            _userManagerMock.Setup(um => um.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() {Id = _id });
+            _wrapperMock.Setup(wrapper => wrapper.LikeRepository.GetAllAsync(
+            It.IsAny<Expression<Func<Like, bool>>>(),
+            It.IsAny<Func<IQueryable<Like>, IIncludableQueryable<Like, object>>>())).ReturnsAsync(_likes.Where(l => l.UserId == _id));
+            _mapperMock.Setup(mapper => mapper.Map<IEnumerable<StreetcodeDTO>>(It.IsAny<IEnumerable<object>>())).Returns(_streetcodes);
+
+            // Act
+            var result = await handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Equal(_streetcodes.Count, result.Value.Count());
+            }); 
         }
     }
 }
