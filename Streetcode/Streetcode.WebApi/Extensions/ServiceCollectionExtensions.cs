@@ -46,21 +46,7 @@ public static class ServiceCollectionExtensions
     { 
         services.AddTransient<IValueConverter<DateTime, DateTimeOffset>, DateTimeToDateTimeOffsetConverter>();
     }
-
-    public static void AddBlobService(this IServiceCollection services)
-    {
-        var host = Environment.GetEnvironmentVariable("Host") ?? "Default";
-
-        if (host.Equals("Default"))
-        {
-            services.AddScoped<IBlobService, BlobService>();
-        }
-        else if (host.Equals("Azure"))
-        {
-            services.AddScoped<IBlobService, AzureBlobService>();
-        }
-    }
-  
+     
     public static void AddResetPasswordUrlConfiguration(this IServiceCollection services, IConfiguration config)
     {
         var resPassConfig = config.GetSection("ResetPasswordConfiguration").Get<ResetPasswordConfiguration>();
@@ -97,7 +83,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
         services.AddMediatR(currentAssemblies);
-        services.AddBlobService();
+        services.AddScoped<IBlobService, AzureBlobService>();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISendVerificationEmail, SendVerificationEmail>();
