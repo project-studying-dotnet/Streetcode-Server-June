@@ -11,6 +11,7 @@ using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.Tokens;
 using Streetcode.BLL.Services.CookieService.Realizations;
+using Streetcode.BLL.Converters;
 
 namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
 {
@@ -40,7 +41,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
                 _tokenServiceMock.Object, 
                 _httpContextAccessorMock.Object,
                 _cookieService,
-                _tokensConfiguration);
+                _tokensConfiguration,
+                new DateTimeToDateTimeOffsetConverter());
         }
 
         [Fact]

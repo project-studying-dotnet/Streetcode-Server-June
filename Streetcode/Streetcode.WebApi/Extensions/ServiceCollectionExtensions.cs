@@ -35,12 +35,19 @@ using Streetcode.BLL.Services.URL;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.CookieService.Realizations;
 using Streetcode.DAL.Enums;
+using AutoMapper;
+using Streetcode.BLL.Converters;
 
 
 namespace Streetcode.WebApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static void AddConverters(this IServiceCollection services)
+    { 
+        services.AddTransient<IValueConverter<DateTime, DateTimeOffset>, DateTimeToDateTimeOffsetConverter>();
+    }
+
     public static void AddBlobService(this IServiceCollection services)
     {
         var host = Environment.GetEnvironmentVariable("Host") ?? "Default";
@@ -65,6 +72,11 @@ public static class ServiceCollectionExtensions
     public static void AddRepositoryServices(this IServiceCollection services)
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+    }
+
+    public static void AddConvertors()
+    { 
+        
     }
 
     public static void AddCustomServices(this IServiceCollection services)

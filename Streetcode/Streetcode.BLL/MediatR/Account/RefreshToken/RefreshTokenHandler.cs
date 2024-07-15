@@ -1,8 +1,10 @@
-﻿using FluentResults;
+﻿using AutoMapper;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Streetcode.BLL.Converters;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
@@ -20,6 +22,7 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICookieService _cookieService;
         private readonly TokensConfiguration _tokensConfiguration;
+        private readonly IValueConverter<DateTime, DateTimeOffset> _dateConverter;
 
         public RefreshTokensHandler(
             UserManager<User> userManager, 
@@ -27,7 +30,8 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
             ITokenService tokenService, 
             IHttpContextAccessor httpContextAccessor,
             ICookieService cookieService,
-            TokensConfiguration tokensConfiguration)
+            TokensConfiguration tokensConfiguration,
+            IValueConverter<DateTime, DateTimeOffset> converter)
         {
             _logger = logger;
             _userManager = userManager;
@@ -35,6 +39,7 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
             _httpContextAccessor = httpContextAccessor;
             _cookieService = cookieService;
             _tokensConfiguration = tokensConfiguration;
+            _dateConverter = converter;
         }
 
         public async Task<Result<string>> Handle(RefreshTokensCommand request, CancellationToken cancellationToken)
@@ -63,10 +68,7 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
             user.RefreshTokens.RemoveAll(t => t.Token == refreshToken);
 
             var tokens = await _tokenService.GenerateTokens(user);
-            
-            DateTime utcTime1 = DateTime.SpecifyKind(tokens.RefreshToken.Expires, DateTimeKind.Utc);
-            DateTimeOffset utcTime2 = utcTime1;
-
+                        
             await _cookieService.AppendCookiesToResponseAsync(httpContext.Response,
                 ("accessToken", tokens.AccessToken, new CookieOptions
                 {                    
@@ -77,7 +79,7 @@ namespace Streetcode.BLL.MediatR.Account.RefreshToken
                 }),
                 ("refreshToken", tokens.RefreshToken.Token, new CookieOptions
                 {
-                    Expires = utcTime2,
+                    Expires = _dateConverter.Convert(tokens.RefreshToken.Expires, null),
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None
