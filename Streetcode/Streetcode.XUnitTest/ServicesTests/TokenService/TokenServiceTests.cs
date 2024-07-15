@@ -15,7 +15,7 @@ using Streetcode.BLL.Services.Tokens;
 using Streetcode.DAL.Entities.Users;
 using Xunit;
 
-namespace Streetcode.XUnitTest.Services.TokenService;
+namespace Streetcode.XUnitTest.ServicesTests.TokenService;
 
 public class TokenServiceTests
 {
