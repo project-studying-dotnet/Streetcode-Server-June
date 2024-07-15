@@ -46,8 +46,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
                 _loggerMock.Object,
                 _httpContextAccessor.Object,
                 _cookieServiceMock.Object,
-                _tokensConfigurationMock.Object)
-            { CallBase = true }; // Allow to call base methods if not explicitly mocked
+                _tokensConfigurationMock.Object);
         }
 
         [Fact]
