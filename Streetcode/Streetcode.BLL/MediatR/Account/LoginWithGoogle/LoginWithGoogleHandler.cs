@@ -28,7 +28,6 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
 
     public LoginWithGoogleHandler(
         UserManager<User> userManager,
-        SignInManager<User> signInManager,
         ITokenService tokenService,
         IMapper mapper,
         ILoggerService logger,
