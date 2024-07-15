@@ -13,7 +13,6 @@ using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.MediatR.Account.Login;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
-using FluentResults;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.Tokens;
 
@@ -168,8 +167,11 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Login
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.True(result.IsSuccess);
-            Assert.Equal(userDto, result.Value);                        
+            Assert.Multiple(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Equal(userDto, result.Value);
+            });
         }
     }
 }

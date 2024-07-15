@@ -13,15 +13,11 @@ public class RelatedFigureProfile : Profile
             .ForPath(dto => dto.Title, conf => conf
                 .MapFrom(e => e.Title))
             .ForPath(dto => dto.Url, conf => conf
-                .MapFrom(e => e.TransliterationUrl))
-            .ForPath(dto => dto.ImageId, conf => conf
-                .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
+                .MapFrom(e => e.TransliterationUrl));
 
         CreateMap<PersonStreetcode, RelatedFigureDTO>()
             .ForPath(dto => dto.Url, conf => conf
-                .MapFrom(e => e.TransliterationUrl))
-            .ForPath(dto => dto.ImageId, conf => conf
-                .MapFrom(e => e.Images.Select(i => i.Id).LastOrDefault()));
+                .MapFrom(e => e.TransliterationUrl));
 
         CreateMap<StreetcodeContent, RelatedFigureShortDTO>();
     }

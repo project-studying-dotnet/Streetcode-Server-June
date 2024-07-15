@@ -38,7 +38,6 @@ using Streetcode.DAL.Enums;
 using AutoMapper;
 using Streetcode.BLL.Converters;
 
-
 namespace Streetcode.WebApi.Extensions;
 
 public static class ServiceCollectionExtensions
@@ -61,12 +60,28 @@ public static class ServiceCollectionExtensions
             services.AddScoped<IBlobService, AzureBlobService>();
         }
     }
+  
+    public static void AddResetPasswordUrlConfiguration(this IServiceCollection services, IConfiguration config)
+    {
+        var resPassConfig = config.GetSection("ResetPasswordConfiguration").Get<ResetPasswordConfiguration>();
+        if (resPassConfig is null)
+        {
+            throw new Exception("Fail to get ResetPasswordConfiguration!") 
+            { HelpLink = "Check appsettingss.json file." };
+        }
+
+        services.AddSingleton(resPassConfig);
+    }
 
     public static void AddIdentityService(this IServiceCollection services)
     {
-        services.AddIdentity<User, IdentityRole<Guid>>()
+        services.AddIdentity<User, IdentityRole<Guid>>(opt =>
+        {
+            opt.User.RequireUniqueEmail = true;
+            opt.Password.RequiredLength = 7;
+        })
             .AddEntityFrameworkStores<StreetcodeDbContext>()
-            .AddDefaultTokenProviders();
+            .AddDefaultTokenProviders();        
     }
     
     public static void AddRepositoryServices(this IServiceCollection services)

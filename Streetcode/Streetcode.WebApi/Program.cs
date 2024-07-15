@@ -13,6 +13,7 @@ builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddHttpClients(builder.Configuration);
 builder.Services.AddCustomServices();
 builder.Services.AddIdentityService();
+builder.Services.AddResetPasswordUrlConfiguration(builder.Configuration);
 builder.Services.AddPipelineBehaviors();
 builder.Services.ConfigureBlob(builder);
 builder.Services.ConfigurePayment(builder);

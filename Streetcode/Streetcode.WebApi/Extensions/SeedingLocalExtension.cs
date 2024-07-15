@@ -7,6 +7,7 @@ using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Services.BlobStorageService;
 using Streetcode.DAL.Entities.AdditionalContent;
 using Streetcode.DAL.Entities.AdditionalContent.Coordinates.Types;
+using Streetcode.DAL.Entities.Comments;
 using Streetcode.DAL.Entities.Feedback;
 using Streetcode.DAL.Entities.Media;
 using Streetcode.DAL.Entities.Media.Images;
@@ -21,7 +22,6 @@ using Streetcode.DAL.Entities.Transactions;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Enums;
 using Streetcode.DAL.Persistence;
-using Streetcode.DAL.Repositories.Realizations.Base;
 
 namespace Streetcode.WebApi.Extensions
 {
@@ -38,7 +38,7 @@ namespace Streetcode.WebApi.Extensions
             const string adminUserEmail = "SuperAdmin@test.com";
             const string adminId = "4eb10d27-a950-45ef-9ebe-f730a07ce5e9";
             const string adminPass = "*Superuser18";
-            
+
             StreetcodeDbContext? context = serviceProvider.GetService<StreetcodeDbContext>();
 
             ILoggerService? logger = serviceProvider.GetService<ILoggerService>();
@@ -46,7 +46,7 @@ namespace Streetcode.WebApi.Extensions
             RoleManager<IdentityRole<Guid>> rm = serviceProvider.GetService<RoleManager<IdentityRole<Guid>>>();
 
             UserManager<User> um = serviceProvider.GetService<UserManager<User>>();
-            
+
             try
             {
                 // Seed Roles
@@ -62,7 +62,7 @@ namespace Streetcode.WebApi.Extensions
                         new IdentityRole<Guid>(UserRole.User.ToString())
                         {
                             Id = Guid.Parse(userRoleId)
-                        });                    
+                        });
                 }
 
                 // Seed Admin
@@ -88,7 +88,7 @@ namespace Streetcode.WebApi.Extensions
                 logger.LogError(new { um, rm }, $"Error occured when trying to seed Identity Data. \n\tMessage:\n {ex.Message}");
 
                 throw;
-            }                        
+            }
         }
 
         public static async Task SeedDataAsync(this WebApplication app)
@@ -102,6 +102,7 @@ namespace Streetcode.WebApi.Extensions
                 var blobService = app.Services.GetRequiredService<IBlobService>();
                 string initialDataImagePath = "../Streetcode.DAL/InitialData/images.json";
                 string initialDataAudioPath = "../Streetcode.DAL/InitialData/audios.json";
+                await SeedIdentityDataAsync(scope.ServiceProvider);
                 if (!dbContext.Images.Any())
                 {
                     string imageJson = File.ReadAllText(initialDataImagePath, Encoding.UTF8);
@@ -333,7 +334,7 @@ namespace Streetcode.WebApi.Extensions
                             }
                         }
                     }
-                    
+
                     if (!dbContext.News.Any())
                     {
                         dbContext.News.AddRange(
@@ -411,6 +412,36 @@ namespace Streetcode.WebApi.Extensions
                                     Title = "Роман Ратушний (Сенека)",
                                     Alias = "Сенека",
                                     AudioId = 2,
+                                    Status = StreetcodeStatus.Published
+                                },
+                                new EventStreetcode
+                                {
+                                    Index = 3,
+                                    TransliterationUrl = "eurovision-2005",
+                                    Teaser = "Пісенний конкурс «Євробачення-2005» — 50-й конкурс в історії «Євробачення». Відбувся в Києві після перемоги Руслани на конкурсі 2004 року в Стамбулі, де вона представляла Україну з піснею «Wild dances». Перемога Руслани стала першою перемогою України на «Євробачення» відтоді, як країна стала учасницею конкурсу 2003 року. Конкурс, організований Європейською мовною спілкою і Національною телекомпанією України, проходив у «Палаці спорту» і складався з півфіналу (19 травня) та фіналу (21 травня).",
+                                    ViewCount = 1,
+                                    CreatedAt = DateTime.Now,
+                                    DateString = "19 травня 2005 - 21 травня 2005",
+                                    EventStartOrPersonBirthDate = new DateTime(2005, 5, 19),
+                                    EventEndOrPersonDeathDate = new DateTime(2005, 5, 21),
+                                    Title = "Євробачення (2005)",
+                                    Alias = "Євробачення",
+                                    AudioId = null,
+                                    Status = StreetcodeStatus.Published
+                                },
+                                new EventStreetcode
+                                {
+                                    Index = 4,
+                                    TransliterationUrl = "orange-revolution",
+                                    Teaser = "Помаранчева революція — кампанія протестів, мітингів, пікетів, страйків та інших актів громадянської непокори в Україні, організована і проведена прихильниками Віктора Ющенка, основного кандидата від опозиції на президентських виборах у листопаді — грудні 2004 року, після оголошення Центральною виборчою комісією попередніх результатів, згідно з якими нібито переміг його суперник — Віктор Янукович. Акція почалася 22 листопада 2004 як реакція на масові фальсифікації, що вплинули на результат виборів.",
+                                    ViewCount = 1,
+                                    CreatedAt = DateTime.Now,
+                                    DateString = "22 листопада 2004 — 23 січня 2005",
+                                    EventStartOrPersonBirthDate = new DateTime(2004, 11, 22),
+                                    EventEndOrPersonDeathDate = new DateTime(2005, 1, 23),
+                                    Title = "Помаранчева революція",
+                                    Alias = "Помаранчева революція",
+                                    AudioId = null,
                                     Status = StreetcodeStatus.Published
                                 });
 
@@ -1322,6 +1353,16 @@ namespace Streetcode.WebApi.Extensions
                                 dbContext.RelatedFigures.AddRange(
                                     new RelatedFigure
                                     {
+                                        ObserverId = 4,
+                                        TargetId = 4
+                                    },
+                                    new RelatedFigure
+                                    {
+                                        ObserverId = 3,
+                                        TargetId = 3
+                                    },
+                                    new RelatedFigure
+                                    {
                                         ObserverId = 2,
                                         TargetId = 1
                                     },
@@ -1356,6 +1397,16 @@ namespace Streetcode.WebApi.Extensions
                                     {
                                         ImageId = 23,
                                         StreetcodeId = 2,
+                                    },
+                                    new StreetcodeImage
+                                    {
+                                        ImageId = 1,
+                                        StreetcodeId = 3,
+                                    },
+                                    new StreetcodeImage
+                                    {
+                                        ImageId = 1,
+                                        StreetcodeId = 4,
                                     });
 
                                 await dbContext.SaveChangesAsync();
@@ -1457,6 +1508,18 @@ namespace Streetcode.WebApi.Extensions
                                             TagId = 10,
                                             StreetcodeId = 2,
                                             IsVisible = true,
+                                        },
+                                        new StreetcodeTagIndex
+                                        {
+                                            TagId = 10,
+                                            StreetcodeId = 3,
+                                            IsVisible = true,
+                                        },
+                                        new StreetcodeTagIndex
+                                        {
+                                            TagId = 10,
+                                            StreetcodeId = 4,
+                                            IsVisible = true,
                                         });
 
                                     await dbContext.SaveChangesAsync();
@@ -1466,9 +1529,30 @@ namespace Streetcode.WebApi.Extensions
                     }
 
                     await dbContext.SaveChangesAsync();
-                }
+                    if (!dbContext.Comments.Any())
+                    {
+                        var comment = new Comment()
+                        {
+                            CommentContent = "Some sort of text",
+                            UserId = Guid.Parse("4eb10d27-a950-45ef-9ebe-f730a07ce5e9"),
+                            CreatedAt = DateTime.UtcNow,
+                            StreetcodeId = 1
+                        };
+                        dbContext.Comments.Add(comment);
+                        await dbContext.SaveChangesAsync();
 
-                await SeedIdentityDataAsync(scope.ServiceProvider);
+                        var reply = new Comment()
+                        {
+                            CommentContent = "Replies",
+                            UserId = Guid.Parse("4eb10d27-a950-45ef-9ebe-f730a07ce5e9"),
+                            CreatedAt = DateTime.UtcNow,
+                            StreetcodeId = 1,
+                            ParentId = 1
+                        };
+                        dbContext.Comments.Add(reply);
+                        await dbContext.SaveChangesAsync();
+                    }        
+                }
             }
         }
     }

@@ -96,8 +96,17 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
         {
             // Arrange
             var command = new RefreshTokensCommand();
-            var tokens = new TokenResponseDTO { AccessToken = "access_token", RefreshToken = new RefreshTokenDTO { Token = "refresh_token" } };
+            var validExpirationDate = DateTime.UtcNow.AddDays(1);
 
+            var tokens = new TokenResponseDTO
+            {
+                AccessToken = "accessToken",
+                RefreshToken = new RefreshTokenDTO
+                {
+                    Token = "refreshToken",
+                    Expires = validExpirationDate
+                }
+            };
             var httpContext = new Mock<HttpContext>();
             var request = new Mock<HttpRequest>();
             var response = new Mock<HttpResponse>();

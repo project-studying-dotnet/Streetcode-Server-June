@@ -5,6 +5,7 @@ using Streetcode.BLL.Services.Instagram;
 using Streetcode.BLL.Services.Payment;
 using Serilog.Sinks.SystemConsole.Themes;
 using Streetcode.BLL.Services.Payment.PaymentEnviroment;
+using Microsoft.AspNetCore.Identity;
 
 namespace Streetcode.WebApi.Extensions;
 
@@ -50,5 +51,11 @@ public static class ConfigureHostBuilderExtensions
             loggerConfiguration
                 .ReadFrom.Configuration(builder.Configuration);
         });
+    }
+
+    public static void ProtectionTokenConfiguration(this IServiceCollection services)
+    {
+        services.Configure<DataProtectionTokenProviderOptions>(opt =>
+         opt.TokenLifespan = TimeSpan.FromHours(2));
     }
 }

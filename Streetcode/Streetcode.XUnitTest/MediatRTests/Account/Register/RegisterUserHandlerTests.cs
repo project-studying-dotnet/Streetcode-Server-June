@@ -122,10 +122,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
             var request = new RegisterUserCommand(new UserRegisterDTO { Email = "test@test.com", Password = "Test@123" });
             var user = new User();
             var userDto = new UserDTO();
+            var validExpirationDate = DateTime.UtcNow.AddDays(1);
+
             var tokenResponse = new TokenResponseDTO
             {
                 AccessToken = "accessToken",
-                RefreshToken = new RefreshTokenDTO { Token = "refreshToken" }
+                RefreshToken = new RefreshTokenDTO
+                {
+                    Token = "refreshToken",
+                    Expires = validExpirationDate
+                }
             };
 
             _userManagerMock.Setup(um => um.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null);

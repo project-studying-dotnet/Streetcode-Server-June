@@ -1,10 +1,14 @@
-﻿using AutoMapper;
+﻿using Ardalis.Specification;
+using AutoMapper;
 using FluentResults;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Streetcode.BLL.DTO.Streetcode.RelatedFigure;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Resources;
+using Streetcode.BLL.Specification.Streetcode.Streetcode.GetAll;
+using Streetcode.BLL.Specification.Streetcode.Streetcode.GetAllCatalog;
+using Streetcode.DAL.Entities.Streetcode;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog
@@ -25,14 +29,15 @@ namespace Streetcode.BLL.MediatR.Streetcode.Streetcode.GetAllCatalog
 
         public async Task<Result<IEnumerable<RelatedFigureDTO>>> Handle(GetAllStreetcodesCatalogQuery request, CancellationToken cancellationToken)
         {
-            var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllAsync(
-                predicate: sc => sc.Status == DAL.Enums.StreetcodeStatus.Published,
-                include: src => src.Include(item => item.Tags).Include(item => item.Images));
+            List<ISpecification<StreetcodeContent>> specifications = new List<ISpecification<StreetcodeContent>>();
+            specifications.Add(new StreetcodesInclTagsImagesSpec());
+            specifications.Add(new StreetcodeApplyPaginationSpec(request.count, request.page));
+
+            var streetcodes = await _repositoryWrapper.StreetcodeRepository.GetAllWithSpecAsync(specifications.ToArray());
 
             if (streetcodes != null)
             {
-                var skipped = streetcodes.Skip((request.page - 1) * request.count).Take(request.count);
-                return Result.Ok(_mapper.Map<IEnumerable<RelatedFigureDTO>>(skipped));
+                return Result.Ok(_mapper.Map<IEnumerable<RelatedFigureDTO>>(streetcodes));
             }
 
             string errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);

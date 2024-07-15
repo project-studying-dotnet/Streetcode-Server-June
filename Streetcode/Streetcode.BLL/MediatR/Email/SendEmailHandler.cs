@@ -23,7 +23,7 @@ namespace Streetcode.BLL.MediatR.Email
             var message = new Message(new string[] { "" }, request.Email.From, "FeedBack", request.Email.Content);
             bool isResultSuccess = await _emailService.SendEmailAsync(message);
 
-            if(isResultSuccess)
+            if (isResultSuccess)
             {
                 return Result.Ok(Unit.Value);
             }

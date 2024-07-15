@@ -5,7 +5,7 @@ using Moq;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Streetcode.BLL.Interfaces.Logging;
-using Streetcode.BLL.MediatR.Account.EmailVerification.ConfirmEmail;
+using Streetcode.BLL.MediatR.Account.Email.ConfirmEmail;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Users;
 using Xunit;

@@ -10,5 +10,7 @@ namespace Streetcode.BLL.Interfaces.URL
             string controller,
             object values,
             HttpContext httpContext);
+
+        string Url(string route, Dictionary<string, object> queryValues, HttpContext httpContext);
     }
 }
