@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.CookieService.Realizations;
-using Streetcode.BLL.Services.Tokens;
-using System.Linq;
-using System.Runtime.Serialization;
+
 using Xunit;
 
 namespace Streetcode.XUnitTest.Services.CookieServiceTests
