@@ -4,10 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.CookieService.Realizations;
-using System.Linq;
 using Xunit;
 
-namespace Streetcode.XUnitTest.ServicesTests.CookieService
+namespace Streetcode.XUnitTest.ServicesTests.CookieServiceTests
 {
     public class CookieServiceTests
     {
