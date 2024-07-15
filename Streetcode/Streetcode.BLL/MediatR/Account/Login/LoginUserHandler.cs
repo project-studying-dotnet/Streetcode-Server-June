@@ -82,7 +82,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserCommand, Result<UserDTO
                 Secure = true,
                 SameSite = SameSiteMode.None
             }),
-            ("refreshToken", tokens.AccessToken, new CookieOptions
+            ("refreshToken", tokens.RefreshToken.Token, new CookieOptions
             {
                 Expires = DateTimeOffset.UtcNow.AddDays(_tokensConfiguration.RefreshTokenExpirationDays),
                 HttpOnly = true,
