@@ -4,18 +4,16 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Streetcode.BLL.DTO.Likes;
-using Streetcode.BLL.DTO.Media.Art;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
 using Streetcode.BLL.Resources;
 using Streetcode.DAL.Entities.Likes;
-using Streetcode.DAL.Entities.Media.Images;
 using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 
 namespace Streetcode.BLL.MediatR.Likes.PushLike
 {
-    public class GetLikesByUser : IRequestHandler<GetLikesByUserQuery, Result<IEnumerable<LikeDTO>>>
+    public class GetLikesByUserHandler : IRequestHandler<GetLikesByUserQuery, Result<IEnumerable<LikeDTO>>>
     {
         private IRepositoryWrapper _wrapper;
         private ILoggerService _logger;
@@ -24,7 +22,7 @@ namespace Streetcode.BLL.MediatR.Likes.PushLike
         private ITokenService _tokenService;
         private UserManager<User> _userManager;
 
-        public GetLikesByUser(
+        public GetLikesByUserHandler(
             IRepositoryWrapper wrapper,
             IMapper mapper, 
             ILoggerService logger,
