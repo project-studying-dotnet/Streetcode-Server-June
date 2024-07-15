@@ -31,6 +31,7 @@ namespace Streetcode.BLL.MediatR.Newss.GetById
                 predicate: sc => sc.Id == id,
                 include: scl => scl
                     .Include(sc => sc.Image)));
+
             if(newsDTO is null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityWithIdNotFound, request, id);

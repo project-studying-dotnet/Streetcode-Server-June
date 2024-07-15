@@ -3,6 +3,7 @@ using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Streetcode.BLL.Converters;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
@@ -23,6 +24,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ICookieService _cookieService;
     private readonly TokensConfiguration _tokensConfiguration;
+    private readonly IValueConverter<DateTime, DateTimeOffset> _toDateTimeOffsetConverter;
 
     public RegisterUserHandler(
         IMapper mapper, 
@@ -31,7 +33,8 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
         ITokenService tokenService, 
         IHttpContextAccessor contextAccessor,
         ICookieService cookieService,
-        TokensConfiguration tokensConfiguration)
+        TokensConfiguration tokensConfiguration,
+        IValueConverter<DateTime, DateTimeOffset> converter)
     {
         _mapper = mapper;
         _logger = logger;
@@ -40,6 +43,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
         _httpContextAccessor = contextAccessor;
         _cookieService = cookieService;  
         _tokensConfiguration = tokensConfiguration;
+        _toDateTimeOffsetConverter = converter;
     }
 
     public async Task<Result<UserDTO>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -79,7 +83,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
         }
 
         var tokens = await _tokenService.GenerateTokens(user);
-
+              
         await _cookieService.AppendCookiesToResponseAsync(httpContext.Response,
             ("accessToken", tokens.AccessToken, new CookieOptions
             {
@@ -90,7 +94,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, Result<U
             }),
             ("refreshToken", tokens.RefreshToken.Token, new CookieOptions
             {
-                Expires = tokens.RefreshToken.Expires,
+                Expires = _toDateTimeOffsetConverter.Convert(tokens.RefreshToken.Expires, null),
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None

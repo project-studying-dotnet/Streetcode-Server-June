@@ -29,12 +29,15 @@ namespace Streetcode.BLL.MediatR.Newss.SortedByDateTime
         {
             var news = await _repositoryWrapper.NewsRepository.GetAllAsync(
                 include: cat => cat.Include(img => img.Image));
+            
             if (news is null)
             {
                 var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.EntityNotFound, request);
                 _logger.LogError(request, errorMsg);
                 return Result.Fail(errorMsg);
             }
+
+            news.OrderByDescending(x => x.CreationDate);
 
             var newsDTOs = _mapper.Map<IEnumerable<NewsDTO>>(news).OrderByDescending(x => x.CreationDate).ToList();
 

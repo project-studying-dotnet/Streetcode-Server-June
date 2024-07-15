@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using Streetcode.BLL.Converters;
 using Streetcode.BLL.DTO.Users;
 using Streetcode.BLL.Interfaces.Logging;
 using Streetcode.BLL.Interfaces.Users;
@@ -46,7 +47,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.Register
                 _tokenServiceMock.Object,
                 _httpContextAccessorMock.Object,
                 _ccokieServiceMock.Object,
-                _tokensConfigurationMock.Object);
+                _tokensConfigurationMock.Object,
+                new DateTimeToDateTimeOffsetConverter());
         }
 
         [Fact]

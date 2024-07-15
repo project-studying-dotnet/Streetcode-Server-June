@@ -35,11 +35,32 @@ using Streetcode.BLL.Services.URL;
 using Streetcode.BLL.Services.CookieService.Interfaces;
 using Streetcode.BLL.Services.CookieService.Realizations;
 using Streetcode.DAL.Enums;
+using AutoMapper;
+using Streetcode.BLL.Converters;
 
 namespace Streetcode.WebApi.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+    public static void AddConverters(this IServiceCollection services)
+    { 
+        services.AddTransient<IValueConverter<DateTime, DateTimeOffset>, DateTimeToDateTimeOffsetConverter>();
+    }
+
+    public static void AddBlobService(this IServiceCollection services)
+    {
+        var host = Environment.GetEnvironmentVariable("Host") ?? "Default";
+
+        if (host.Equals("Default"))
+        {
+            services.AddScoped<IBlobService, BlobService>();
+        }
+        else if (host.Equals("Azure"))
+        {
+            services.AddScoped<IBlobService, AzureBlobService>();
+        }
+    }
+  
     public static void AddResetPasswordUrlConfiguration(this IServiceCollection services, IConfiguration config)
     {
         var resPassConfig = config.GetSection("ResetPasswordConfiguration").Get<ResetPasswordConfiguration>();
@@ -67,7 +88,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
     }
-
+   
     public static void AddCustomServices(this IServiceCollection services)
     {
         services.AddRepositoryServices();
@@ -76,7 +97,7 @@ public static class ServiceCollectionExtensions
         services.AddAutoMapper(currentAssemblies);
         services.AddValidatorsFromAssemblies(currentAssemblies);
         services.AddMediatR(currentAssemblies);
-        services.AddScoped<IBlobService, AzureBlobService>();
+        services.AddBlobService();
         services.AddScoped<ILoggerService, LoggerService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<ISendVerificationEmail, SendVerificationEmail>();
@@ -88,6 +109,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<ICookieService, CookieService>();
+        services.AddConverters();
     }
 
     public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
