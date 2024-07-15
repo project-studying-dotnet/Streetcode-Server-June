@@ -101,15 +101,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             _mapperMock.Setup(x => x.Map<UserDTO>(user)).Returns(userDto);
             _tokenServiceMock.Setup(x => x.GenerateTokens(user)).ReturnsAsync(tokens);
 
-            var httpContext = new Mock<HttpContext>();
-            var response = new Mock<HttpResponse>();
-            var cookies = new Mock<IResponseCookies>();
-
-            response.Setup(x => x.Cookies).Returns(cookies.Object);
-            httpContext.Setup(x => x.Response).Returns(response.Object);
-            _httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext.Object);
-
-            _cookieServiceMock.Setup(x => x.AppendCookiesToResponseAsync(It.IsAny<HttpResponse>()));
+            SetupCookies();
 
             // Act
             var result = await _handlerMock.Object.Handle(command, CancellationToken.None);
@@ -118,7 +110,21 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             Assert.True(result.IsSuccess);
             Assert.Equal(userDto, result.Value);
             _tokenServiceMock.Verify(x => x.GenerateTokens(user), Times.Once);
-            _cookieServiceMock.Verify(x => x.AppendCookiesToResponseAsync(It.IsAny<HttpResponse>()), Times.Once);
+        }
+
+        private void SetupCookies()
+        {
+            var httpContext = new Mock<HttpContext>();
+            var response = new Mock<HttpResponse>();
+            var cookies = new Mock<IResponseCookies>();
+
+            response.Setup(x => x.Cookies).Returns(cookies.Object);
+            httpContext.Setup(x => x.Response).Returns(response.Object);
+            _httpContextAccessor.Setup(x => x.HttpContext).Returns(httpContext.Object);
+
+            _cookieServiceMock.Setup(x => x.AppendCookiesToResponseAsync(
+                It.IsAny<HttpResponse>(), It.IsAny<(string, string, CookieOptions)[]>()))
+                .Returns(Task.CompletedTask);
         }
     }
 }

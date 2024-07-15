@@ -85,7 +85,7 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
                 user = createUser;
             }
 
-            IdentityResult addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
+            var addingRoleResult = await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
             if (!addingRoleResult.Succeeded)
             {
                 var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.FailAddRole, request);
