@@ -31,6 +31,7 @@ namespace Streetcode.WebApi.Controllers.Comment
             return HandleResult(await Mediator.Send(new GetAllCommentsQuery()));
         }
 
+        [Authorize]
         [HttpDelete("{commentId:int}")]
         public async Task<IActionResult> Delete([FromRoute] int commentId)
         {
