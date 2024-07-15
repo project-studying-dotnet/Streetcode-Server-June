@@ -14,6 +14,8 @@ using Streetcode.DAL.Entities.Users;
 using Streetcode.DAL.Repositories.Interfaces.Base;
 using System.Linq.Expressions;
 using Xunit;
+using Streetcode.BLL.Services.Tokens;
+using Azure.Core;
 
 namespace Streetcode.XUnitTest.MediatRTests.Likes
 {
@@ -65,6 +67,65 @@ namespace Streetcode.XUnitTest.MediatRTests.Likes
                 Assert.False(result.IsSuccess);
                 Assert.Equal(errorMsg, result.Errors.FirstOrDefault()?.Message);
             });
+        }
+
+        [Fact]
+        public async Task Handler_ShouldReturnFailure_WhenUserManagerReturnNullUser()
+        {
+            // Arrange
+            var handler = new GetLikesByUserHandler(
+               _wrapperMock.Object, _mapperMock.Object, _loggerMock.Object, _httpContextAccessorMock.Object,
+               _tokenServiceMock.Object, _userManagerMock.Object);
+            var request = new GetLikesByUserQuery();
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
+            var cookies = new Mock<IRequestCookieCollection>();
+            var httpContextMock = new Mock<HttpContext>();
+            var requestMock = new Mock<HttpRequest>();
+
+            cookies.Setup(c => c.TryGetValue("accessToken", out It.Ref<string?>.IsAny)).Returns(true);
+            requestMock.Setup(r => r.Cookies).Returns(cookies.Object);
+            httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContextMock.Object);
+            _tokenServiceMock.Setup(ts => ts.GetUserIdFromAccessToken(It.IsAny<string>())).Returns(string.Empty);
+            _userManagerMock.Setup(um => um.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((User)null!);
+
+            // Act
+            var result = await handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            Assert.Multiple(() =>
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Equal(errorMsg, result.Errors.FirstOrDefault()?.Message);
+            });
+        }
+
+        [Fact]
+        public async Task Handler_ShouldReturnSuccess_WhenCorrectUser()
+        {
+            // Arrange
+            var handler = new GetLikesByUserHandler(
+               _wrapperMock.Object, _mapperMock.Object, _loggerMock.Object, _httpContextAccessorMock.Object,
+               _tokenServiceMock.Object, _userManagerMock.Object);
+            var request = new GetLikesByUserQuery();
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.UserNotFound, request);
+            var cookies = new Mock<IRequestCookieCollection>();
+            var httpContextMock = new Mock<HttpContext>();
+            var requestMock = new Mock<HttpRequest>();
+
+            cookies.Setup(c => c.TryGetValue("accessToken", out It.Ref<string?>.IsAny)).Returns(true);
+            requestMock.Setup(r => r.Cookies).Returns(cookies.Object);
+            httpContextMock.Setup(c => c.Request).Returns(requestMock.Object);
+            _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContextMock.Object);
+            _tokenServiceMock.Setup(ts => ts.GetUserIdFromAccessToken(It.IsAny<string>())).Returns(string.Empty);
+            _userManagerMock.Setup(um => um.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _wrapperMock.Setup(obj => obj.LikeRepository.GetAllAsync(default, default)).ReturnsAsync(new List<Like>());
+
+            // Act
+            var result = await handler.Handle(request, CancellationToken.None);
+
+            // Assert
+            Assert.True(result.IsSuccess);
         }
     }
 }
