@@ -73,12 +73,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
     }
-
-    public static void AddConvertors()
-    { 
-        
-    }
-
+   
     public static void AddCustomServices(this IServiceCollection services)
     {
         services.AddRepositoryServices();
@@ -99,6 +94,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITokenService, TokenService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<ICookieService, CookieService>();
+        services.AddConverters();
     }
 
     public static void AddCachingService(this IServiceCollection services, ConfigurationManager configuration)
