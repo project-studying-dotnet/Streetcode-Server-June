@@ -21,16 +21,19 @@ namespace Streetcode.DAL.Configurations.Comments
             builder.HasOne(c => c.User)
                 .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
-            
+                .OnDelete(DeleteBehavior.Cascade);  
+
             builder.HasOne(c => c.Streetcode)
                 .WithMany(s => s.Comments)
                 .HasForeignKey(c => c.StreetcodeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);  
 
+            builder.HasOne(c => c.ParentComment)
+                .WithMany(c => c.Replies)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);  
 
-
-            builder.ToTable("Comments");
+            builder.ToTable("Comments", "comments");
         }
     }
 }

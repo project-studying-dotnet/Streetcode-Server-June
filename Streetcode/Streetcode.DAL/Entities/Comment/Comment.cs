@@ -19,6 +19,8 @@ namespace Streetcode.DAL.Entities.Comments
         public DateTime EditedAt { get; set; }
         public User? User { get; set; }
         public StreetcodeContent? Streetcode { get; set; }
-        public List<Reply> Replies { get; set; } = new();
+        public int? ParentId { get; set; }
+        public Comment? ParentComment { get; set; }
+        public List<Comment> Replies { get; set; } = new();
     }
 }

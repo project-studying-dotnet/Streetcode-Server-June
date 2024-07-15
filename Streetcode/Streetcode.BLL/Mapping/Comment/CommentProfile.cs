@@ -10,6 +10,8 @@ namespace Streetcode.BLL.Mapping.Comments
         {
             CreateMap<CommentCreateDTO, Comment>().ReverseMap();
             CreateMap<CommentDTO, Comment>().ReverseMap();
+            CreateMap<ReplyCreateDTO, Comment>().ReverseMap();
+            CreateMap<ReplyDTO, Comment>().ReverseMap();
         }
     }
 }

@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Streetcode.BLL.DTO.Comment;
 using Streetcode.BLL.MediatR.Comments.Create;
+using Streetcode.BLL.MediatR.Comments.Delete;
 using Streetcode.BLL.MediatR.Comments.GetAll;
 using Streetcode.BLL.MediatR.Comments.GetByUserId;
+using Streetcode.BLL.MediatR.Replies;
 using Streetcode.BLL.MediatR.Comments.Update;
 
 namespace Streetcode.WebApi.Controllers.Comment
@@ -17,10 +19,24 @@ namespace Streetcode.WebApi.Controllers.Comment
             return HandleResult(await Mediator.Send(new CreateCommentCommand(comment)));
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CreateReply([FromBody] ReplyCreateDTO reply)
+        {
+            return HandleResult(await Mediator.Send(new CreateReplyCommand(reply)));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return HandleResult(await Mediator.Send(new GetAllCommentsQuery()));
+        }
+
+        [Authorize]
+        [HttpDelete("{commentId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int commentId)
+        {
+            return HandleResult(await Mediator.Send(new DeleteCommentCommand(commentId)));
         }
 
         [HttpGet]

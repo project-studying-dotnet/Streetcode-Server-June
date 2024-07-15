@@ -1541,13 +1541,13 @@ namespace Streetcode.WebApi.Extensions
                         dbContext.Comments.Add(comment);
                         await dbContext.SaveChangesAsync();
 
-                        var reply = new Reply()
+                        var reply = new Comment()
                         {
                             CommentContent = "Replies",
                             UserId = Guid.Parse("4eb10d27-a950-45ef-9ebe-f730a07ce5e9"),
                             CreatedAt = DateTime.UtcNow,
                             StreetcodeId = 1,
-                            ParentId = 1,
+                            ParentId = 1
                         };
                         dbContext.Comments.Add(reply);
                         await dbContext.SaveChangesAsync();
