@@ -6,8 +6,7 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "STREETCODE_ENVIRONMENT": "Local",
-        "ASPNETCORE_ENVIRONMENT": "Local",
-        "Host": "Default"
+        "ASPNETCORE_ENVIRONMENT": "Local"        
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5000;https://localhost:5001"
