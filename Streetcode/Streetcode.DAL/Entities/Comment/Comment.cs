@@ -16,6 +16,7 @@ namespace Streetcode.DAL.Entities.Comments
         public Guid? UserId { get; set; }
         public string CommentContent { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime EditedAt { get; set; }
         public User? User { get; set; }
         public StreetcodeContent? Streetcode { get; set; }
         public int? ParentId { get; set; }

@@ -291,4 +291,16 @@
   <data name="ErrorResetingPassword" xml:space="preserve">
     <value>Error reseting password for request: {0}</value>
   </data>
+  <data name="CommentNotFound" xml:space="preserve">
+    <value>Comment with id {0} not found.</value>
+  </data>
+  <data name="FailToUpdateComment" xml:space="preserve">
+    <value>Fail to update comment with id {0}</value>
+  </data>
+  <data name="UnauthorizedAccessForEditComment" xml:space="preserve">
+    <value>User {0} does not have permission to edit this comment.</value>
+  </data>
+  <data name="UserNotAuthenticated" xml:space="preserve">
+    <value>User is not authenticated.</value>
+  </data>
 </root>

@@ -6,6 +6,7 @@ using Streetcode.BLL.MediatR.Comments.Delete;
 using Streetcode.BLL.MediatR.Comments.GetAll;
 using Streetcode.BLL.MediatR.Comments.GetByUserId;
 using Streetcode.BLL.MediatR.Replies;
+using Streetcode.BLL.MediatR.Comments.Update;
 
 namespace Streetcode.WebApi.Controllers.Comment
 {
@@ -42,6 +43,13 @@ namespace Streetcode.WebApi.Controllers.Comment
         public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
         {
             return HandleResult(await Mediator.Send(new GetCommentsByUserIdQuery(userId)));
+        }
+
+        [Authorize]
+        [HttpPatch]
+        public async Task<IActionResult> UpdateComment([FromBody] EditCommentDto dto)
+        {
+            return HandleResult(await Mediator.Send(new UpdateCommentCommand(dto)));
         }
 
         [HttpGet("{streetcodeId:int}")]
