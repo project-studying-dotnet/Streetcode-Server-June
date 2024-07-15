@@ -26,7 +26,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
         private readonly Mock<IHttpContextAccessor> _httpContextAccessor;
         private readonly Mock<ICookieService> _cookieServiceMock;
         private readonly Mock<TokensConfiguration> _tokensConfigurationMock;
-        private readonly LoginWithGoogleHandler _handler;
+        private readonly Mock<LoginWithGoogleHandler> _handlerMock;
 
         public LoginWithGoogleHandlerTests()
         {
@@ -39,14 +39,15 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             _cookieServiceMock = new Mock<ICookieService>();
             _tokensConfigurationMock = new Mock<TokensConfiguration>();
 
-            _handler = new LoginWithGoogleHandler(
+            _handlerMock = new Mock<LoginWithGoogleHandler>(
                 _userManagerMock.Object,
                 _tokenServiceMock.Object,
                 _mapperMock.Object,
                 _loggerMock.Object,
                 _httpContextAccessor.Object,
                 _cookieServiceMock.Object,
-                _tokensConfigurationMock.Object);
+                _tokensConfigurationMock.Object)
+            { CallBase = true }; // Allow to call base methods if not explicitly mocked
         }
 
         [Fact]
@@ -57,7 +58,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken, command);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handlerMock.Object.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsFailed);
@@ -70,13 +71,15 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             // Arrange
             var command = new LoginWithGoogleCommand(new LoginWithGoogleDTO { IdToken = "valid_token" });
             var googleCredentials = new Payload { Email = "test@example.com", Name = "Test User", GivenName = "Test", FamilyName = "User" };
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, command);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, command);
+            var user = new User { UserName = "TestUser", Email = "test@example.com" };
 
-            _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((User)null!);
+            _handlerMock.Setup(x => x.ValidateGoogleToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(googleCredentials);
+            _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
             _mapperMock.Setup(x => x.Map<UserDTO>(It.IsAny<User>())).Returns((UserDTO)null!);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handlerMock.Object.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsFailed);
@@ -93,6 +96,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             var userDto = new UserDTO { Username = "TestUser" };
             var tokens = new TokenResponseDTO { AccessToken = "access_token", RefreshToken = new RefreshTokenDTO { Token = "refresh_token" } };
 
+            _handlerMock.Setup(x => x.ValidateGoogleToken(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(googleCredentials);
             _userManagerMock.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(user);
             _mapperMock.Setup(x => x.Map<UserDTO>(user)).Returns(userDto);
             _tokenServiceMock.Setup(x => x.GenerateTokens(user)).ReturnsAsync(tokens);
@@ -108,7 +112,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.LoginWithGoogle
             _cookieServiceMock.Setup(x => x.AppendCookiesToResponseAsync(It.IsAny<HttpResponse>()));
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handlerMock.Object.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.True(result.IsSuccess);

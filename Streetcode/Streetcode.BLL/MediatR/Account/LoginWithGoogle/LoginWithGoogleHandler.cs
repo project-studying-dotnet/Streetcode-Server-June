@@ -46,14 +46,9 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
 
     public async Task<Result<UserDTO>> Handle(LoginWithGoogleCommand request, CancellationToken cancellationToken)
     {
-        Payload googleCredentials;
-        try
+        var googleCredentials = await ValidateGoogleToken(request.LoginWithGoogle.IdToken, _tokensConfiguration.GoogleClientId);
+        if (googleCredentials == null)
         {
-            googleCredentials = await ValidateAsync(request.LoginWithGoogle.IdToken, new ValidationSettings { Audience = new List<string> { _tokensConfiguration.GoogleClientId } });
-        }
-        catch (Exception)
-        {
-
             var errorMessage = MessageResourceContext.GetMessage(ErrorMessages.InvalidToken, request);
             _logger.LogError(request, errorMessage);
             return Result.Fail(errorMessage);
@@ -102,7 +97,7 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
         var userDto = _mapper.Map<UserDTO>(user);
         if (userDto == null)
         {
-            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.FailToMap, request);
+            var errorMsg = MessageResourceContext.GetMessage(ErrorMessages.CanNotMap, request);
             _logger.LogError(request, errorMsg);
             return Result.Fail(new Error(errorMsg));
         }
@@ -128,5 +123,17 @@ public class LoginWithGoogleHandler : IRequestHandler<LoginWithGoogleCommand, Re
         await _tokenService.SetRefreshToken(tokens.RefreshToken, user);
 
         return Result.Ok(userDto);
+    }
+
+    public virtual async Task<Payload> ValidateGoogleToken(string idToken, string clientId)
+    {
+        try
+        {
+            return await ValidateAsync(idToken, new ValidationSettings { Audience = new List<string> { clientId } });
+        }
+        catch (Exception)
+        {
+            return null!;
+        }
     }
 }
