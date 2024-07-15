@@ -22,8 +22,8 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
         private readonly Mock<UserManager<User>> _userManagerMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly RefreshTokensHandler _handler;
-        private readonly ICookieService _cookieService;
-        private readonly TokensConfiguration _tokensConfiguration;
+        private readonly Mock<ICookieService> _cookieService;
+        private readonly Mock<TokensConfiguration> _tokensConfiguration;
 
         public RefreshTokensHandlerTests()
         {
@@ -32,16 +32,16 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             var userStoreMock = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();            
-            _cookieService = new CookieService();
-            _tokensConfiguration = new TokensConfiguration();
+            _cookieService = new Mock<ICookieService>();
+            _tokensConfiguration = new Mock<TokensConfiguration>();
 
             _handler = new RefreshTokensHandler(
                 _userManagerMock.Object, 
                 _loggerMock.Object, 
                 _tokenServiceMock.Object, 
                 _httpContextAccessorMock.Object,
-                _cookieService,
-                _tokensConfiguration,
+                _cookieService.Object,
+                _tokensConfiguration.Object,
                 new DateTimeToDateTimeOffsetConverter());
         }
 
@@ -137,9 +137,7 @@ namespace Streetcode.XUnitTest.MediatRTests.Account.RefreshToken
             };
             _userManagerMock.Setup(x => x.Users).Returns(new List<User> { user }.AsQueryable());
 
-            _tokenServiceMock.Setup(x => x.GenerateTokens(It.IsAny<User>())).ReturnsAsync(tokens);
-            _tokensConfiguration.AccessTokenExpirationMinutes = 15;
-            _tokensConfiguration.RefreshTokenExpirationDays = 7;
+            _tokenServiceMock.Setup(x => x.GenerateTokens(It.IsAny<User>())).ReturnsAsync(tokens);            
             
             var result = await _handler.Handle(command, CancellationToken.None);
 
