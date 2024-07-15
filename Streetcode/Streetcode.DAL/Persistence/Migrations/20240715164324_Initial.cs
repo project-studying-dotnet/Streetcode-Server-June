@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Streetcode.DAL.Migrations
 {
+    /// <inheritdoc />
     public partial class Initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
@@ -567,6 +569,7 @@ namespace Streetcode.DAL.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CommentContent = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EditedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -579,17 +582,17 @@ namespace Streetcode.DAL.Migrations
                         principalTable: "Comments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Comments_streetcodes_StreetcodeId",
-                        column: x => x.StreetcodeId,
-                        principalSchema: "streetcode",
-                        principalTable: "streetcodes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Comments_Users_UserId",
                         column: x => x.UserId,
                         principalSchema: "Users",
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_streetcodes_StreetcodeId",
+                        column: x => x.StreetcodeId,
+                        principalSchema: "streetcode",
+                        principalTable: "streetcodes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -672,17 +675,17 @@ namespace Streetcode.DAL.Migrations
                 {
                     table.PrimaryKey("PK_Likes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Likes_streetcodes_streetcodeId",
-                        column: x => x.streetcodeId,
-                        principalSchema: "streetcode",
-                        principalTable: "streetcodes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Likes_Users_UserId",
                         column: x => x.UserId,
                         principalSchema: "Users",
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Likes_streetcodes_streetcodeId",
+                        column: x => x.streetcodeId,
+                        principalSchema: "streetcode",
+                        principalTable: "streetcodes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1431,6 +1434,7 @@ namespace Streetcode.DAL.Migrations
                 column: "StreetcodeId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
