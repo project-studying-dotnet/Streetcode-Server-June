@@ -7,7 +7,7 @@ using Streetcode.BLL.Services.CookieService.Realizations;
 using System.Linq;
 using Xunit;
 
-namespace Streetcode.XUnitTest.Services.CookieServiceTests
+namespace Streetcode.XUnitTest.ServicesTests.CookieService
 {
     public class CookieServiceTests
     {
@@ -25,11 +25,11 @@ namespace Streetcode.XUnitTest.Services.CookieServiceTests
             // Act
             await cookieService!.
                 AppendCookiesToResponseAsync(httpContext.Response, (key, value, new CookieOptions()));
-            
+
             // Assert
             Assert.True(httpContext.Response.Headers.Values.Contains(string.Format("{0}={1}; path=/", key, value)));
         }
-       
+
         public static ICookieService? CreateCookieService()
         {
             IServiceCollection col = new ServiceCollection();
